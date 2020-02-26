@@ -3,19 +3,21 @@ package ru.swayfarer.swl2.asm.transfomer.injection.visitor;
 import ru.swayfarer.swl2.asm.informated.ClassInfo;
 import ru.swayfarer.swl2.asm.informated.MethodInfo;
 import ru.swayfarer.swl2.asm.transfomer.injection.IMethodInjection;
+import ru.swayfarer.swl2.asm.transfomer.injection.InjectionsClassTransformer;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.MethodVisitor;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.commons.AdviceAdapter;
 
-public class InjectionMethodVisitor extends AdviceAdapter {
+/** {@link MethodVisitor} трансформера {@link InjectionsClassTransformer} */
+public class InjectionsMethodVisitor extends AdviceAdapter {
 
 	public MethodInfo targetMethodInfo;
 	public ClassInfo targetClassInfo;
 	public IExtendedList<IMethodInjection> availableInjections;
 	public boolean isAlreadyInCode;
 	
-	public InjectionMethodVisitor(MethodVisitor methodVisitor, int access, String name, String descriptor, IExtendedList<IMethodInjection> availableInjections, ClassInfo targetClassInfo, MethodInfo targetMethodInfo)
+	public InjectionsMethodVisitor(MethodVisitor methodVisitor, int access, String name, String descriptor, IExtendedList<IMethodInjection> availableInjections, ClassInfo targetClassInfo, MethodInfo targetMethodInfo)
 	{
 		super(ASM7, methodVisitor, access, name, descriptor);
 		

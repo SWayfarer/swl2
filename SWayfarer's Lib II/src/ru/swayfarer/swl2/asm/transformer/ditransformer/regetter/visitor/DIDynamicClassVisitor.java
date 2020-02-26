@@ -5,7 +5,7 @@ import ru.swayfarer.swl2.asm.informated.ClassInfo;
 import ru.swayfarer.swl2.asm.informated.FieldInfo;
 import ru.swayfarer.swl2.asm.informated.MethodInfo;
 import ru.swayfarer.swl2.asm.informated.visitor.InformatedClassVisitor;
-import ru.swayfarer.swl2.asm.transformer.ditransformer.visitor.DependencyInjectionMethodVisitor;
+import ru.swayfarer.swl2.asm.transformer.ditransformer.visitor.DIMethodVisitor;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.logger.ILogger;
@@ -63,7 +63,7 @@ public class DIDynamicClassVisitor extends InformatedClassVisitor {
 		MethodVisitor mv = visitMethod(ACC_PUBLIC, methodName, methodDesc, "", null);
 		
 		mv.visitCode();
-			DependencyInjectionMethodVisitor.appendFieldInit(mv, field, false);
+			DIMethodVisitor.appendFieldInit(mv, field, false);
 			AsmUtils.invokeReturn(mv, field.getType());
 			mv.visitMaxs(2, 2);
 		mv.visitEnd();

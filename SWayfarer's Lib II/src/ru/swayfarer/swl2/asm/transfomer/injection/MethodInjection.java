@@ -63,7 +63,7 @@ public class MethodInjection implements IMethodInjection, Opcodes {
 	
 	/** Имя класса, в который будет производиться иньекция */
 	@InternalElement @Getter @Setter
-	public String targetClassInternalName;
+	public String targetClassCanonicalName;
 	
 	/** Информация о методе, который вставляется */
 	@InternalElement
@@ -310,7 +310,7 @@ public class MethodInjection implements IMethodInjection, Opcodes {
 			injection.hasReturnRef = hasReturnRef;
 			injection.injectedMethodInfo = methodInfo;
 			injection.injectOnExit = injectOnExit;
-			injection.targetClassInternalName = targetMethodClass;
+			injection.targetClassCanonicalName = targetMethodClass;
 			injection.targetMethodDesc = targetMethodDesc;
 			injection.targetMethodName = targetMethodName;
 			
@@ -329,7 +329,7 @@ public class MethodInjection implements IMethodInjection, Opcodes {
 	@Override
 	public String toString()
 	{
-		return "MethodInjection [targetMethodName=" + targetMethodName + ", targetMethodDesc=" + targetMethodDesc + ", targetClassInternalName=" + targetClassInternalName + ", injectedMethodInfo=" + injectedMethodInfo + ", hasReturnRef="
+		return "MethodInjection [targetMethodName=" + targetMethodName + ", targetMethodDesc=" + targetMethodDesc + ", targetClassInternalName=" + targetClassCanonicalName + ", injectedMethodInfo=" + injectedMethodInfo + ", hasReturnRef="
 				+ hasReturnRef + ", injectOnExit=" + injectOnExit + "]";
 	}
 	

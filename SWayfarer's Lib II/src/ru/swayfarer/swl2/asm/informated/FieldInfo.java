@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Data;
+import lombok.ToString;
 import ru.swayfarer.swl2.asm.AsmUtils;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.Opcodes;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.Type;
@@ -13,6 +14,7 @@ import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.Type;
  * @author swayfarer
  */
 @Data
+@ToString
 public class FieldInfo {
 
 	/** Доступ к полю через Opcodes */
@@ -33,19 +35,16 @@ public class FieldInfo {
 	/** Аннотации поля */
 	public List<AnnotationInfo> annotations = new ArrayList<>();
 	
+	/** Класс, в котором находится поле */
 	public ClassInfo owner;
-
-	@Override
-	public String toString()
-	{
-		return "FieldInfo [access=" + access + ", name=" + name + ", descriptor=" + descriptor + ", signature=" + signature + ", value=" + value + ", annotations=" + annotations + "]";
-	}
 	
+	/** Получить тип поля */
 	public Type getType()
 	{
 		return Type.getType(descriptor);
 	}
 	
+	/** Является ли поле примитивом? (int, boolean и пр.) */
 	public boolean isPrimitive()
 	{
 		return AsmUtils.isPrimitive(getType());

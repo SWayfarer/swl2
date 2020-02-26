@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Data;
+import lombok.ToString;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.Type;
 
@@ -12,6 +13,7 @@ import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.Type;
  * @author swayfarer
  */
 @Data
+@ToString
 public class VariableInfo {
 
 	/** Id переменной */
@@ -117,11 +119,5 @@ public class VariableInfo {
 	public boolean isArray()
 	{
 		return descriptor.startsWith("[");
-	}
-
-	@Override
-	public String toString()
-	{
-		return "VariableInfo [id=" + id + ", name=" + name + ", descriptor=" + descriptor + ", signature=" + signature + ", annotations=" + annotations + "]";
 	}
 }

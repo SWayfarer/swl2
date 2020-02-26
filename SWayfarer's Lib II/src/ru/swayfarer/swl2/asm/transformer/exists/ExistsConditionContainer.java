@@ -7,18 +7,29 @@ import java.util.Map;
 
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
+import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.resource.rlink.RLUtils;
 import ru.swayfarer.swl2.string.StringUtils;
 
+/**
+ * Контейнер для условий существования элементов 
+ * @author swayfarer
+ *
+ */
 @SuppressWarnings("unchecked")
 public class ExistsConditionContainer {
 
+	/** Логгер */
+	@InternalElement
 	public static ILogger logger = LoggingManager.getLogger();
 	
+	/** Карта с условиями, где ключ - название условия, значение - значение */
 	public Map<String, Boolean> conditions = new HashMap<>();
 	
+	/** Кастомные условия */
 	public List<ICustomExistsCondition> customConditions = new ArrayList<>();
 	
+	/** Задать условие */
 	public <ExistsManager_Type extends ExistsConditionContainer> ExistsManager_Type setCondition(String name, boolean value)
 	{
 		name = name.toLowerCase();
@@ -26,6 +37,7 @@ public class ExistsConditionContainer {
 		return (ExistsManager_Type) this;
 	}
 	
+	/** Получить условие */
 	public boolean getCondition(String name)
 	{
 		for (ICustomExistsCondition condition : customConditions)

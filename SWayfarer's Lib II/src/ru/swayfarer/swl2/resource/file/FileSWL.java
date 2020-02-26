@@ -43,6 +43,17 @@ public class FileSWL extends File {
 		this("%appDir%");
 	}
 	
+	/** Удалить (если папка, то включая подпапки и подфайлы) */
+	public boolean remove()
+	{
+		if (exists() && isDirectory())
+			for (FileSWL file : getSubfiles())
+				if (!file.remove())
+					return false;
+		
+		return delete();
+	}
+	
 	/** Конструктор */
 	public FileSWL(File parent, String child)
 	{
@@ -65,6 +76,45 @@ public class FileSWL extends File {
 	public FileSWL(URI uri)
 	{
 		super(uri);
+	}
+	
+	/** Получить имя без расширения */
+	public String getNameWithoutExtension()
+	{
+		String name = getName();
+		String extension = getExtension();
+		
+		if (extension.isEmpty())
+			return name;
+		
+		return name.substring(0, name.length() - extension.length() - 1);
+	}
+	
+	/** Получить расширение файла */
+	public String getExtension()
+	{
+		String name = getName();
+		
+		String ret = "";
+		
+		char[] chars = name.toCharArray();
+		
+		for (char ch : chars)
+		{
+			if (ch == '.')
+			{
+				ret = "";
+			}
+			else
+			{
+				ret += ch;
+			}
+		}
+		
+		if (ret.equalsIgnoreCase(name))
+			return "";
+		
+		return ret;
 	}
 	
 	public FileSWL getParentFile()

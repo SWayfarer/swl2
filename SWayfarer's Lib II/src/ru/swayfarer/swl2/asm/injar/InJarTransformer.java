@@ -10,10 +10,11 @@ import java.util.zip.ZipOutputStream;
 
 import ru.swayfarer.swl2.asm.IClassTransformer;
 import ru.swayfarer.swl2.asm.TransformedClassInfo;
-import ru.swayfarer.swl2.asm.injection.annotations.InjectionAsm;
+import ru.swayfarer.swl2.asm.transfomer.injection.InjectionAsm;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
+import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.reference.IReference;
 import ru.swayfarer.swl2.reference.SimpleReference;
 import ru.swayfarer.swl2.resource.file.FileSWL;
@@ -28,9 +29,19 @@ import ru.swayfarer.swl2.resource.streams.StreamsUtils;
  */
 public class InJarTransformer {
 
+	/** Логгер */
+	@InternalElement
 	public static ILogger logger = LoggingManager.getLogger();
+	
+	/** Записывать ли изменения в jar? */
 	public boolean isWriting = false;
+	
+	/** Преобразователи классов */
+	@InternalElement
 	public List<IClassTransformer> classTransformers = new ArrayList<>();
+	
+	/** Преобразователи zip'ки */
+	@InternalElement
 	public List<IZipTransformer> zipTransformers = new ArrayList<>();
 	
 	/** Доавить {@link IZipTransformer} в список трансформеров*/
@@ -42,6 +53,7 @@ public class InJarTransformer {
 		return this;
 	}
 	
+	/** Добавить в jar набор классов для работы {@link ru.swayfarer.swl2.asm.transfomer.injection.InjectionAsm} */
 	public InJarTransformer addInjectionAsmKit()
 	{
 		addExistingClass(InjectionAsm.class);
@@ -97,11 +109,13 @@ public class InJarTransformer {
 		return transform(new FileSWL(filePath));
 	}
 	
+	/** Трансформировать на основе добавленных трансформеров (см. {@link InJarTransformer#addTransformer(IClassTransformer)}) */
 	public FileSWL transform(FileSWL file)
 	{
-		return transform(file, file.getAbsolutePath());
+		return transform(file, file.getNameWithoutExtension() + "_transformed(%date[dd.MM.YYYY-HH.mm.ssss]%)" + file.getExtension());
 	}
 	
+	/** Настроить режим записи */
 	@SuppressWarnings("unchecked")
 	public <InJarTransformer_Type extends InJarTransformer> InJarTransformer_Type setReadonly(boolean isReadonly)
 	{
@@ -220,12 +234,12 @@ public class InJarTransformer {
 				}
 				
 				
-				File tmpParent = tmpFile.getParentFile();
+				FileSWL tmpParent = tmpFile.getParentFile();
 				
 				File[] files = tmpParent.listFiles();
 				
 				if (files == null || files.length == 0)
-					tmpParent.delete();
+					tmpParent.remove();
 				
 				return tmpFile;
 			}

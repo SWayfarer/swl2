@@ -6,6 +6,7 @@ import java.util.Map;
 import ru.swayfarer.swl2.asm.informated.ClassInfo;
 import ru.swayfarer.swl2.asm.informated.FieldInfo;
 import ru.swayfarer.swl2.asm.informated.MethodInfo;
+import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.ClassVisitor;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.FieldVisitor;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.MethodVisitor;
@@ -25,9 +26,11 @@ public class InformatedClassVisitor extends ClassVisitor implements Opcodes {
 	public String className;
 	
 	/** Имя + дескриптор метода в информацио о методе */
+	@InternalElement
 	public Map<String, MethodInfo> methodToInfo = new HashMap<>();
 	
 	/** Имя + дескриптор поля в информацио о поле */
+	@InternalElement
 	public Map<String, FieldInfo> fieldToInfo = new HashMap<>();
 	
 	public InformatedClassVisitor(ClassVisitor classVisitor, ClassInfo classInfo)

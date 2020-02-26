@@ -15,7 +15,7 @@ import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.Type;
  * Визитор классов, добавляющий в отмеченные {@link DISwL} поля иньекцию из контекста 
  * @author swayfarer
  */
-public class DependencyInjectionClassVisitor extends InformatedClassVisitor {
+public class DIClassVisitor extends InformatedClassVisitor {
 
 	/** Логгер */
 	@InternalElement
@@ -28,7 +28,7 @@ public class DependencyInjectionClassVisitor extends InformatedClassVisitor {
 	public static String CONTEXT_GET_METHOD_NAME = "getContextElement";
 	
 	/** Конструктор */
-	public DependencyInjectionClassVisitor(ClassVisitor classVisitor, ClassInfo classInfo)
+	public DIClassVisitor(ClassVisitor classVisitor, ClassInfo classInfo)
 	{
 		super(classVisitor, classInfo);
 	}
@@ -39,7 +39,7 @@ public class DependencyInjectionClassVisitor extends InformatedClassVisitor {
 	{	
 		MethodVisitor mv = super.visitMethod(access, name, descriptor, signature, exceptions);
 		
-		return new DependencyInjectionMethodVisitor(mv, access, name, descriptor, classInfo);
+		return new DIMethodVisitor(mv, access, name, descriptor, classInfo);
 	}
 
 }

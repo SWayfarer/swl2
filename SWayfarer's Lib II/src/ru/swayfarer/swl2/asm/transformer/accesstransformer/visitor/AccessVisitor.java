@@ -1,10 +1,17 @@
 package ru.swayfarer.swl2.asm.transformer.accesstransformer.visitor;
 
+import ru.swayfarer.swl2.asm.AsmUtils;
+import ru.swayfarer.swl2.asm.transformer.accesstransformer.AccessOpenClassTransformer;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.ClassVisitor;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.FieldVisitor;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.MethodVisitor;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.Opcodes;
 
+/**
+ * {@link ClassVisitor} трансформера {@link AccessOpenClassTransformer} 
+ * @author swayfarer
+ *
+ */
 public class AccessVisitor extends ClassVisitor{
 
 	public boolean isSkiping = false;
@@ -16,13 +23,13 @@ public class AccessVisitor extends ClassVisitor{
 	
 	public int getAccess(int acc)
 	{
-		return isSkiping ? acc : AccessTypes.openAccess(acc);
+		return isSkiping ? acc : AsmUtils.openAccess(acc);
 	}
 	
 	@Override
 	public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
 
-		isSkiping = AccessTypes.isInterface(access) || (signature != null && (signature.contains("Ljava/lang/Enum")));
+		isSkiping = AsmUtils.isInterface(access) || (signature != null && (signature.contains("Ljava/lang/Enum")));
 		
 		cv.visit(version, getAccess(access), name, signature, superName, interfaces);
 	}

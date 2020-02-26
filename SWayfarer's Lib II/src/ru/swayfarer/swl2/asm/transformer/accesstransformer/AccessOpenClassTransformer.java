@@ -7,11 +7,12 @@ import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.ClassWriter;
 
 /**
  * Трансформер доступа к содержимому классов. 
- * <h1>Применение:</h1> При использовании на классе делает публичными все его поля и методы, а также снимает метки final там, где они расставлены.
+ * <h1>Применение:</h1> 
+ * При использовании на классе делает публичными все его поля и методы, а также снимает метки final там, где они расставлены.
  * @author swayfarer
  *
  */
-public class AccessTransformer extends AbstractAsmTransformer{
+public class AccessOpenClassTransformer extends AbstractAsmTransformer{
 
 	@Override
 	public void transform(String name, byte[] bytes, ClassReader reader, ClassWriter writer)

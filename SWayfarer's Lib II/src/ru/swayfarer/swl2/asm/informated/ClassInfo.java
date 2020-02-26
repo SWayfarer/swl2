@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Data;
+import lombok.ToString;
 import ru.swayfarer.swl2.asm.TransformedClassInfo;
 import ru.swayfarer.swl2.asm.transformer.informated.ClassScannerTransformer;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
@@ -16,6 +17,7 @@ import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.Type;
  * @author swayfarer
  */
 @Data
+@ToString
 public class ClassInfo {
 
 	/** Версия класса. На какой Java скомпилирован */
@@ -45,24 +47,27 @@ public class ClassInfo {
 	/** Лист информации об аннотациях */
 	public IExtendedList<AnnotationInfo> annotations = CollectionsSWL.createExtendedList();
 
-	
-	@Override
-	public String toString()
-	{
-		return "ClassInfo [version=" + version + ", access=" + access + ", name=" + name + ", signature=" + signature + ", superName=" + superName + ", interfaces=" + interfaces + ", fields=" + fields + ", methods=" + methods
-				+ ", annotations=" + annotations + "]";
-	}
-	
+	/** 
+	 * Получить каноничное имя класса
+	 * <br> Например, java.lang.String для класса {@link String}
+	 */
 	public String getCanonicalName()
 	{
 		return getType().getClassName();
 	}
 	
+	/** 
+	 * Получить внутреннее имя класса
+	 * <br> Например, java/lang/String для класса {@link String}
+	 */
 	public String getInternalName()
 	{
 		return getType().getInternalName();
 	}
 	
+	/**
+	 * Получить информацию о поле по его имени
+	 */
 	public FieldInfo getField(String name)
 	{
 		return fields.dataStream().find((var) -> var.name.equals(name));
@@ -98,7 +103,7 @@ public class ClassInfo {
 	 */
 	public boolean hasAnnotation(String desc)
 	{
-		return getFirstAnnotation(desc) == null;
+		return getFirstAnnotation(desc) != null;
 	}
 	
 	/**

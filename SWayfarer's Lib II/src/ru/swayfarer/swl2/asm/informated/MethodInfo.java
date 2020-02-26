@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import lombok.Data;
+import lombok.ToString;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.Opcodes;
@@ -14,6 +15,7 @@ import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.Type;
  * @author swayfarer
  */
 @Data
+@ToString
 public class MethodInfo {
 
 	/** Доступ к методу через опкоды */
@@ -56,13 +58,6 @@ public class MethodInfo {
 	/** Ассоциация аннотации с номером локальной переменной */
 	public Map<Integer, IExtendedList<AnnotationInfo>> varToAnnotation = CollectionsSWL.createHashMap(); 
 	
-	@Override
-	public String toString()
-	{
-		return "MethodInfo [access=" + access + ", owner=" + owner + ", name=" + name + ", signature=" + signature + ", descriptor=" + descriptor + ", exceptions=" + exceptions + ", paramsTypes=" + paramsTypes + ", localVars=" + localVars
-				+ ", maxStack=" + maxStack + ", maxLocals=" + maxLocals + "]";
-	}
-	
 	/**
 	 * Получить информацию о переменной по ее id
 	 * @param id Id переменной 
@@ -99,6 +94,7 @@ public class MethodInfo {
 		return getParametersCount() == 0;
 	}
 	
+	/** Является ли метод void'ом? */
 	public boolean isVoid()
 	{
 		return Type.VOID_TYPE.equals(getReturnType());
@@ -179,6 +175,9 @@ public class MethodInfo {
 		return ret;
 	}
 	
+	/**
+	 * Добавить параметер метода 
+	 */
 	public void addParam(int id, VariableInfo info)
 	{
 		if (varToAnnotation.containsKey(id))
@@ -232,7 +231,4 @@ public class MethodInfo {
 	{
 		return (access & Opcodes.ACC_STATIC) != 0;
 	}
-	
-	
-	
 }

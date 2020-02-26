@@ -8,12 +8,18 @@ import ru.swayfarer.swl2.asm.informated.FieldInfo;
 import ru.swayfarer.swl2.asm.informated.MethodInfo;
 import ru.swayfarer.swl2.asm.informated.visitor.InformatedClassVisitor;
 import ru.swayfarer.swl2.asm.nametransformer.RenameAsm;
+import ru.swayfarer.swl2.asm.nametransformer.RenameClassTransformer;
 import ru.swayfarer.swl2.string.StringUtils;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.ClassVisitor;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.FieldVisitor;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.MethodVisitor;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.Type;
 
+/**
+ * Визитор для {@link RenameClassTransformer} 
+ * @author swayfarer
+ *
+ */
 public class RenameClassTransformerVisitor extends InformatedClassVisitor{
 
 	public static final String ANNOTATION_DESC = Type.getDescriptor(RenameAsm.class);

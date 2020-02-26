@@ -5,20 +5,32 @@ import ru.swayfarer.swl2.asm.informated.MethodInfo;
 import ru.swayfarer.swl2.asm.informated.visitor.InformatedClassVisitor;
 import ru.swayfarer.swl2.asm.transfomer.injection.ClassInjectionInfo;
 import ru.swayfarer.swl2.asm.transfomer.injection.IMethodInjection;
+import ru.swayfarer.swl2.asm.transfomer.injection.InjectionsClassTransformer;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
+import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.ClassVisitor;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.MethodVisitor;
 
-public class InjectionClassVisitor extends InformatedClassVisitor {
+/**
+ * {@link ClassVisitor} {@link InjectionsClassTransformer}'а 
+ * @author swayfarer
+ *
+ */
+public class InjectionsClassVisitor extends InformatedClassVisitor {
 
+	/** Логгер */
+	@InternalElement
 	public static ILogger logger = LoggingManager.getLogger();
+	
 	/** Информация о классе, по которой будет проведена иньекция. Не путать с {@link MethodInfo}  */
+	@InternalElement
 	public ClassInjectionInfo classInjectionInfo;
 	
-	public InjectionClassVisitor(ClassVisitor classVisitor, ClassInfo classInfo, ClassInjectionInfo classInjectionInfo)
+	/** Конструктор */
+	public InjectionsClassVisitor(ClassVisitor classVisitor, ClassInfo classInfo, ClassInjectionInfo classInjectionInfo)
 	{
 		super(classVisitor, classInfo);
 		this.classInjectionInfo = classInjectionInfo;
@@ -33,7 +45,7 @@ public class InjectionClassVisitor extends InformatedClassVisitor {
 		if (CollectionsSWL.isNullOrEmpty(injectionsForMethod))
 			return mv;
 		
-		mv = new InjectionMethodVisitor(mv, access, name, descriptor, injectionsForMethod, classInfo, info);
+		mv = new InjectionsMethodVisitor(mv, access, name, descriptor, injectionsForMethod, classInfo, info);
 		
 		return mv;
 	}

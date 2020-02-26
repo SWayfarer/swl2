@@ -14,7 +14,4 @@ import java.lang.annotation.Target;
  */
 @Retention(RUNTIME)
 @Target(FIELD)
-public @interface DynamicDI
-{
-
-}
+public @interface DynamicDI {}

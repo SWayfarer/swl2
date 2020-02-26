@@ -12,7 +12,6 @@ import java.security.CodeSigner;
 import java.security.CodeSource;
 import java.security.Permissions;
 import java.security.ProtectionDomain;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -25,10 +24,12 @@ import ru.swayfarer.swl2.asm.classloader.source.URLClassSource;
 import ru.swayfarer.swl2.asm.transformer.dump.DumpClassTransformer;
 import ru.swayfarer.swl2.classes.ReflectionUtils;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
+import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.exceptions.ExceptionsUtils;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
 import ru.swayfarer.swl2.markers.Alias;
+import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.resource.rlink.RLUtils;
 import ru.swayfarer.swl2.string.StringUtils;
 
@@ -42,45 +43,57 @@ import ru.swayfarer.swl2.string.StringUtils;
 public class ClassLoaderSWL extends URLClassLoader {
 
 	/** Карта с уже загруженными классами, где ключ - имя класса */
+	@InternalElement
 	public Map<String, Class<?>> loadedClasses = new HashMap<>();
 
 	/**
 	 * Самое вкусное. Лист с трансформерами, которые будут применены к классам
 	 */
-	public List<IClassTransformer> transformers = new ArrayList<>();
+	@InternalElement
+	public IExtendedList<IClassTransformer> transformers = CollectionsSWL.createExtendedList();
 
 	/** Исключения, которые будут загружены стандартным загрузчиком */
-	public List<String> systemExclusions = CollectionsSWL.createExtendedList("java.");
+	@InternalElement
+	public IExtendedList<String> systemExclusions = CollectionsSWL.createExtendedList("java.");
 
 	/** Исключения, которые будут загружены стандартным загрузчиком */
-	public List<String> exclusions = new ArrayList<>();
+	@InternalElement
+	public IExtendedList<String> exclusions = CollectionsSWL.createExtendedList();
 
 	/** Исключения, которые будут принудительно загружены этим загрузчиком */
-	public List<String> inclusions = new ArrayList<>();
-
-	//public static SubLoggerSWL logger = Console.getLogger().createSubLogger("ClassLoader");
+	@InternalElement
+	public IExtendedList<String> inclusions = CollectionsSWL.createExtendedList();
 
 	/** Показывать ли эксепшены, вылетающие при загрузке классов */
+	@InternalElement
 	public boolean showDefineStacktrace = false;
 
+	/**
+	 *  Источник информации о классе, из которого будет браться необходимая для загрузки информация
+	 * <br> Позволяет изменить источник на любой понравившийся
+	 */
+	@InternalElement
 	public IClassInfoSource classInfoSource = URLClassSource.valueOf(this);
 	
-	public boolean isUsingUnsafeDefiner = false;
-	
-	public boolean isDefiningAsBootstrap = false;
-
+	/** Логгер */
+	@InternalElement
 	public static ILogger logger = LoggingManager.getLogger();
 	
-	public List<String> definedPackages = new ArrayList<>();
+	/** Задефайненные пакеты */
+	@InternalElement
+	public IExtendedList<String> definedPackages = CollectionsSWL.createExtendedList();
 	
 	/** Родитель */
+	@InternalElement
 	public ClassLoader parent;
 
+	/** Конструктор */
 	public ClassLoaderSWL()
 	{
 		this(ClassLoaderSWL.class.getClassLoader());
 	}
 
+	/** Конструктор c указанием родительского класслоадера */
 	public ClassLoaderSWL(ClassLoader parent)
 	{
 		super(getUrls(parent).toArray(new URL[]
@@ -99,24 +112,29 @@ public class ClassLoaderSWL extends URLClassLoader {
 		}
 	}
 	
+	/** Добавить дамп классов по маске имени в директорию */
 	@Alias("registerDump")
 	public <T extends ClassLoaderSWL> T addDump(String classInternalNameMask, String dumpDir)
 	{
 		return registerDump(classInternalNameMask, dumpDir);
 	}
 	
+	/** Добавить дамп классов по маске имени в директорию */
 	public <T extends ClassLoaderSWL> T registerDump(String classInternalNameMask, String dumpDir)
 	{
 		addTransformer(new DumpClassTransformer(classInternalNameMask, dumpDir));
 		return (T) this;
 	}
 	
+	/** Использовать родительский класслоадер в качестве {@link #classInfoSource} */
 	public <T extends ClassLoaderSWL> T wrapParent()
 	{
 		classInfoSource = URLClassSource.wrapClassloader(parent);
 		return (T) this;
 	}
 	
+	/** Получить {@link URL}'ы из класслоадера, который ими пользуется */
+	@InternalElement
 	public static List<URL> getUrls(ClassLoader classLoader)
 	{
 		if (classLoader instanceof URLClassLoader)
@@ -140,25 +158,16 @@ public class ClassLoaderSWL extends URLClassLoader {
 		return null;
 	}
 	
+	/** 
+	 * Начать новую цепочку действий в указанном методе класса с указанными аргументами.
+	 * <br> Метод должен содержать параметер {@link List}<{@link String}>, в который будут помещены переданные аргументы 
+	 * <br> Смотри {@link #startAt(String, String, Object...)}
+	 */
 	public void startAt(Class<?> cl, String methodname, String... args)
 	{
-		Thread currentThread = Thread.currentThread();
-		ClassLoader context = currentThread.getContextClassLoader();
-		currentThread.setContextClassLoader(this);
 		startAt(cl.getName(), methodname, (Object[]) args);
-		currentThread.setContextClassLoader(context);
 	}
 	
-	public void defineClassBy(String name, byte[] classBytes, int start, int end, CodeSource cs)
-	{
-		
-	}
-	
-	public Class<?> defineClassBy(String name, byte[] classBytes, int start, int end, ProtectionDomain pd)
-	{
-		return defineClass(name, classBytes, start, end, pd);
-	}
-
 	/**
 	 * 
 	 * Создает объект, дочерние объекты которого будут загружены через этот
@@ -177,10 +186,11 @@ public class ClassLoaderSWL extends URLClassLoader {
 	 */
 	public void startAt(String className, String methodname, Object... args)
 	{
-		ClassLoader context = Thread.currentThread().getContextClassLoader();
-
+		Thread currentThread = Thread.currentThread();
+		ClassLoader context = currentThread.getContextClassLoader();
 		try
 		{
+			currentThread.setContextClassLoader(this);
 			ReflectionUtils.invokeMethod(ReflectionUtils.newInstanceOf(this.loadClass(className)), methodname, Arrays.asList(args));
 		}
 		catch (Throwable e)
@@ -188,10 +198,11 @@ public class ClassLoaderSWL extends URLClassLoader {
 			e.printStackTrace();
 		}
 
-		Thread.currentThread().setContextClassLoader(context);
+		currentThread.setContextClassLoader(context);
 	}
 
 	/** Класс не должен быть загружен этим ClassLoader'ом? */
+	@InternalElement
 	public boolean isExclusion(String name)
 	{
 		if (StringUtils.isStringStartsWith(name, inclusions.toArray()))
@@ -202,6 +213,7 @@ public class ClassLoaderSWL extends URLClassLoader {
 	}
 
 	/** Трансформация класса */
+	@InternalElement
 	public byte[] transform(String name, byte[] bytes, TransformedClassInfo transformedClassInfo)
 	{
 		for (IClassTransformer transformer : transformers)
@@ -311,7 +323,7 @@ public class ClassLoaderSWL extends URLClassLoader {
 						}
 					});
 					
-					ret = defineClassBy(transformedClassInfo.name, bytes, 0, bytes.length, getDomain(source));
+					ret = defineClass(transformedClassInfo.name, bytes, 0, bytes.length, getDomain(source));
 				}
 			}
 			catch (Throwable e)

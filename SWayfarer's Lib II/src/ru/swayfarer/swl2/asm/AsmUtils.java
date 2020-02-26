@@ -1,8 +1,5 @@
 package ru.swayfarer.swl2.asm;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import ru.swayfarer.swl2.asm.informated.ClassInfo;
 import ru.swayfarer.swl2.asm.informated.FieldInfo;
 import ru.swayfarer.swl2.asm.informated.MethodInfo;
@@ -12,18 +9,69 @@ import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.MethodVisitor;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.Opcodes;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.Type;
 
+/** 
+ * Утилиты для работы с ObjectWeb ASM (https://asm.ow2.io/)
+ */
 public class AsmUtils implements Opcodes{
 
-	/**
-	 * Ex: path/to/class/TestClass
+	/** Является ли класс с этим доступом интерфесом? */
+	public static boolean isInterface(int access)
+	{
+		return (access & ACC_INTERFACE) != 0;
+	}
+	
+	/** Является ли элемент с этим доступом финальным? (final) */
+	public static boolean isFinal(int access)
+	{
+		return (access & ACC_FINAL) != 0;
+	}
+	
+	/** Является ли элемент с этим доступом защищенным? (protected) */
+	public static boolean isProtected(int access)
+	{
+		return (access & ACC_PROTECTED) != 0;
+	}
+	
+	/** Является ли элемент с этим доступом приватным? (provate) */
+	public static boolean isPrivate(int access)
+	{
+		return (access & ACC_PRIVATE) != 0;
+	}
+	
+	/** Открыть доступ. Сделать public и убрать final */
+	public static int openAccess(int access) {
+		
+		if (isFinal(access))
+		{
+			access = access ^ ACC_FINAL;
+		}
+		
+		if (isPrivate(access))
+		{
+			access = (access ^ ACC_PRIVATE) | ACC_PUBLIC;
+		}
+		
+		if (isProtected(access))
+		{
+			access = (access ^ ACC_PROTECTED) | ACC_PUBLIC;
+		}
+		
+		return access;
+		
+	}
+	
+	/** 
+	 * Получить "Internal name" класса. 
+	 * <br> Например, для java.lang.String вернет java/lang/String
 	 */
 	public static String toInternalName(Type type)
 	{
-		return toInternalName(type.getDescriptor());
+		return type.getInternalName();
 	}
 	
-	/**
-	 * Ex: path/to/class/TestClass
+	/** 
+	 * Получить "Internal name" класса. 
+	 * <br> Например, для java.lang.String вернет java/lang/String
 	 */
 	public static String toInternalName(String desc)
 	{
@@ -32,6 +80,11 @@ public class AsmUtils implements Opcodes{
 		return toCanonicalName(desc).replace(".", "/");
 	}
 	
+	/**
+	 * Является ли тип примитивным? (таким как int, boolean и т.п.)
+	 * @param type
+	 * @return
+	 */
 	public static boolean isPrimitive(Type type)
 	{
 		return EqualsUtils.objectEqualsSome
@@ -49,38 +102,54 @@ public class AsmUtils implements Opcodes{
 		);
 	}
 	
+	/** Получить дескриптор из каноничного названия класса */
 	public static String toDescName(String canonicalName)
 	{
 		return "L"+canonicalName.replace(".", "/")+";";
 	}
 	
-	public static void createInstance(MethodVisitor mv, Type type)
+	/** Создать объект указанного типа и вызвать пустой конструктор */
+	public static void createInstance(MethodVisitor mv, Type classType)
 	{
-		newInstance(mv, type);
-		initInstance(mv, type);
+		newInstance(mv, classType);
+		initInstance(mv, classType);
 	}
 	
-	public static void initInstance(MethodVisitor mv, Type type)
+	/** Вызвать пустой конструктор */
+	public static void initInstance(MethodVisitor mv, Type classType)
 	{
-		initInstance(mv, toInternalName(type.getDescriptor()));
+		initInstance(mv, toInternalName(classType.getDescriptor()));
 	}
 	
-	public static void initInstance(MethodVisitor mv, String desc)
+	/** Вызвать пустой конструктор*/
+	public static void initInstance(MethodVisitor mv, String classInternalName)
 	{
-		mv.visitMethodInsn(INVOKESPECIAL, desc, "<init>", "()V", false);
+		mv.visitMethodInsn(INVOKESPECIAL, classInternalName, "<init>", "()V", false);
 	}
 	
+	/** 
+	 * Создать новый объект указанного типа 
+	 * <br> Конструктор при этом вызван не будет
+	 */
 	public static void newInstance(MethodVisitor mv, Type type)
 	{
 		newInstance(mv, toInternalName(type.getDescriptor()));
 	}
 	
-	public static void newInstance(MethodVisitor mv, String desc)
+	/** 
+	 * Создать новый объект указанного типа 
+	 * <br> Конструктор при этом вызван не будет
+	 */
+	public static void newInstance(MethodVisitor mv, String typeInternalName)
 	{
-		mv.visitTypeInsn(NEW, desc);
+		mv.visitTypeInsn(NEW, typeInternalName);
 		mv.visitInsn(DUP);
 	}
 	
+	/** 
+	 * Вызвать return указанного типа в {@link MethodVisitor}'е
+	 * <br> Если указан примитивный тип, то будет возвращена его обертка 
+	 */
 	public static void invokeObjectReturn(MethodVisitor mv, Type type)
 	{
 		Class<?> cl = null;
@@ -136,6 +205,10 @@ public class AsmUtils implements Opcodes{
 		mv.visitInsn(ARETURN);
 	}
 	
+	/**
+	 * Вызвать каст к указанному типу 
+	 * <br> Если указан примитивный тип, то каст произведется к его обертке 
+	 */
 	public static void invokeObjectCheckcast(MethodVisitor mv, Type type)
 	{
 		Type checkcastType = type;
@@ -208,7 +281,9 @@ public class AsmUtils implements Opcodes{
 	}
 	
 	/**
-	 * Ex: path.to.class.TestClass
+	 * Превратить дескриптор в каноничное имя класса. 
+	 * <h1> Пример:
+	 * <br> Было Lpath/to/class/TestClass; - стало path.to.class.TestClass
 	 */
 	public static String toCanonicalName(String desc)
 	{
@@ -223,41 +298,48 @@ public class AsmUtils implements Opcodes{
 		return desc.replace("/", ".");
 	}
 	
+	/** Вызывать хранение объекта со стека в переменную под указанным id */
 	public static void invokeStore(MethodVisitor mv, Type type, int id)
 	{
 		if (type != Type.VOID_TYPE)
 			mv.visitVarInsn(getStoreOpcode(type), id);
 	}
 	
+	/** Вызывать загрузку объекта на стек из переменной с указанным id */ //
 	public static void invokeLoad(MethodVisitor mv, Type type, int id)
 	{
 		if (type != Type.VOID_TYPE)
 			mv.visitVarInsn(getLoadOpcode(type), id);
 	}
 	
+	/** Вызов филда, исользуя его {@link FieldInfo} */
 	public static void getField(MethodVisitor mv, FieldInfo fieldInfo)
 	{
 		ClassInfo classInfo = fieldInfo.getOwner();
 		mv.visitFieldInsn(fieldInfo.isStatic() ? Opcodes.GETSTATIC : Opcodes.GETFIELD, classInfo.getType().getInternalName(), fieldInfo.name, fieldInfo.descriptor);
 	}
 	
+	/** Вызов задания филда, используя его {@link FieldInfo} */
 	public static void putField(MethodVisitor mv, FieldInfo fieldInfo)
 	{
 		ClassInfo classInfo = fieldInfo.getOwner();
 		mv.visitFieldInsn(fieldInfo.isStatic() ? Opcodes.PUTSTATIC : Opcodes.PUTFIELD, classInfo.getType().getInternalName(), fieldInfo.name, fieldInfo.descriptor);
 	}
 	
+	/** Вызов метода, используя его {@link MethodInfo} */
 	public static void invokeMethod(MethodVisitor mv, MethodInfo methodInfo)
 	{
 		ClassInfo classInfo = methodInfo.getOwner();
 		mv.visitMethodInsn(methodInfo.isStatic() ? Opcodes.INVOKESTATIC : Opcodes.INVOKEVIRTUAL, classInfo.getType().getInternalName(), methodInfo.name, methodInfo.descriptor, false);
 	}
 	
+	/** Вызвать return указанного типа */
 	public static void invokeReturn(MethodVisitor mv, Type type)
 	{
 		mv.visitInsn(getReturnOpcode(type));
 	}
 	
+	/** Получить кол-во параметров функции по ее дескриптору */
 	public static int getMethodArgumentsCount(String methodDesc)
 	{
 		String regex = "L[^;]*;";
@@ -273,108 +355,27 @@ public class AsmUtils implements Opcodes{
 		return count;
 	}
 	
+	/** Получить {@link Opcodes} хранения указанного типа */
 	public static int getStoreOpcode(Type type)
 	{
-		int opcode = ASTORE;
-		
-		if (EqualsUtils.objectEqualsSome(type, Type.BOOLEAN_TYPE, Type.BYTE_TYPE, Type.CHAR_TYPE, Type.SHORT_TYPE, Type.INT_TYPE))
-		{
-			opcode = ISTORE;
-		}
-		else if (type == Type.LONG_TYPE)
-		{
-			opcode = LSTORE;
-		}
-		else if (type == Type.FLOAT_TYPE)
-		{
-			opcode = FSTORE;
-		}
-		else if (type == Type.DOUBLE_TYPE)
-		{
-			opcode = DSTORE;
-		}
-		
-		return opcode;
+		return type.getOpcode(ISTORE);
 	}
 	
+	/** Получить {@link Opcodes} загрузки указанного типа */
 	public static int getLoadOpcode(Type type)
 	{
-		int opcode = ALOAD;
-		
-		if (EqualsUtils.objectEqualsSome(type, Type.BOOLEAN_TYPE, Type.BYTE_TYPE, Type.CHAR_TYPE, Type.SHORT_TYPE, Type.INT_TYPE))
-		{
-			opcode = ILOAD;
-		}
-		else if (type == Type.LONG_TYPE)
-		{
-			opcode = LLOAD;
-		}
-		else if (type == Type.FLOAT_TYPE)
-		{
-			opcode = FLOAD;
-		}
-		else if (type == Type.DOUBLE_TYPE)
-		{
-			opcode = DLOAD;
-		}
-		
-		return opcode;
+		return type.getOpcode(ILOAD);
 	}
 	
+	/** Получить {@link Opcodes} возврата указанного типа */
 	public static int getReturnOpcode(Type type)
 	{
-		int opcode = ARETURN;
-		
-		if (EqualsUtils.objectEqualsSome(type, Type.BOOLEAN_TYPE, Type.BYTE_TYPE, Type.CHAR_TYPE, Type.SHORT_TYPE, Type.INT_TYPE))
-			opcode = IRETURN;
-		else if (type == Type.FLOAT_TYPE)
-			opcode = FRETURN;
-		else if (type == Type.DOUBLE_TYPE)
-			opcode = DRETURN;
-		else if (type == Type.LONG_TYPE)
-			opcode = LRETURN;
-		else if (type == Type.VOID_TYPE)
-			opcode = RETURN;
-		
-		return opcode;
+		return type.getOpcode(IRETURN);
 	}
 	
+	/** Статический вызов метода */
 	public static void invokeStatic(MethodVisitor mv, String className, String methodName, String methodDesc)
 	{
 		mv.visitMethodInsn(INVOKESTATIC, className, methodName, methodDesc, false);
 	}
-	
-	public static List<String> parseArgumentsFromDescriptor(String desc)
-	{
-		return parseArgumentsFromDescriptor(desc, new ArrayList<>());
-	}
-	
-	public static List<String> parseArgumentsFromDescriptor(String desc, List<String> list)
-	{
-		if (desc == null)
-			return null;
-		
-		if (desc.contains("("))
-			desc = desc.substring(desc.indexOf("(") + 1, desc.indexOf(")"));
-		
-		int index;
-		
-		for (int i1 = 0; i1 < desc.length(); i1 ++)
-		{
-			if (desc.charAt(i1) == 'L' || (desc.charAt(i1) == '[' && desc.length() - 1 > i1 && desc.charAt(i1 + 1) == 'L'))
-			{
-				list.add(desc.substring(i1, index = desc.indexOf(';') ));
-				return parseArgumentsFromDescriptor(desc.substring(index+1), list);
-			}
-			else if (desc.charAt(i1) == '[' && desc.length() - 1 > i1)
-			{
-				list.add(desc.charAt(i1)+desc.charAt(i1 + 1)+"");
-				i1 ++;
-			}
-		}
-		
-		return list;
-		
-	}
-	
 }

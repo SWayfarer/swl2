@@ -6,6 +6,11 @@ import ru.swayfarer.swl2.asm.transformer.informated.InformatedClassTransformer;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.ClassReader;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.ClassWriter;
 
+/**
+ * Трансформер классов, обеспечивающий работу {@link RenameAsm}
+ * @author swayfarer
+ *
+ */
 public class RenameClassTransformer extends InformatedClassTransformer{
 
 	@Override

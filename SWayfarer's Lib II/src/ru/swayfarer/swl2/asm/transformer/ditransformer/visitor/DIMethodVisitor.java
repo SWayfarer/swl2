@@ -1,6 +1,6 @@
 package ru.swayfarer.swl2.asm.transformer.ditransformer.visitor;
 
-import static ru.swayfarer.swl2.asm.transformer.ditransformer.DependencyInjectionClassTransformer.DI_ANNOTATION_DESC;
+import static ru.swayfarer.swl2.asm.transformer.ditransformer.DIClassTransformer.DI_ANNOTATION_DESC;
 
 import ru.swayfarer.swl2.asm.AsmUtils;
 import ru.swayfarer.swl2.asm.informated.AnnotationInfo;
@@ -18,7 +18,7 @@ import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.commons.AdviceAdapter;
  * @author swayfarer
  *
  */
-public class DependencyInjectionMethodVisitor extends AdviceAdapter {
+public class DIMethodVisitor extends AdviceAdapter {
 
 	/** Будет ли при иньекции все происходить через {@link DIManager#injectContextElements(String, Object)}? */
 	public static boolean injectByReflection = true;
@@ -28,7 +28,7 @@ public class DependencyInjectionMethodVisitor extends AdviceAdapter {
 	public ClassInfo classInfo;
 	
 	/** Конструктор */
-	protected DependencyInjectionMethodVisitor(MethodVisitor methodVisitor, int access, String name, String descriptor, ClassInfo classInfo)
+	protected DIMethodVisitor(MethodVisitor methodVisitor, int access, String name, String descriptor, ClassInfo classInfo)
 	{
 		super(ASM7, methodVisitor, access, name, descriptor);
 		this.classInfo = classInfo;
@@ -52,7 +52,7 @@ public class DependencyInjectionMethodVisitor extends AdviceAdapter {
 		if (injectByReflection && classInfo.fields.stream().anyMatch((field) -> field.hasAnnotation(DI_ANNOTATION_DESC)))
 		{
 			mv.visitVarInsn(ALOAD, 0);
-			mv.visitMethodInsn(INVOKESTATIC, DependencyInjectionClassVisitor.CONTEXT_GET_CLASS_NAME, "injectContextElements", "(Ljava/lang/Object;)Ljava/lang/Object;", false);
+			mv.visitMethodInsn(INVOKESTATIC, DIClassVisitor.CONTEXT_GET_CLASS_NAME, "injectContextElements", "(Ljava/lang/Object;)Ljava/lang/Object;", false);
 			mv.visitInsn(POP);
 		}
 		else
@@ -118,7 +118,7 @@ public class DependencyInjectionMethodVisitor extends AdviceAdapter {
 		String fieldCanonicalName = fieldInternalName.replace("/", ".");
 		
 		mv.visitLdcInsn(fieldCanonicalName);
-		mv.visitMethodInsn(INVOKESTATIC, DependencyInjectionClassVisitor.CONTEXT_GET_CLASS_NAME, DependencyInjectionClassVisitor.CONTEXT_GET_METHOD_NAME, "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;", false);
+		mv.visitMethodInsn(INVOKESTATIC, DIClassVisitor.CONTEXT_GET_CLASS_NAME, DIClassVisitor.CONTEXT_GET_METHOD_NAME, "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;", false);
 		mv.visitTypeInsn(CHECKCAST, fieldInternalName);
 		
 		if (put)

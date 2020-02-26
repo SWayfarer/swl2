@@ -37,11 +37,13 @@ public class AnnotationInfo {
 		return "AnnotationInfo [descritor=" + descritor + ", params=" + params + "]";
 	}
 	
+	/** Получть значение параметра аннотации */
 	public <Param_Type> Param_Type getParam(String name)
 	{
 		return (Param_Type) params.get(name);
 	}
 	
+	/** Получть значение параметра аннотации с указанием дефолтного значения */
 	public <Param_Type> Param_Type getParam(String name, Param_Type defaultValue)
 	{
 		Param_Type param = getParam(name);

@@ -3,6 +3,7 @@ package ru.swayfarer.swl2.asm;
 import ru.swayfarer.swl2.asm.transformer.basic.AbstractAsmTransformer;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
+import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.string.StringUtils;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.AnnotationVisitor;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.ClassReader;
@@ -17,26 +18,43 @@ import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.MethodVisitor;
  */
 public class ClassInspector extends AbstractAsmTransformer{
 
+	/** Логгер */
+	@InternalElement
 	public static ILogger logger = LoggingManager.getLogger();
 	
+	/** Преобразовать класс */
 	@Override
 	public void transform(String name, byte[] bytes, ClassReader reader, ClassWriter writer)
 	{
 		acceptCV(reader, bytes, new ClassInspectorVisitor(writer));
 	}
 	
+	/** {@link ClassVisitor}, сканирующий класс */
 	public static class ClassInspectorVisitor extends ClassVisitor {
 
+		/** Показывать ли методы? */
+		@InternalElement
 		public boolean showMethods = true;
+		
+		/** Показывать ли классы? */
+		@InternalElement
 		public boolean showClasses = true;
+		
+		/** Показывать ли аннотации? */
+		@InternalElement
 		public boolean showAnnotations = true;
+		
+		/** Показывать ли поля? */
+		@InternalElement
 		public boolean showField = true;
 		
+		/** Конструктор */
 		public ClassInspectorVisitor(ClassVisitor cv)
 		{
 			super(ASM5, cv);
 		}
 		
+		/** Конструктор */
 		public ClassInspectorVisitor(ClassVisitor cv, boolean showMethods, boolean showClasses, boolean showAnnotations, boolean showField)
 		{
 			super(ASM5, cv);
