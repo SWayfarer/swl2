@@ -1,0 +1,22 @@
+{
+	"basePackages":[
+		"ru.swayfarer.swl"
+	],
+	"printing":{
+		"format":"(%from%) [%thread%] [%date[dd.MM.YYYY-HH:mm:ss]%] [%logger%] [%level%] -> %text%"
+	},
+	"filtering":{
+		"levelWeight":10,
+		"ignoreLevels":[
+			"Dev"
+		]
+	},
+	"file":{
+		"filePath":"log.log",
+		"archivingInfo":{
+			"archiveTime":"per 30 secs",
+			"archiveFolder":"logs/",
+			"archiveName":"%file%(%date[dd.MM.YYYY_HH-mm-ss]%)"
+		}
+	}
+}
