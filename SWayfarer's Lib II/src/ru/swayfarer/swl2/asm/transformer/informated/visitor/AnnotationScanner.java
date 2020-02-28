@@ -6,6 +6,11 @@ import java.util.List;
 import ru.swayfarer.swl2.asm.informated.AnnotationInfo;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.AnnotationVisitor;
 
+/**
+ * Сканнер аннотаций, который собирает {@link AnnotationInfo} для своих целей 
+ * @author swayfare
+ *
+ */
 public class AnnotationScanner extends AnnotationVisitor{
 
 	public AnnotationInfo info;

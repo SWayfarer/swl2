@@ -7,21 +7,36 @@ import ru.swayfarer.swl2.asm.informated.ClassInfo;
 import ru.swayfarer.swl2.asm.informated.MethodInfo;
 import ru.swayfarer.swl2.asm.informated.visitor.InformatedClassVisitor;
 import ru.swayfarer.swl2.asm.transformer.exists.ExistsConditionContainer;
+import ru.swayfarer.swl2.asm.transformer.inheritance.InheritanceClassTransformer;
 import ru.swayfarer.swl2.asm.transformer.inheritance.InheritsIf;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
+import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.string.StringUtils;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.ClassVisitor;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.MethodVisitor;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.Type;
 
+/**
+ * {@link ClassVisitor} для {@link InheritanceClassTransformer}
+ * @author swayfarer
+ *
+ */
 public class InheritanceClassVisitor extends InformatedClassVisitor {
 
+	/** Дескриптор аннотации {@link InheritsIf} */
+	@InternalElement
 	public static final String ANNOTATION_DESC = Type.getType(InheritsIf.class).getDescriptor();
+	
+	/** Контейнер с уловиями, по которым будет определяться наследование */
+	@InternalElement
 	public ExistsConditionContainer conditionContainer;
 	
+	/** Старый и новый типы парента */
+	@InternalElement
 	public String oldParentType, newParentType;
 	
+	/** Конструктор */
 	public InheritanceClassVisitor(ClassVisitor classVisitor, ClassInfo classInfo, ExistsConditionContainer conditionContainer)
 	{
 		super(classVisitor, classInfo);

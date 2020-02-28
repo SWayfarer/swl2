@@ -8,6 +8,10 @@ import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction3;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.ClassReader;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.ClassWriter;
 
+/** 
+ * Класс-трансформер, обсеспечивающий работу аннотации {@link NullSafe}
+ * @author swayfarer
+ */
 public class NullSafeClassTransformer extends InformatedClassTransformer {
 	
 	/** Шаблонированное сообщение о нулевом аргументе метода */
@@ -28,6 +32,7 @@ public class NullSafeClassTransformer extends InformatedClassTransformer {
 	};
 	
 	
+	/** Получить форматированное сообщение для брошенного {@link Exception}'а */
 	public static String getFormattedMessage(String className, String methodName, String paramName)
 	{
 		return formatterFun.apply(className, methodName, paramName);

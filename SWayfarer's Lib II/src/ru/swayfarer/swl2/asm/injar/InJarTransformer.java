@@ -112,7 +112,7 @@ public class InJarTransformer {
 	/** Трансформировать на основе добавленных трансформеров (см. {@link InJarTransformer#addTransformer(IClassTransformer)}) */
 	public FileSWL transform(FileSWL file)
 	{
-		return transform(file, file.getNameWithoutExtension() + "_transformed(%date[dd.MM.YYYY-HH.mm.ssss]%)" + file.getExtension());
+		return transform(file, file.getParent() + "/" + file.getNameWithoutExtension() + "_transformed(%date[dd.MM.YYYY-HH.mm.ssss]%)." + file.getExtension());
 	}
 	
 	/** Настроить режим записи */
@@ -129,9 +129,11 @@ public class InJarTransformer {
 	{
 		try
 		{
+			
 			FileSWL tmpFile = new FileSWL("%temp%/%rand%/transform_%rand%.jar");
 			
-			tmpFile.createIfNotFound();
+			if (isWriting)
+				tmpFile.createIfNotFound();
 			
 			ZipOutputStream zipOut = isWriting ? tmpFile.toOutputStream().zip() : null;
 			
@@ -184,6 +186,7 @@ public class InJarTransformer {
 									{
 										String entryName = entry.getName();
 										entryName = entryName.substring(0, entryName.length() - ".class".length());
+										entryName = entryName.replace("/", ".");
 										
 										int len = bytes.length;
 										
@@ -231,17 +234,18 @@ public class InJarTransformer {
 				{
 					zipOut.close();
 					zipFile.close();
+					
+					FileSWL tmpParent = tmpFile.getParentFile();
+					FileSWL destFile = new FileSWL(dest).createIfNotFound();
+					
+					tmpFile.copyTo(destFile);
+					
+					System.out.println(tmpFile.getAbsolutePath() + " | " + destFile.getAbsolutePath());
+					
+					tmpParent.remove();
 				}
 				
-				
-				FileSWL tmpParent = tmpFile.getParentFile();
-				
-				File[] files = tmpParent.listFiles();
-				
-				if (files == null || files.length == 0)
-					tmpParent.remove();
-				
-				return tmpFile;
+				return null;
 			}
 			else
 			{

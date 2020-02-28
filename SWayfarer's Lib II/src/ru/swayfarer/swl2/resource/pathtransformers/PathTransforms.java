@@ -7,6 +7,7 @@ import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1;
 import ru.swayfarer.swl2.markers.ConcattedString;
 import ru.swayfarer.swl2.markers.InternalElement;
+import ru.swayfarer.swl2.resource.pathtransformers.actor.DateActor;
 import ru.swayfarer.swl2.resource.pathtransformers.actor.IPathActor;
 import ru.swayfarer.swl2.resource.pathtransformers.actor.PathActor;
 import ru.swayfarer.swl2.resource.pathtransformers.actor.RandomActor;
@@ -105,6 +106,7 @@ public class PathTransforms {
 		registerActor("%user%", System.getProperty("user.home"));
 		registerActor("%java%", System.getProperty("java.home")+"/bin/java"+(SystemUtils.isWindows() ? ".exe" : ""));
 		registerActor("%temp%", SystemUtils.isWindows() ? System.getProperty("user.home")+"/AppData/Temp/" : "/tmp/");
+	
 	}
 	
 	/** Регистрация старндартных трансформеров */

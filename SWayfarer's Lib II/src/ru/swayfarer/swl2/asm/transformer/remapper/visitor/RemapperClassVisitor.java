@@ -1,16 +1,31 @@
 package ru.swayfarer.swl2.asm.transformer.remapper.visitor;
 
 import ru.swayfarer.swl2.asm.transformer.remapper.RemapInfo;
+import ru.swayfarer.swl2.asm.transformer.remapper.RemapperClassTransformer;
+import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.string.StringUtils;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.ClassVisitor;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.FieldVisitor;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.commons.ClassRemapper;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.commons.Remapper;
 
+/**
+ * {@link ClassVisitor} для {@link RemapperClassTransformer} 
+ * @author swayfarer
+ *
+ */
 public class RemapperClassVisitor extends ClassRemapper {
 
+	/** Информация о ремаппинге */
+	@InternalElement
 	public RemapInfo remapInfo;
+	
+	/** Новое имя класса */
+	@InternalElement
 	public String newName;
+	
+	/** Старое имя класса */
+	@InternalElement
 	public String oldName;
 	
 	public RemapperClassVisitor(ClassVisitor classVisitor, RemapInfo remapInfo, boolean fieldsEnabled, boolean classesEnabled, boolean methodsEnabled)
@@ -34,13 +49,21 @@ public class RemapperClassVisitor extends ClassRemapper {
 		return super.visitField(access, name, descriptor, signature, value);
 	}
 	
+	/** 
+	 * Реализация ASM'овского {@link Remapper} для работы с {@link RemapInfo}
+	 * @author swayfarer
+	 *
+	 */
 	public static class RemapInfoRemapper extends Remapper {
 	
+		/** Информация о ремаппинге */
+		@InternalElement
 		public RemapInfo remapInfo;
+		
+		/** Настройки */
 		public boolean fieldsEnabled, classesEnabled, methodsEnabled;
 		
-		
-
+		/** Конструктор */
 		public RemapInfoRemapper(RemapInfo remapInfo, boolean fieldsEnabled, boolean classesEnabled, boolean methodsEnabled)
 		{
 			super();

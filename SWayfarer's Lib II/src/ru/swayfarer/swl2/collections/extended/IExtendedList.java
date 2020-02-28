@@ -6,8 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
-import com.sun.org.apache.xml.internal.serializer.ElemDesc;
-
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.streams.DataStream;
 import ru.swayfarer.swl2.collections.streams.IDataStream;

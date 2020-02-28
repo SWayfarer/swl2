@@ -1,14 +1,20 @@
 package ru.swayfarer.swl2.asm.transformer.inheritance.visitor;
 
+import ru.swayfarer.swl2.asm.transformer.inheritance.InheritanceClassTransformer;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.MethodVisitor;
 
+/**
+ * {@link MethodVisitor} для {@link InheritanceClassTransformer} 
+ * @author swayfarer
+ *
+ */
 public class InheritanceMethodVisitor extends MethodVisitor{
 
+	/** Старый и новый типы парентов */
 	public String oldParentType, newParentType;
-	public int initsToSkip;
 	
-	//methodVisitor.visitTypeInsn(NEW, "Codetest");
-	//methodVisitor.visitMethodInsn(INVOKESPECIAL, "Codetest", "<init>", "()V", false);
+	/** Сколько <init> нужно пропустить? */
+	public int initsToSkip;
 	
 	public InheritanceMethodVisitor(MethodVisitor methodVisitor, String oldParentType, String newParentType)
 	{

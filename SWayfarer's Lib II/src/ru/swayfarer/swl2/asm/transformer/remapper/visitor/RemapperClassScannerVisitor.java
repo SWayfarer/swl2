@@ -7,18 +7,30 @@ import ru.swayfarer.swl2.asm.informated.MethodInfo;
 import ru.swayfarer.swl2.asm.informated.visitor.InformatedClassVisitor;
 import ru.swayfarer.swl2.asm.transformer.remapper.RemapAsm;
 import ru.swayfarer.swl2.asm.transformer.remapper.RemapInfo;
+import ru.swayfarer.swl2.asm.transformer.remapper.RemapperClassScanner;
+import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.string.StringUtils;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.ClassVisitor;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.FieldVisitor;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.MethodVisitor;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.Type;
 
+/**
+ * {@link ClassVisitor} для {@link RemapperClassScanner} 
+ * @author swayfarer
+ *
+ */
 public class RemapperClassScannerVisitor extends InformatedClassVisitor{
 
+	/** Дескриптор аннотации {@link RemapAsm} */
+	@InternalElement
 	public static final String ANNOTATION_DESC = Type.getType(RemapAsm.class).getDescriptor();
 	
+	/** Информация о ремаппинге */
+	@InternalElement
 	public RemapInfo remapInfo;
 	
+	/** Конструкор */
 	public RemapperClassScannerVisitor(ClassVisitor classVisitor, ClassInfo classInfo, RemapInfo remapInfo)
 	{
 		super(classVisitor, classInfo);

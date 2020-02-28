@@ -1,7 +1,5 @@
 package ru.swayfarer.swl2.asm.transfomer.injection;
 
-import com.sun.xml.internal.ws.org.objectweb.asm.Opcodes;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -23,6 +21,7 @@ import ru.swayfarer.swl2.reference.SimpleReference;
 import ru.swayfarer.swl2.string.StringUtils;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.Label;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.MethodVisitor;
+import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.Opcodes;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.Type;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.commons.AdviceAdapter;
 
