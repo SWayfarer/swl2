@@ -9,6 +9,11 @@ import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LogInfo;
 import ru.swayfarer.swl2.string.StringUtils;
 
+/**
+ * Правило для форматирования дат в формате %date[format]%
+ * @author swayfarer
+ *
+ */
 public class DateFormatRule implements IFunction2NoR<ILogger, LogInfo>{
 
 	public static final String DATE_REGEX = StringUtils.regex()
@@ -23,6 +28,7 @@ public class DateFormatRule implements IFunction2NoR<ILogger, LogInfo>{
 		logInfo.content = format(logInfo.content, new Date(logInfo.time));
 	}
 	
+	/** Форматировать дату в формат */
 	public static String format(String s, Date d)
 	{
 		List<String> dates = StringUtils.getAllMatches(DATE_REGEX, s);

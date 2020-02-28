@@ -31,6 +31,7 @@ import ru.swayfarer.swl2.resource.streams.StreamsUtils;
 @SuppressWarnings("serial")
 public class FileSWL extends File {
 
+	/** Локи по файлам ({@link FileSWL} можно залочить, чтоьы не случилось параллельной записи)*/
 	public static ConcurrentHashMap<String, Lock> filesLocks = new ConcurrentHashMap<>();
 	
 	/** Логгер */

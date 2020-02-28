@@ -2,6 +2,12 @@ package ru.swayfarer.swl2.logger.config.files.archiver;
 
 import ru.swayfarer.swl2.date.DateUtils;
 
+/** 
+ * Тип разницы слова over
+ * См. {@link DelayType}y
+ * @author swayfarer
+ *
+ */
 public class OverDelayType extends DelayType {
 
 	public OverDelayType()

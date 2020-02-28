@@ -1,5 +1,11 @@
 package ru.swayfarer.swl2.logger.config.files.archiver;
 
+/**
+ * Тип разницы слова every
+ * <br> см {@link DelayType}
+ * @author swayfarer
+ *
+ */
 public class EveryDelayType extends DelayType {
 
 	public EveryDelayType()

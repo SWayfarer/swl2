@@ -9,22 +9,37 @@ import ru.swayfarer.swl2.binary.buffers.DynamicByteBuffer;
 import ru.swayfarer.swl2.exceptions.ExceptionsUtils;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
+import ru.swayfarer.swl2.markers.InternalElement;
 
+/**
+ * {@link InputStream}, который можно откатить назад, пока позволяет максимальный размер кэша 
+ * @author swayfarer
+ *
+ */
 public class BackableInputStream extends FilterInputStream {
 
+	/** Максимальный размер кэша */
 	public int maxBufferSize; 
 	
+	/** Логгер */
+	@InternalElement
 	public static ILogger logger = LoggingManager.getLogger();
+	
+	/** Буффер, в котором хранятся кэшированные байты */
+	@InternalElement
 	public DynamicByteBuffer buffer = DynamicByteBuffer.allocateDirect();
 	
+	/** Кол-во "разчитанных" байтов */
 	public int unreadBytesCount = 0;
 	
+	/** Конструктор, который укажет максимальный размер буффера как размер самого потока */
 	public BackableInputStream(InputStream in)
 	{
 		super(in);
 		ExceptionsUtils.safe(() -> maxBufferSize = in.available());
 	}
 	
+	/** Конструктор */
 	public BackableInputStream(InputStream in, int bufferSize)
 	{
 		super(in);
@@ -37,6 +52,7 @@ public class BackableInputStream extends FilterInputStream {
 		return unreadBytesCount + super.available();
 	}
 	
+	/** Отмотать несколько байтов назад */
 	public void back(int bytesCount)
 	{
 		ExceptionsUtils.If(bytesCount + unreadBytesCount > maxBufferSize, ArrayIndexOutOfBoundsException.class, "Can't back bigger than cache size (", maxBufferSize, ")!");
@@ -99,6 +115,7 @@ public class BackableInputStream extends FilterInputStream {
 		}
 	}
 	
+	/** Проверить размер буффера и обновить его, если что */
 	public void checkBufferSize(int size)
 	{
 		int futureSize = size + buffer.lenght;

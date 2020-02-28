@@ -11,19 +11,35 @@ import ru.swayfarer.swl2.logger.LogInfo;
 import ru.swayfarer.swl2.markers.ConcattedString;
 import ru.swayfarer.swl2.string.StringUtils;
 
+/**
+ * Форматтер логов, раскрывающий определенный шаблон:
+ * <br> %file% - Источник лога (сорцы)
+ * <br> %level% - Уровень лога
+ * <br> %thread% - Поток, из которого выполняется лог
+ * <br> %logger% - Логгер, который выполняет лог 
+ * <br> %text% - Текст лога
+ * <br> %from% - Сокращенная запись источника лога. Как в стакстрейсе (файл и строка)
+ * <br> %fromFull% - Полная запись источника лога 
+  * @author swayfarer
+ *
+ */
 @SuppressWarnings("unchecked")
 @Data
 public class TemplateLogFormatter implements IFunction2NoR<ILogger, LogInfo>{
 
+	/** Текущий шаблон */
 	public String template = "[%logger%] [%level%]: %text%";
 	
+	/** Форматтеры */
 	public List<IFunction2NoR<ILogger, LogInfo>> formatRules = new ArrayList<>();
 	
+	/** Конструктор */
 	public TemplateLogFormatter()
 	{
 		initDefaultRules();
 	}
 	
+	/** Загрузка стандартных правил */
 	public void initDefaultRules()
 	{
 		addRule((logger, logInfo) -> {
@@ -46,6 +62,7 @@ public class TemplateLogFormatter implements IFunction2NoR<ILogger, LogInfo>{
 		formatRules.add(new DateFormatRule());
 	}
 	
+	/** Задать формат */
 	public <T extends TemplateLogFormatter> T setFormat(@ConcattedString Object... text)
 	{
 		String s = StringUtils.concat(text);
@@ -63,12 +80,14 @@ public class TemplateLogFormatter implements IFunction2NoR<ILogger, LogInfo>{
 		formatRules.forEach((rule) -> rule.apply(logger, info));
 	}
 	
+	/** Зарегистрировать правило */
 	public <T extends TemplateLogFormatter> T addRule(IFunction2NoR<ILogger, LogInfo> rule)
 	{
 		formatRules.add(rule);
 		return (T) this;
 	}
 	
+	/** Создать форматтер с указанным форматом */
 	public static TemplateLogFormatter of(@ConcattedString Object... format)
 	{
 		TemplateLogFormatter ret = new TemplateLogFormatter();

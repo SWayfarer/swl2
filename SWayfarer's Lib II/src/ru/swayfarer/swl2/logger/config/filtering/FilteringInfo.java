@@ -8,10 +8,18 @@ import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.handlers.LogLevelFilteringHandler;
 
+/**
+ * Информация о фильтрации логов 
+ * @author swayfarer
+ *
+ */
 @AllArgsConstructor(staticName = "of") @Data
 public class FilteringInfo {
 	
+	/** Минимальный вес лога, чтобы его пропустили */
 	public int levelWeight;
+	
+	/** Игнорируемые уровни логов */
 	public List<String> ignoreLevels;
 	
 	public FilteringInfo()
@@ -19,6 +27,7 @@ public class FilteringInfo {
 		
 	}
 	
+	/** Применить на логгер */
 	public void apply(ILogger logger)
 	{
 		if (levelWeight != Short.MIN_VALUE)

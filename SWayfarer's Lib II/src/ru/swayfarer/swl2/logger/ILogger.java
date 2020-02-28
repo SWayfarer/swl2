@@ -10,6 +10,7 @@ import ru.swayfarer.swl2.logger.formatter.DecoratorFormatter;
 import ru.swayfarer.swl2.logger.formatter.TemplateLogFormatter;
 import ru.swayfarer.swl2.logger.handlers.LogRedirectHandler;
 import ru.swayfarer.swl2.markers.ConcattedString;
+import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.observable.IObservable;
 import ru.swayfarer.swl2.string.StringUtils;
 
@@ -103,7 +104,7 @@ public interface ILogger {
 	 */
 	public void log(ILogLevel lvl, Throwable e, @ConcattedString Object... text);
 	
-	
+	/** Получить дочерний логгер */
 	public <T extends ILogger> T child(String name);
 	
 	/*
@@ -154,6 +155,8 @@ public interface ILogger {
 		return setFrom(creationStacktrace);
 	}
 	
+	@InternalElement
+	/** Установить декоратор */
 	public default <T extends ILogger> T setDecoratorSeq(@ConcattedString Object... text)
 	{
 		DecoratorFormatter formatter = new DecoratorFormatter();
@@ -167,6 +170,8 @@ public interface ILogger {
 		return (T) this;
 	}
 	
+	@InternalElement
+	/** Задать место создания логгера*/
 	public default <T extends ILogger> T setFrom(int stacktraceOffset)
 	{
 		stacktraceOffset += 1;

@@ -10,6 +10,12 @@ import ru.swayfarer.swl2.resource.file.FileSWL;
 import ru.swayfarer.swl2.resource.rlink.RLUtils;
 import ru.swayfarer.swl2.resource.rlink.ResourceLink;
 
+/**
+ * Искалка соседних URL для файлов
+ * @author swayfarer
+ *
+ */
+
 public class FileAdjacentFinder implements IFunction3<URL, IFunction1<ResourceLink, Boolean>, Boolean, IExtendedList<ResourceLink>>{
 
 	@Override

@@ -4,7 +4,14 @@ import ru.swayfarer.swl2.exceptions.ExceptionsUtils;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1NoR;
 
+/** 
+ * Утилиты для работы с файлами 
+ * @author swayfarer
+ *
+ */
 public class FilesUtils {
+	
+	/** Для каждого файла, проходящего указанный фильтр, выполнить функцию */
 	public static void forEachFile(IFunction1<FileSWL, Boolean> filter, IFunction1NoR<FileSWL> fun, FileSWL initialFile)
 	{
 		if (filter == null)

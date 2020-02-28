@@ -7,7 +7,6 @@ import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1;
 import ru.swayfarer.swl2.markers.ConcattedString;
 import ru.swayfarer.swl2.markers.InternalElement;
-import ru.swayfarer.swl2.resource.pathtransformers.actor.DateActor;
 import ru.swayfarer.swl2.resource.pathtransformers.actor.IPathActor;
 import ru.swayfarer.swl2.resource.pathtransformers.actor.PathActor;
 import ru.swayfarer.swl2.resource.pathtransformers.actor.RandomActor;

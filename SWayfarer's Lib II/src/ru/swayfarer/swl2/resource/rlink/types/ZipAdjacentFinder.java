@@ -13,6 +13,11 @@ import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction3;
 import ru.swayfarer.swl2.resource.rlink.RLUtils;
 import ru.swayfarer.swl2.resource.rlink.ResourceLink;
 
+/**
+ * Искалка соседних URL для Zip-архивов 
+ * @author swayfarer
+ *
+ */
 public class ZipAdjacentFinder implements IFunction3<URL, IFunction1<ResourceLink, Boolean>, Boolean, IExtendedList<ResourceLink>>{
 
 	@Override

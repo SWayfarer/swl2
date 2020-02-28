@@ -3,8 +3,14 @@ package ru.swayfarer.swl2.math;
 import java.io.UnsupportedEncodingException;
 import java.util.Random;
 
+/**
+ * Математические утилиты 
+ * @author swayfarer
+ *
+ */
 public class MathUtils {
 
+	/** Генератор случайных чисел */
 	public static Random rand = new Random();
 	
 	/** Привести число к 1 к виду 000001, где lenght = размеру числа*/
@@ -29,6 +35,7 @@ public class MathUtils {
 		return ret;
 	}
 	
+	/** Получить Jenkins Hash из строки */
 	public static long getJenkinsHash(String s)
 	{
 		try
@@ -43,6 +50,7 @@ public class MathUtils {
 		return 0;
 	}
 	
+	/** Получить Jenkins Hash из байтов */
 	public static long getJenkinsHash(byte[] bytes)
 	{
 		return JenkinsHasher.instance.hash(bytes);
@@ -70,18 +78,6 @@ public class MathUtils {
 	{
 		return d < 0 ? (int)(d - 0.5) : (int)(d + 0.5);
 	}
-
-//	/** Выполнить пример */
-//	public static double process(String s)
-//	{
-//		return Double.valueOf(process(s, 10));
-//	}
-
-//	/** Выполнить пример. Результат в resultBase-системе счисления*/
-//	public static String process(String s, int resultBase)
-//	{
-//		return (toBase(new LuaMathInterpteter().<LuaMathInterpteter>launch().process(s), resultBase)+"").toUpperCase();
-//	}
 	
 	/** Перевести число из fromBase-чной СС в toBase-ную*/
 	public static String toBase(Object num, int fromBase, int toBase)
@@ -178,6 +174,7 @@ public class MathUtils {
 		return ret;
 	}
 	
+	/** Минимальное значение из укзаанных */
 	public static float min(boolean isIgnoresZero, float... floats)
 	{
 		float ret = floats[0];
@@ -194,6 +191,7 @@ public class MathUtils {
 		return ret;
 	}
 	
+	/** Максимальное значение из укзаанных */
 	public static float max(boolean isIgnoresZero, float... floats)
 	{
 		float ret = floats[0];
@@ -248,11 +246,13 @@ public class MathUtils {
 		return rand.nextInt(min)+(max - min);
 	}
 
+	/** Получить вероятность от 0.0 до 1.0*/
 	public static boolean getChance(float f)
 	{
 		return rand.nextFloat() <= f;
 	}
 	
+	/** Хешер, который делает Jenkins Hash'и */
 	public static class JenkinsHasher {
 		
 		public static final long MAX_VALUE = 4294967295L;

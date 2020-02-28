@@ -12,21 +12,45 @@ import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.resource.file.FileSWL;
 import ru.swayfarer.swl2.string.StringUtils;
 
+/**
+ * Информация об архивации
+ * @author swayfarer
+ *
+ */
 public class ArchivingInfo {
 
+	/** Максимальный размер файла, после которого он будет заахивирован */
+	@InternalElement
 	public String maxSize;
+	
+	/** Промежуток, в который будут происходить архивации */
+	@InternalElement
 	public String archiveTime;
+	
+	/** Папка, в которую будут сохраняться архивы */
+	@InternalElement
 	public String archiveFolder;
+	
+	/** Имя генерируемого архива */
+	@InternalElement
 	public String archiveName;
 	
+	/**
+	 *  Максимальный размер файла в байтах. 
+	 * <br> Отличие от {@link #maxSize} в том, что первый хранит строку с единицами измерениz,
+	 * тогда как второй - тот же размер, но переведенный в байты 
+	 * <br> Пример: {@link #maxSize} = "120mb", {@link #maxFileBytes} = 125829120. (Это 120 * 1024 * 1024, где 120 умножается на кол-во кб в мб, а потом на кол-во байтов в кб)
+	 */
 	@NonJson
 	@InternalElement
 	public long maxFileBytes = Short.MIN_VALUE;
 	
+	/** Информация о файле, который архивируется */
 	@NonJson
 	@InternalElement
 	public FileInfo fileInfo;
 	
+	/** Зарегистированные {@link DelayType}'ы */
 	@NonJson
 	@InternalElement
 	public Map<String, DelayType> registeredDelayTypes = new HashMap<>();
@@ -37,6 +61,7 @@ public class ArchivingInfo {
 		registeredDelayTypes.put("per", new OverDelayType());
 	}
 	
+	/** Применить на логгер */
 	public void apply(ILogger logger)
 	{
 		if (!StringUtils.isEmpty(archiveFolder))
@@ -74,6 +99,7 @@ public class ArchivingInfo {
 		}
 	}
 	
+	/** Метод первоначально читает из записи с ед. измерения кол-во байт, а потом возвращает его */
 	public long getMaxFileBytes()
 	{
 		if (maxFileBytes == Short.MIN_VALUE)

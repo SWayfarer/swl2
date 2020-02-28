@@ -18,14 +18,22 @@ import ru.swayfarer.swl2.string.StringUtils;
 @SuppressWarnings("unchecked")
 public class LogArchiverHandler implements IFunction2NoR <ISubscription<LogEvent>, LogEvent> {
 
+	/** Шаблон для имен архиов */
 	public String archiveTemplate;
+	
+	/** Директория, в которую будут сохраняться архивы */
 	public FileSWL archivesDir;
+	
+	/** Файл логов */
 	public FileSWL logsFile;
 	
+	/** Функция, говорящая, когда стоит архивировать файл */
 	public IFunction1<FileSWL, Boolean> isNeedsToArchiveFun = (file) -> false;
 	
+	/** Функция, архивирующая файл */
 	public IFunction3NoR<FileSWL, FileSWL, String> archiveFun = Archivers.gzArchiver;
 	
+	/** Конструктор */
 	public LogArchiverHandler(FileSWL archivesDir, FileSWL logsFile)
 	{
 		this.archivesDir = archivesDir;
@@ -55,18 +63,21 @@ public class LogArchiverHandler implements IFunction2NoR <ISubscription<LogEvent
 		logsFile.unlock();
 	}
 
+	/** Задать {@link #isNeedsToArchiveFun} */
 	public <T extends LogArchiverHandler> T setArchiveConditionFun(IFunction1<FileSWL, Boolean> conditionFun)
 	{
 		this.isNeedsToArchiveFun= conditionFun;
 		return (T) this;
 	}
 	
+	/** Задать {@link #archiveTemplate} */
 	public <T extends LogArchiverHandler> T setFileNameTemplate(@ConcattedString Object... format)
 	{
 		this.archiveTemplate = StringUtils.concat(format);
 		return (T) this;
 	}
 	
+	/** Задать {@link #archiveFun} */
 	public <T extends LogArchiverHandler> T setArchiveFun(IFunction3NoR<FileSWL, FileSWL, String> archiveFun)
 	{
 		this.archiveFun = archiveFun;

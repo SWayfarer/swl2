@@ -2,14 +2,27 @@ package ru.swayfarer.swl2.version;
 
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
+import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.string.StringUtils;
 
+/**
+ * Простая версия, состоящая их трех чисел, разделенных точками 
+ * @author swayfarer
+ *
+ */
 public class SimpleVersion implements Comparable<SimpleVersion> {
 
+	/** 
+	 * Составляющие версии, разделенные точками
+	 * <br> major.minon.build или 1.2.33 
+	 */
 	public int major, minor, build;
 
+	/** Логгер */
+	@InternalElement
 	public static final ILogger logger = LoggingManager.getLogger();
 
+	/** Конструтор */
 	public SimpleVersion(int major, int minor, int build)
 	{
 		super();
@@ -18,36 +31,43 @@ public class SimpleVersion implements Comparable<SimpleVersion> {
 		this.build = build;
 	}
 	
+	/** Получить {@link #major} */
 	public int getMajor()
 	{
 		return major;
 	}
 
+	/** Задать {@link #major} */
 	public void setMajor(int major)
 	{
 		this.major = major;
 	}
 
+	/** Получить {@link #minor} */
 	public int getMinor()
 	{
 		return minor;
 	}
 
+	/** Задать {@link #minor} */
 	public void setMinor(int minor)
 	{
 		this.minor = minor;
 	}
 
+	/** Получить {@link #build} */
 	public int getBuild()
 	{
 		return build;
 	}
 
+	/** Задать {@link #build} */
 	public void setBuild(int build)
 	{
 		this.build = build;
 	}
 
+	/** Получить версию, соответствующую указанной строке */
 	public static SimpleVersion valueOf(String versionStr)
 	{
 		if (StringUtils.isEmpty(versionStr))

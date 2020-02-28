@@ -4,22 +4,35 @@ import java.io.PrintStream;
 import java.util.Locale;
 
 import ru.swayfarer.swl2.exceptions.ExceptionsUtils;
+import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.observable.IObservable;
 import ru.swayfarer.swl2.observable.SimpleObservable;
 import ru.swayfarer.swl2.resource.streams.BytesOutputStreamSWL;
 
+/**
+ * Обертка на {@link PrintStream}, позволяющая навешать на его {@link IObservable}
+ * @author swayfarer
+ *
+ */
 public class PrintStreamWrapper extends PrintStream {
 
+	/** Событие принта {@link PrintStream#print(boolean)} */
 	public IObservable<PrintEvent> eventPrint = new SimpleObservable<>();
+	
+	/** Событие принта с переходом на новую строку {@link PrintStream#println(boolean)} */
 	public IObservable<PrintEvent> eventPrintLn = new SimpleObservable<>();
 	
+	/** Обернутый поток */
+	@InternalElement
 	public PrintStream wrappedStream;
 	
+	/** Конструктор, оборачивающий {@link System#out} */
 	public PrintStreamWrapper()
 	{
 		this(System.out);
 	}
 	
+	/** Конструктор */
 	public PrintStreamWrapper(PrintStream wrappedStream)
 	{
 		super(BytesOutputStreamSWL.createStream());
@@ -27,6 +40,7 @@ public class PrintStreamWrapper extends PrintStream {
 		this.wrappedStream = wrappedStream;
 	}
 	
+	/** Перехватывалка всех println'ов */
 	public void printlnObj(Object obj)
 	{
 		PrintEvent event = PrintEvent.of(this, String.valueOf(obj));
@@ -38,6 +52,7 @@ public class PrintStreamWrapper extends PrintStream {
 		wrappedStream.println(obj);
 	}
 	
+	/** Перехватывалка всех print'ов */
 	public void printObj(Object obj)
 	{
 		PrintEvent event = PrintEvent.of(this, String.valueOf(obj));
@@ -48,6 +63,10 @@ public class PrintStreamWrapper extends PrintStream {
 		
 		wrappedStream.print(obj);
 	}
+	
+	/*
+	 * Биндинги
+	 */
 	
 	
 	@Override

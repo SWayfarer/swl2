@@ -10,6 +10,10 @@ import ru.swayfarer.swl2.observable.events.AbstractCancelableEvent;
  */
 @AllArgsConstructor(staticName = "of")
 public class LogEvent extends AbstractCancelableEvent {
+	
+	/** Информация о логе, с которым произошло событие */
 	public LogInfo logInfo;
+	
+	/** Логгер, с которым произошло событие */
 	public ILogger logger;
 }

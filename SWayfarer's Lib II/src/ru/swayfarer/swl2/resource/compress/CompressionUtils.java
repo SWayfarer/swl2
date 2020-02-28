@@ -5,8 +5,14 @@ import ru.swayfarer.swl2.resource.file.FileSWL;
 import ru.swayfarer.swl2.resource.streams.DataOutputStreamSWL;
 import ru.swayfarer.swl2.resource.streams.StreamsUtils;
 
+/** 
+ * Утилиты для работы со сжатием
+ * @author swayfarer
+ *
+ */
 public class CompressionUtils {
 
+	/** Функции-архиверы */
 	public static class Archivers {
 		
 		public static IFunction3NoR<FileSWL, FileSWL, String> gzArchiver = (file, target, name) -> {

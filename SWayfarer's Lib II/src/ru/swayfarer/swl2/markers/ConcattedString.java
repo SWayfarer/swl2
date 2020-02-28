@@ -8,6 +8,12 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+/**
+ * Эти объекты будут преобразованы в строку через соединие. 
+ * <br> В некоторых случаях, например, при логгинге, будут использованы пробелы между объектами
+ * @author swayfarer
+ *
+ */
 @Retention(RUNTIME)
 @Target({ FIELD, LOCAL_VARIABLE, ElementType.PARAMETER})
 public @interface ConcattedString
