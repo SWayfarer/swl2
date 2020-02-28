@@ -11,12 +11,15 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
+import ru.swayfarer.swl2.classes.ReflectionUtils;
 import ru.swayfarer.swl2.collections.extended.ExtendedListWrapper;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
+import ru.swayfarer.swl2.exceptions.ExceptionsUtils;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.SimpleLoggerSWL;
 import ru.swayfarer.swl2.markers.Alias;
 import ru.swayfarer.swl2.markers.InternalElement;
+import ru.swayfarer.swl2.string.StringUtils;
 
 /**
  * Утилиты для работы с коллекциями 
@@ -29,18 +32,60 @@ public class CollectionsSWL {
 	@InternalElement
 	public static ILogger logger = new SimpleLoggerSWL().lateinit();
 	
+	public static String getArrayString(Object obj)
+	{
+		ExceptionsUtils.IfNull(obj, IllegalArgumentException.class, "Object for string generation can't be null!");
+		ExceptionsUtils.If(!ReflectionUtils.isArray(obj), IllegalArgumentException.class, "Object for string generation must be a array!");
+		
+		ExtendedListWrapper<?> list = ExtendedListWrapper.valueOf(obj); 
+		
+		String s = StringUtils.concat(", ", list.toArray());
+		
+		return obj.getClass().getComponentType().getSimpleName() + ": {" + s + "}";
+	}
+	
 	/*
 	 * Создание карт
 	 */
 	
+	/** Создать {@link HashMap} */
 	public static <K, V> Map<K, V> createHashMap()
 	{
 		return new HashMap<>();
 	}
 	
+	/** Создать конкруррентную {@link HashMap} */
 	public static <K, V> Map<K, V> createConcurrentHashMap()
 	{
 		return new ConcurrentHashMap<>();
+	}
+	
+	/** Создать {@link HashMap} */
+	public static <K, V> Map<K, V> createHashMap(Object... content)
+	{
+		if (!CollectionsSWL.isNullOrEmpty(content))
+		{
+			ExceptionsUtils.If(content.length % 2 != 0, IllegalArgumentException.class, "Content lenght % 2 must be a zero!");
+			
+			Map<K, V> map = createHashMap();
+			
+			Object key = null;
+			boolean isKey = true;
+			
+			for (Object obj : content)
+			{
+				if (isKey)
+					key = obj;
+				else
+					map.put((K) key, (V) obj);
+				
+				isKey = !isKey;
+			}
+			
+			return map;
+		}
+		
+		return new HashMap<>();
 	}
 	
 	/*
@@ -61,7 +106,7 @@ public class CollectionsSWL {
 	 */
 	
 	/** Создает {@link ArrayList} */
-	public static <T> List<T> arrayList(Enumeration<T> enumeration)
+	public static <T> List<T> createArrayList(Enumeration<T> enumeration)
 	{
 		List<T> ret = new ArrayList<>();
 		
@@ -179,4 +224,6 @@ public class CollectionsSWL {
 	{
 		return arr == null || arr.length == 0;
 	}
+	
+	
 }

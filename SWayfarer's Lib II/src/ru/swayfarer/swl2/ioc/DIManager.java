@@ -17,6 +17,7 @@ import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction2;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
+import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.string.StringUtils;
 
 /**
@@ -40,6 +41,7 @@ public class DIManager {
 		DIRegistry.registerDefultIfNotFound(this);
 	}
 	
+	/** Зарегистировать источник контекста */
 	public static <T extends DIManager> T registerContextSource(String contextName, Object... sources)
 	{
 		DIManager manager = DIRegistry.getRegisteredManager(contextName);
@@ -495,12 +497,24 @@ public class DIManager {
 	@Builder
 	public static class DIContextElementFromMethod implements IDIContextElement {
 
+		/** Класс, с которым ассоциируется элемент */
+		@InternalElement
 		public Class<?> associatedClass;
+		
+		/** Класс, с которым ассоциируется имя */
+		@InternalElement
 		public String name;
 		
+		/** Источник, из которого берется элемент */
+		@InternalElement
 		public Object sourceInstance;
+		
+		/** Метод, из которого берертся элемент */
+		@InternalElement
 		public Method method;
 		
+		/** Логгер */
+		@InternalElement
 		public static ILogger logger = LoggingManager.getLogger();
 		
 		@Override
@@ -532,11 +546,24 @@ public class DIManager {
 		
 	}
 	
+	/**
+	 * Синглтон-элемент контекста. Всегда возвращает одно и то же значение
+	 * @author swayfarer
+	 *
+	 */
 	@Builder @ToString
 	public static class DIContextElementSingleton implements IDIContextElement{
 		
+		/** Класс, с которым ассоциируется элемент */
+		@InternalElement
 		public Class<?> associatedClass;
+		
+		/** Класс, с которым ассоциируется имя */
+		@InternalElement
 		public String name;
+		
+		/** Возвращаемое значение */
+		@InternalElement
 		public Object value;
 		
 		public Object getValue()
@@ -555,12 +582,20 @@ public class DIManager {
 		}
 	}
 	
+	/**
+	 * Элемент контекста. Отвечает за возврат значений контекста 
+	 * @author swayfarer
+	 *
+	 */
 	public static interface IDIContextElement {
 		
+		/** Получить значение */
 		public Object getValue();
 		
+		/** Получить класс, с которым ассоциируется элемент */
 		public Class<?> getAssociatedClass();
 		
+		/** Получить имя элемента */
 		public String getName();
 		
 	}

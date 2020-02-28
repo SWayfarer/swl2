@@ -62,6 +62,7 @@ public class JsonUtils {
 		return null;
 	}
 	
+	/** Распрарсить json-строку в {@link JsonObject} */
 	public static JsonObject parseJsonObjectSafe(String jsonString)
 	{
 		try

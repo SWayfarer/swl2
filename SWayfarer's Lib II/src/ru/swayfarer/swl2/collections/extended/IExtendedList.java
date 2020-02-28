@@ -17,6 +17,10 @@ import ru.swayfarer.swl2.logger.LogInfo;
 import ru.swayfarer.swl2.markers.Alias;
 import ru.swayfarer.swl2.string.StringUtils;
 
+/**
+ * Расширенный лист
+ * @author swayfarer
+ */
 @SuppressWarnings("unchecked")
 public interface IExtendedList<Element_Type> extends List<Element_Type>{
 

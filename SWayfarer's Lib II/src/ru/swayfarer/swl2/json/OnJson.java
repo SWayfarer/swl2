@@ -4,6 +4,11 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import java.lang.annotation.Retention;
 
+/**
+ * Добавить обработчик (де)сериализации
+ * @author swayfarer
+ *
+ */
 @Retention(RUNTIME)
 public @interface OnJson
 {

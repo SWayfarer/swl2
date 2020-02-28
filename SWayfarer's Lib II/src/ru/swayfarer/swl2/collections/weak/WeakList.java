@@ -12,11 +12,21 @@ import ru.swayfarer.swl2.classes.ReflectionUtils;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.collections.streams.DataStream;
+import ru.swayfarer.swl2.markers.InternalElement;
 
+/**
+ * "Слабый" лист, который держит слабые ссылки на свои элементы 
+ * @author swayfarer
+ */
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class WeakList<Element_Type> implements IExtendedList<Element_Type> {
 
+	/** Был ли лист модифицирован? */
+	@InternalElement
 	public Boolean isModified = false;
+	
+	/** Лист ссылок */
+	@InternalElement
 	public IExtendedList<WeakReference<Element_Type>> referencesList = CollectionsSWL.createExtendedList();
 	
 	@Synchronized(value = "isModified")

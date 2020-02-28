@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import ru.swayfarer.swl2.classes.ReflectionUtils;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.collections.streams.DataStream;
@@ -361,6 +362,12 @@ public class StringUtils {
 		{
 			if (isNoFirst && splitter != null)
 				builder.append(splitter);
+			
+			
+			if (ReflectionUtils.isArray(obj))
+			{
+				obj = CollectionsSWL.getArrayString(obj);
+			}
 			
 			builder.append(obj+"");
 			

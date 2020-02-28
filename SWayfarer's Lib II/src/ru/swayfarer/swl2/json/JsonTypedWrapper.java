@@ -58,6 +58,7 @@ public class JsonTypedWrapper {
 		this.type = type;
 	}
 	
+	/** Включить красивое форматирование */
 	public <T extends JsonTypedWrapper> T setPrettyFormatting()
 	{
 		formatter = new PrettyGsonFormatter();
@@ -65,11 +66,13 @@ public class JsonTypedWrapper {
 		return (T) this;
 	}
 	
+	/** Получить значение */
 	public <T> T getContent()
 	{
 		return (T) content;
 	}
 	
+	/** Получить Json-строку */
 	public String toJsonString()
 	{
 		JsonObject contentObject = JsonUtils.parseJsonObjectSafe(JsonUtils.saveToJson(content));
@@ -89,6 +92,7 @@ public class JsonTypedWrapper {
 		return ret.toString();
 	}
 	
+	/** Десериализовать (загрузить) обертку из json-строки */
 	public static JsonTypedWrapper of(String jsonString)
 	{
 		JsonObject jsonObject = JsonUtils.parseJsonObjectSafe(jsonString);

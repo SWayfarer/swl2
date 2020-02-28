@@ -6,6 +6,7 @@ import lombok.SneakyThrows;
 import ru.swayfarer.swl2.collections.streams.DataStream;
 import ru.swayfarer.swl2.markers.Alias;
 import ru.swayfarer.swl2.markers.ConcattedString;
+import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.string.StringUtils;
 
 public class ExceptionsUtils {
@@ -41,6 +42,7 @@ public class ExceptionsUtils {
 	 * @param stacktraceOffset Смещение начала стактрейса
 	 * @return Созданный {@link Throwable}, Null, если не выйдет создать
 	 */
+	@InternalElement
 	public static <Throwable_Type extends Throwable> Throwable_Type createThrowable(Class<Throwable_Type> classOfThrowable, String message, int stacktraceOffset)
 	{
 		try
@@ -144,6 +146,7 @@ public class ExceptionsUtils {
 		return name;
 	}
 	
+	/** Получить простое имя класса из каноничного */
 	public static String getClassSimpleName(String canonicalName)
 	{
 		if (canonicalName.contains(".") && !canonicalName.endsWith("."))
@@ -226,7 +229,7 @@ public class ExceptionsUtils {
  	 * @param message Сообщение исключения
 	 */
 	@SneakyThrows
-	public static void Not(boolean condition, Class<? extends Throwable> classOfThrowable, @ConcattedString Object... message)
+	public static void IfNot(boolean condition, Class<? extends Throwable> classOfThrowable, @ConcattedString Object... message)
 	{
 		if (!condition)
 			throw createThrowable(classOfThrowable, StringUtils.concatWithSpaces(message), 2);

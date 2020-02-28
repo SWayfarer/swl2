@@ -153,7 +153,7 @@ public class InJarTransformer {
 					}
 				}
 				
-				for (ZipEntry zipInEntry : CollectionsSWL.arrayList(zipFile.entries()))
+				for (ZipEntry zipInEntry : CollectionsSWL.createArrayList(zipFile.entries()))
 				{
 					try
 					{

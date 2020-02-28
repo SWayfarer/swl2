@@ -1,10 +1,12 @@
 package ru.swayfarer.swl2.collections.extended;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.List;
 
+import ru.swayfarer.swl2.classes.ReflectionUtils;
 import ru.swayfarer.swl2.collections.wrapper.ListWrapper;
 import ru.swayfarer.swl2.markers.InternalElement;
 
@@ -96,6 +98,131 @@ public class ExtendedListWrapper<Element_Type> extends ListWrapper<Element_Type>
 			add(type);
 		
 		return (T) this;
+	}
+	
+	/** Создать лист из массива */
+	@SuppressWarnings("rawtypes")
+	public static <T> ExtendedListWrapper<T> valueOf(Object obj)
+	{
+		if (obj == null)
+			return null;
+		
+		ExtendedListWrapper list = null;
+
+		if (obj.getClass() == char[].class)
+			list = valueOf((char[]) obj);
+		else if (obj.getClass() == boolean[].class)
+			list = valueOf((boolean[]) obj);
+		else if (obj.getClass() == byte[].class)
+			list = valueOf((byte[]) obj);
+		else if (obj.getClass() == short[].class)
+			list = valueOf((short[]) obj);
+		else if (obj.getClass() == int[].class)
+			list = valueOf((int[]) obj);
+		else if (obj.getClass() == long[].class)
+			list = valueOf((long) obj);
+		else if (obj.getClass() == float[].class)
+			list = valueOf((float) obj);
+		else if (obj.getClass() == double[].class)
+			list = valueOf((double) obj);
+		
+		else if (ReflectionUtils.isArray(obj))
+			list = new ExtendedListWrapper<>(new ArrayList<>(Arrays.asList(((Object[]) obj))));
+		else
+		{
+			list = new ExtendedListWrapper<>();
+			list.add(obj);
+		}
+		
+		return list;
+	}
+	
+	/** Создать лист из массива */
+	public static ExtendedListWrapper<Boolean> valueOf(boolean[] arr)
+	{
+		ExtendedListWrapper<Boolean> list = new ExtendedListWrapper<>();
+		
+		for (boolean i : arr)
+			list.add(i);
+		
+		return list;
+	}
+
+	/** Создать лист из массива */
+	public static ExtendedListWrapper<Character> valueOf(char[] arr)
+	{
+		ExtendedListWrapper<Character> list = new ExtendedListWrapper<>();
+		
+		for (char i : arr)
+			list.add(i);
+		
+		return list;
+	}
+
+	/** Создать лист из массива */
+	public static ExtendedListWrapper<Integer> valueOf(byte[] arr)
+	{
+		ExtendedListWrapper<Integer> list = new ExtendedListWrapper<>();
+		
+		for (int i : arr)
+			list.add(i);
+		
+		return list;
+	}
+	
+	/** Создать лист из массива */
+	public static ExtendedListWrapper<Short> valueOf(short[] arr)
+	{
+		ExtendedListWrapper<Short> list = new ExtendedListWrapper<>();
+		
+		for (short i : arr)
+			list.add(i);
+		
+		return list;
+	}
+	
+	/** Создать лист из массива */
+	public static ExtendedListWrapper<Integer> valueOf(int[] arr)
+	{
+		ExtendedListWrapper<Integer> list = new ExtendedListWrapper<>();
+		
+		for (int i : arr)
+			list.add(i);
+		
+		return list;
+	}
+	
+	/** Создать лист из массива */
+	public static ExtendedListWrapper<Long> valueOf(long[] arr)
+	{
+		ExtendedListWrapper<Long> list = new ExtendedListWrapper<>();
+		
+		for (long i : arr)
+			list.add(i);
+		
+		return list;
+	}
+	
+	/** Создать лист из массива */
+	public static ExtendedListWrapper<Float> valueOf(float[] arr)
+	{
+		ExtendedListWrapper<Float> list = new ExtendedListWrapper<>();
+		
+		for (float i : arr)
+			list.add(i);
+		
+		return list;
+	}
+	
+	/** Создать лист из массива */
+	public static ExtendedListWrapper<Double> valueOf(double[] arr)
+	{
+		ExtendedListWrapper<Double> list = new ExtendedListWrapper<>();
+		
+		for (double i : arr)
+			list.add(i);
+		
+		return list;
 	}
 
 }

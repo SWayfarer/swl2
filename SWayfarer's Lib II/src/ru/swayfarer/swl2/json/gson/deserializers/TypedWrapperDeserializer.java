@@ -8,6 +8,11 @@ import ru.swayfarer.swl2.z.dependencies.com.google.gson.JsonDeserializer;
 import ru.swayfarer.swl2.z.dependencies.com.google.gson.JsonElement;
 import ru.swayfarer.swl2.z.dependencies.com.google.gson.JsonParseException;
 
+/**
+ * Десериализатор для {@link TypedWrapperDeserializer} 
+ * @author swayfarer
+ *
+ */
 public class TypedWrapperDeserializer implements JsonDeserializer<JsonTypedWrapper> {
 
 	@Override

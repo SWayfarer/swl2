@@ -67,6 +67,7 @@ public class ReflectionUtils {
 		return cl;
 	}
 	
+	/** Создать новый объект указанного класса, с наиболее подходящим для переданных аррументов конструктором */
 	public static <T> T newInstanceOf(Class<?> cl, Object... args)
 	{
 		try
@@ -76,18 +77,28 @@ public class ReflectionUtils {
 			
 			if (constructor == null)
 			{
-				logger.warning("Can't find constructor for args", Arrays.asList(args));
+				logger.warning("Can't find constructor for args", args);
 			}
 			
 		}
 		catch (Throwable e)
 		{
-			logger.error(e, "");
+			logger.error(e, "Error while creating new instance of", cl);
 		}
 		
 		return null;
 	}
 	
+	/** Является ли объект массивом? */
+	public static boolean isArray(Object obj)
+	{
+		if (obj == null)
+			return false;
+		
+		return obj.getClass().isArray();
+	}
+	
+	/** Создать новый объект через пустой конструктор */
 	public static <T> T newInstanceOf(Class<?> cl)
 	{
 		try

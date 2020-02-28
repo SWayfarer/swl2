@@ -159,7 +159,11 @@ public interface ILogger {
 		DecoratorFormatter formatter = new DecoratorFormatter();
 		formatter.decoratorSeq = StringUtils.concat(text);
 		
-		this.setFormatter(getFormatter().andThan(formatter));
+		if (getFormatter() == null)
+			this.setFormatter(formatter);
+		else
+			this.setFormatter(getFormatter().andThan(formatter));
+		
 		return (T) this;
 	}
 	
