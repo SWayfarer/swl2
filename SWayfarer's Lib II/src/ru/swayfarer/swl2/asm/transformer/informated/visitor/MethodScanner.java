@@ -3,15 +3,25 @@ package ru.swayfarer.swl2.asm.transformer.informated.visitor;
 import ru.swayfarer.swl2.asm.AsmUtils;
 import ru.swayfarer.swl2.asm.informated.AnnotationInfo;
 import ru.swayfarer.swl2.asm.informated.MethodInfo;
+import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.AnnotationVisitor;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.Label;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.MethodVisitor;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.Opcodes;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.commons.AdviceAdapter;
 
+/**
+ * Сканнер методов, создающий {@link MethodInfo} для указанных целей
+ * @author swayfarer
+ */
 public class MethodScanner extends AdviceAdapter{
 
+	/** Сканнер переменных */
+	@InternalElement
 	public VarsScanner varScanner;
+	
+	/** Информация о методе, которую заполняем */
+	@InternalElement
 	public MethodInfo info;
 	
 	public MethodScanner(MethodVisitor methodVisitor, int access, String name, String descriptor, MethodInfo info)

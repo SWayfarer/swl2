@@ -3,30 +3,48 @@ package ru.swayfarer.swl2.asm.transformer.remapper;
 import ru.swayfarer.swl2.asm.TransformedClassInfo;
 import ru.swayfarer.swl2.asm.transformer.basic.AbstractAsmTransformer;
 import ru.swayfarer.swl2.asm.transformer.remapper.visitor.RemapperClassVisitor;
+import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.ClassReader;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.ClassWriter;
 
+/**
+ * Класс-трансформер, обеспечивающий ремаппинг элементов на основе переданного {@link RemapInfo}
+ * @author swayfarer
+ *
+ */
 @SuppressWarnings("unchecked")
 public class RemapperClassTransformer extends AbstractAsmTransformer{
 
+	/** Информация о ремаппинге */
+	@InternalElement
 	public RemapInfo remapInfo;
 	
-	public ClassTransformer classTransformer;
-	public FieldTransformer fieldTransformer;
-	public MethodTransformer methodTransformer;
+	/** Ремаппер классов */
+	@InternalElement
+	public ClassRemapperTransformer classTransformer;
 	
+	/** Ремаппер полей */
+	@InternalElement
+	public FieldRemapperTransformer fieldTransformer;
+	
+	/** Репаммер методов */
+	@InternalElement
+	public MethodRemapperTransformer methodTransformer;
+	
+	/** Конструктор с пустым {@link RemapInfo} */
 	public RemapperClassTransformer()
 	{
 		this(new RemapInfo());
 	}
 	
+	/** Конструктор */
 	public RemapperClassTransformer(RemapInfo remapInfo)
 	{
 		super();
 		this.remapInfo = remapInfo;
-		classTransformer = new ClassTransformer(remapInfo);
-		fieldTransformer = new FieldTransformer(remapInfo);
-		methodTransformer = new MethodTransformer(remapInfo);
+		classTransformer = new ClassRemapperTransformer(remapInfo);
+		fieldTransformer = new FieldRemapperTransformer(remapInfo);
+		methodTransformer = new MethodRemapperTransformer(remapInfo);
 	}
 	
 	@Override
@@ -39,44 +57,55 @@ public class RemapperClassTransformer extends AbstractAsmTransformer{
 		return bytes;
 	}
 	
+	/** Получить маппинг поля */
 	public String getFieldMapping(String name, String owner, String desc)
 	{
 		return remapInfo.getFieldMapping(name, owner, desc);
 	}
 	
+	/** Получить маппинг метода */
 	public String getMethodMapping(String name, String owner, String desc)
 	{
 		return remapInfo.getMethodMapping(name, owner, desc);
 	}
 	
+	/** Получить маппинг класса */
 	public String getClassMapping(String name)
 	{
 		return remapInfo.getClassMapping(name);
 	}
 	
-	public <RemapperClassTransformer_Type extends RemapperClassTransformer> RemapperClassTransformer_Type setClassMapping(String before, String after)
+	/** Задать маппинг класса */
+	public <T extends RemapperClassTransformer> T setClassMapping(String before, String after)
 	{
 		remapInfo.setClassMapping(before, after);
-		return (RemapperClassTransformer_Type) this;
+		return (T) this;
 	}
 	
-	public <RemapperClassTransformer_Type extends RemapperClassTransformer> RemapperClassTransformer_Type setFieldMapping(String owner, String name, String desc, String newName)
+	/** Задать маппинг поля */
+	public <T extends RemapperClassTransformer> T setFieldMapping(String owner, String name, String desc, String newName)
 	{
 		remapInfo.setFieldMapping(owner, name, desc, newName);
-		return (RemapperClassTransformer_Type) this;
+		return (T) this;
 	}
 	
-	public <RemapperClassTransformer_Type extends RemapperClassTransformer> RemapperClassTransformer_Type setMethodMapping(String owner, String name, String desc, String newName)
+	/** Задать маппинг метода */
+	public <T extends RemapperClassTransformer> T setMethodMapping(String owner, String name, String desc, String newName)
 	{
 		remapInfo.setMethodMapping(owner, name, desc, newName);
-		return (RemapperClassTransformer_Type) this;
+		return (T) this;
 	}
 	
-	protected static class ClassTransformer extends AbstractAsmTransformer {
+	/** Репмаппер классов */
+	@InternalElement
+	public static class ClassRemapperTransformer extends AbstractAsmTransformer {
 		
+		/** Информация о ремаппинге */
+		@InternalElement
 		public RemapInfo remapInfo;
 		
-		public ClassTransformer(RemapInfo remapInfo)
+		/** Конструктор */
+		public ClassRemapperTransformer(RemapInfo remapInfo)
 		{
 			super();
 			this.remapInfo = remapInfo;
@@ -92,11 +121,16 @@ public class RemapperClassTransformer extends AbstractAsmTransformer{
 		
 	}
 	
-	protected static class MethodTransformer extends AbstractAsmTransformer {
+	/** Репмаппер методов */
+	@InternalElement
+	public static class MethodRemapperTransformer extends AbstractAsmTransformer {
 		
+		/** Информация о ремаппинге */
+		@InternalElement
 		public RemapInfo remapInfo;
 		
-		public MethodTransformer(RemapInfo remapInfo)
+		/** Конструктор */
+		public MethodRemapperTransformer(RemapInfo remapInfo)
 		{
 			super();
 			this.remapInfo = remapInfo;
@@ -110,11 +144,16 @@ public class RemapperClassTransformer extends AbstractAsmTransformer{
 		
 	}
 	
-	protected static class FieldTransformer extends AbstractAsmTransformer {
+	/** Репмаппер полей */
+	@InternalElement
+	public static class FieldRemapperTransformer extends AbstractAsmTransformer {
 		
+		/** Информация о ремаппинге */
+		@InternalElement
 		public RemapInfo remapInfo;
-		
-		public FieldTransformer(RemapInfo remapInfo)
+
+		/** Конструктор */
+		public FieldRemapperTransformer(RemapInfo remapInfo)
 		{
 			super();
 			this.remapInfo = remapInfo;

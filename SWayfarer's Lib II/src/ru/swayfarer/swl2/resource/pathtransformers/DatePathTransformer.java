@@ -45,9 +45,9 @@ public class DatePathTransformer implements IFunction1<String, String> {
 		this.prefix = prefix;
 		
 		dateRegex = StringUtils.regex()
-				.text("%" + prefix + "{")
+				.text("%" + prefix + "[")
 				.something()
-				.text("}%")
+				.text("]%")
 		.build();
 	}
 

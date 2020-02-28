@@ -3,16 +3,29 @@ package ru.swayfarer.swl2.asm.transformer.informated.visitor;
 import ru.swayfarer.swl2.asm.informated.AnnotationInfo;
 import ru.swayfarer.swl2.asm.informated.MethodInfo;
 import ru.swayfarer.swl2.asm.informated.VariableInfo;
+import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.AnnotationVisitor;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.Label;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.MethodVisitor;
 
+/**
+ * Сканнер переменных, который создает {@link VariableInfo} для целевого метода 
+ * @author swayfarer
+ *
+ */
 public class VarsScanner extends MethodVisitor{
 	
+	/** Кол-во переменных, которые являются параметрами */
 	public int paramsCount;
+	
+	/** Информация о методе, в который добавляются переменные */
+	@InternalElement
 	public MethodInfo info;
+	
+	/** Статический ли метод? */
 	public boolean isStatic;
 	
+	/** Индекс следующего параметра */
 	public int nextParamIndex;
 	
 	public VarsScanner(MethodInfo info, MethodVisitor mv, int paramsCount, boolean isStatic)
@@ -43,11 +56,18 @@ public class VarsScanner extends MethodVisitor{
 		this.info.addVariable(info);
 	}
 	
+	/** 
+	 * Является ли переменная на стеке this? 
+	 * <br> (0 для не-статических методов, для статики не существует) 
+	 */
 	public boolean isThisVar()
 	{
 		return !isStatic && nextParamIndex == 0;
 	}
 	
+	/**
+	 * Является ли следующая переменная параметром?
+	 */
 	public boolean isNextLocalVarParam()
 	{
 		if (isStatic)

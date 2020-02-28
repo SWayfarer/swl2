@@ -9,14 +9,23 @@ import ru.swayfarer.swl2.asm.informated.MethodInfo;
 import ru.swayfarer.swl2.asm.informated.visitor.InformatedClassVisitor;
 import ru.swayfarer.swl2.asm.transformer.exists.ExistsClassTransformer;
 import ru.swayfarer.swl2.asm.transformer.exists.ExistsConditionContainer;
+import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.ClassVisitor;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.FieldVisitor;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.MethodVisitor;
 
+/**
+ * {@link ClassVisitor} для {@link ExistsClassTransformer}
+ * @author swayfarer
+ *
+ */
 public class ExistsClassVisitor extends InformatedClassVisitor {
 
+	/** Условия, по которым будет определяться существование объектов */
+	@InternalElement
 	public ExistsConditionContainer conditions;
 
+	/** Конструктор */
 	public ExistsClassVisitor(ClassVisitor classVisitor, ClassInfo classInfo, ExistsConditionContainer conditions)
 	{
 		super(classVisitor, classInfo);
@@ -50,6 +59,7 @@ public class ExistsClassVisitor extends InformatedClassVisitor {
 		return super.visitMethodInformated(methodInfo, access, name, descriptor, signature, exceptions);
 	}
 	
+	/** Должен ли быть пропущен элемент, отмеченный указанными аннотациями? */
 	public boolean isSkiped(List<AnnotationInfo> annotations)
 	{
 		for (AnnotationInfo annotationInfo : annotations)

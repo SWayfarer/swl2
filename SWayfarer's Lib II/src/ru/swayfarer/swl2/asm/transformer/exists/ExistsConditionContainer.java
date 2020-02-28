@@ -13,8 +13,8 @@ import ru.swayfarer.swl2.string.StringUtils;
 
 /**
  * Контейнер для условий существования элементов 
+ * <br> Здесь можно установить именные {@link ExistsConditionContainer#setCondition(String, boolean)} условия, или настроить кастомные ({@link ICustomExistsCondition})
  * @author swayfarer
- *
  */
 @SuppressWarnings("unchecked")
 public class ExistsConditionContainer {

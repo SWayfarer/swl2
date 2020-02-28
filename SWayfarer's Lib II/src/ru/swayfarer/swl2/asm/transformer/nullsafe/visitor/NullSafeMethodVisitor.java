@@ -7,16 +7,27 @@ import ru.swayfarer.swl2.asm.informated.VariableInfo;
 import ru.swayfarer.swl2.asm.transformer.nullsafe.NullSafeClassTransformer;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
+import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.MethodVisitor;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.Type;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.commons.AdviceAdapter;
 
+/**
+ * {@link MethodVisitor} для {@link NullSafeClassTransformer}'а
+ * @author swayfarer
+ *
+ */
 public class NullSafeMethodVisitor extends AdviceAdapter {
 
+	/** Логгер */
+	@InternalElement
 	public ILogger logger = LoggingManager.getLogger();
 	
+	/** Информация об обрабатываемом методе  */
+	@InternalElement
 	public MethodInfo methodInfo;
 	
+	/** Конструтор */
 	public NullSafeMethodVisitor(MethodInfo methodInfo, MethodVisitor methodVisitor, int access, String name, String descriptor)
 	{
 		super(ASM7, methodVisitor, access, name, descriptor);

@@ -7,15 +7,24 @@ import ru.swayfarer.swl2.asm.informated.ClassInfo;
 import ru.swayfarer.swl2.asm.informated.FieldInfo;
 import ru.swayfarer.swl2.asm.informated.MethodInfo;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
+import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.AnnotationVisitor;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.ClassVisitor;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.FieldVisitor;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.MethodVisitor;
 
+/**
+ * Сканнер классов, который производит {@link ClassInfo} для указанных целей
+ * @author swayfarer
+ *
+ */
 public class ClassScanner extends ClassVisitor{
 
+	/** Информация о классе, которую билдим */
+	@InternalElement
 	public ClassInfo info = new ClassInfo();
 	
+	/** Конструктор */
 	public ClassScanner(ClassVisitor classVisitor)
 	{
 		super(ASM7, classVisitor);

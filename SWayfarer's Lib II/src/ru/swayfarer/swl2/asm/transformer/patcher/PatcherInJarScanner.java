@@ -1,15 +1,19 @@
 package ru.swayfarer.swl2.asm.transformer.patcher;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import ru.swayfarer.swl2.asm.TransformedClassInfo;
 import ru.swayfarer.swl2.asm.transformer.basic.AbstractAsmTransformer;
+import ru.swayfarer.swl2.collections.CollectionsSWL;
+import ru.swayfarer.swl2.collections.extended.IExtendedList;
 
 public class PatcherInJarScanner extends AbstractAsmTransformer {
 
+	/** Класс-трансформер, который ищет патчи */
 	public PatcherClassTransformer patcherClassTransformer = new PatcherClassTransformer();
-	public List<PatchInfo> foundPatches = new ArrayList<>();
+	
+	/** Найденные патчи */
+	public IExtendedList<PatchInfo> foundPatches = CollectionsSWL.createExtendedList();
 	
 	@Override
 	public byte[] transform(String name, byte[] bytes, TransformedClassInfo info)
@@ -24,9 +28,10 @@ public class PatcherInJarScanner extends AbstractAsmTransformer {
 		return ret;
 	}
 	
+	/** Получить найденные патчи */
 	public List<PatchInfo> getFoundPatches()
 	{
-		return foundPatches;
+		return foundPatches.copy();
 	}
 	
 }
