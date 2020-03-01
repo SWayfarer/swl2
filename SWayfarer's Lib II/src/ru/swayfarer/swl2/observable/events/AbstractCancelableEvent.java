@@ -37,7 +37,7 @@ public abstract class AbstractCancelableEvent {
 	 */
 	public <T extends AbstractCancelableEvent> T setCanceled(boolean isCanceled)
 	{
-		whoCanceled = isCanceled ? ExceptionsUtils.getThreadStacktrace(1)[0] : null;
+		whoCanceled = isCanceled ? ExceptionsUtils.getThreadStacktrace(1).getFirstElement() : null;
 		
 		this.isCanceled = isCanceled;
 		return (T) this;

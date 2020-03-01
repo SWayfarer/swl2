@@ -170,6 +170,17 @@ public interface ILogger {
 		return (T) this;
 	}
 	
+	/** Завершать работу приложения, если попадается Fatal-лог */
+	public default <T extends ILogger> T setExitingOnFatal()
+	{
+		evtPostLogging().subscribe((sub, log) -> {
+			if (log.logInfo.level == StandartLoggingLevels.LEVEL_FATAL)
+				System.exit(1);
+		});
+		
+		return (T) this;
+	}
+	
 	@InternalElement
 	/** Задать место создания логгера*/
 	public default <T extends ILogger> T setFrom(int stacktraceOffset)

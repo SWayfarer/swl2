@@ -123,7 +123,7 @@ public class MethodInfo {
 	 */
 	public boolean hasAnnotation(String desc)
 	{
-		return getFirstAnnotation(desc) == null;
+		return getFirstAnnotation(desc) != null;
 	}
 	
 	/**

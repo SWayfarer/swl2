@@ -1,11 +1,13 @@
 package ru.swayfarer.swl2.options;
 
+import lombok.ToString;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1NoR;
 import ru.swayfarer.swl2.markers.ConcattedString;
 import ru.swayfarer.swl2.string.StringUtils;
 
 /** Опция */
 @SuppressWarnings("unchecked")
+@ToString
 public class Option {
 
 	/** Имя */
@@ -23,6 +25,9 @@ public class Option {
 	/** Функция, которая будет вызвана во время применения опции  */
 	public IFunction1NoR<Option> applyOptionFun;
 	
+	/** Обязательная ли опиця? */
+	public boolean isRequired;
+	
 	/** Применить функцию */
 	public void apply()
 	{
@@ -30,9 +35,10 @@ public class Option {
 			applyOptionFun.apply(this);
 	}
 	
+	/** Обязательная ли опиця? */
 	public boolean isRequied()
 	{
-		return false;
+		return isRequired;
 	}
 	
 	/** Добавить значение из текста */
@@ -71,13 +77,11 @@ public class Option {
 		this.applyOptionFun = fun;
 		return (T) this;
 	}
-
-	/** Получить строку из объекта */
-	@Override
-	public String toString()
-	{
-		return "Option [name=" + name + ", value=" + value + ", description=" + description + ", hasValue=" + hasValue + "]";
-	}
 	
+	public <T extends Option> T setRequired(boolean isRequired)
+	{
+		this.isRequired = isRequired;
+		return (T) this;
+	}
 	
 }

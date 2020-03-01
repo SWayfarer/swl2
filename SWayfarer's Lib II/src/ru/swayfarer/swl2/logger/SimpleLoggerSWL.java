@@ -127,7 +127,7 @@ public class SimpleLoggerSWL implements ILogger, StandartLoggingLevels, Stacktra
 	@Override
 	public void log(ILogLevel lvl, Throwable e, Object... text)
 	{
-		log(LogInfo.of(this, lvl, OFFSET_CALLER, getStringFromThrowable(e, text)).setDecorated(true));
+		log(LogInfo.of(this, lvl, 0, getStringFromThrowable(e, text)).setDecorated(true));
 	}
 
 	@Override

@@ -10,6 +10,8 @@ import java.net.URI;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 import java.util.zip.ZipFile;
 
 import ru.swayfarer.swl2.collections.CollectionsSWL;
@@ -19,10 +21,12 @@ import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
 import ru.swayfarer.swl2.markers.InternalElement;
+import ru.swayfarer.swl2.math.MathUtils;
 import ru.swayfarer.swl2.resource.pathtransformers.PathTransforms;
 import ru.swayfarer.swl2.resource.streams.DataInputStreamSWL;
 import ru.swayfarer.swl2.resource.streams.DataOutputStreamSWL;
 import ru.swayfarer.swl2.resource.streams.StreamsUtils;
+import ru.swayfarer.swl2.string.StringUtils;
 
 /**
  * Расширенный файл
@@ -55,12 +59,68 @@ public class FileSWL extends File {
 		return delete();
 	}
 	
+	/** Получить абсолютный путь до этого файла, убрав из него путь до указанного */
+	public String getAbsolutePathWithout(FileSWL file)
+	{
+		return getAbsolutePath().replace(file.getAbsolutePath(), "");
+	}
+	
+	/** Это существующий файл */
+	public boolean isExistingFile()
+	{
+		return exists() && isFile();
+	}
+	
+	/** Это существующая папка */
+	public boolean isExistingDir()
+	{
+		return exists() && isDirectory();
+	}
+	
 	/** Конструктор */
 	public FileSWL(File parent, String child)
 	{
 		super(parent, PathTransforms.transform(child));
 	}
 
+	/** Эквивалетнен ли хэш файла указанному */
+	public boolean hashEquals(String hash)
+	{
+		String fileHash = getHash();
+		
+		if (StringUtils.isEmpty(hash))
+			return StringUtils.isEmpty(fileHash);
+		
+		return fileHash.equals(hash);
+	}
+	
+	/** Получить MD5-хэш файла */
+	public String getHash()
+	{
+		return FilesUtils.getFileHash(this, MathUtils.HASH_MD5);
+	}
+	
+	/** Получить манифест файла, если это jar */
+	public Manifest getManifest()
+	{
+		try
+		{
+			JarFile jar = new JarFile(this);
+			
+			Manifest ret = jar.getManifest();
+			
+			jar.close();
+			
+			return ret;
+		}
+		catch (Throwable e)
+		{
+			logger.error(e, "Error while getting manifest file for", this);
+		}
+		
+		return null;
+	}
+	
 	/** Конструктор */
 	public FileSWL(String parent, String child)
 	{

@@ -1,6 +1,10 @@
 package ru.swayfarer.swl2.binary;
 
+import java.nio.ByteOrder;
+
+import ru.swayfarer.swl2.binary.buffers.DynamicByteBuffer;
 import ru.swayfarer.swl2.exceptions.ExceptionsUtils;
+import ru.swayfarer.swl2.threads.ThreadsUtils;
 
 /**
  * Утилиты для работы с бинарными операциями 
@@ -14,6 +18,8 @@ public class BinaryUtils {
 	public static int FLOAT_BYTES_SIZE = 4;
 	public static int DOUBLE_BYTES_SIZE = 8;
 	public static int LONG_BYTES_SIZE = 8;
+	
+	public static ByteOrder DEFAULT_BYTE_ORDER = ByteOrder.LITTLE_ENDIAN;
 	
 	/** Записать unsigned byte в int */
 	public static int toUnsignedByte(byte b)
@@ -40,6 +46,56 @@ public class BinaryUtils {
 			return b;
 		
 		return ((double) b) - ((double) Float.MIN_VALUE) * 2;
+	}
+	
+	/** Получить байты числа в {@link #DEFAULT_BYTE_ORDER} */
+	public static byte[] toBytes(short i)
+	{
+		DynamicByteBuffer buffer = ThreadsUtils.getThreadLocal(DynamicByteBuffer::allocateDirect);
+		buffer.putShort(i);
+		byte[] ret = buffer.getOnlyUsedBytes();
+		buffer.clear();
+		return ret;
+	}
+	
+	/** Получить байты числа в {@link #DEFAULT_BYTE_ORDER} */
+	public static byte[] toBytes(int i)
+	{
+		DynamicByteBuffer buffer = ThreadsUtils.getThreadLocal(DynamicByteBuffer::allocateDirect);
+		buffer.putInt(i);
+		byte[] ret = buffer.getOnlyUsedBytes();
+		buffer.clear();
+		return ret;
+	}
+	
+	/** Получить байты числа в {@link #DEFAULT_BYTE_ORDER} */
+	public static byte[] toBytes(long i)
+	{
+		DynamicByteBuffer buffer = ThreadsUtils.getThreadLocal(DynamicByteBuffer::allocateDirect);
+		buffer.putLong(i);
+		byte[] ret = buffer.getOnlyUsedBytes();
+		buffer.clear();
+		return ret;
+	}
+	
+	/** Получить байты числа в {@link #DEFAULT_BYTE_ORDER} */
+	public static byte[] toBytes(float i)
+	{
+		DynamicByteBuffer buffer = ThreadsUtils.getThreadLocal(DynamicByteBuffer::allocateDirect);
+		buffer.putFloat(i);
+		byte[] ret = buffer.getOnlyUsedBytes();
+		buffer.clear();
+		return ret;
+	}
+	
+	/** Получить байты числа в {@link #DEFAULT_BYTE_ORDER} */
+	public static byte[] toBytes(double i)
+	{
+		DynamicByteBuffer buffer = ThreadsUtils.getThreadLocal(DynamicByteBuffer::allocateDirect);
+		buffer.putDouble(i);
+		byte[] ret = buffer.getOnlyUsedBytes();
+		buffer.clear();
+		return ret;
 	}
 	
 	/** Преобразовать float, записанный double, в signed */

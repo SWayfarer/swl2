@@ -3,6 +3,8 @@ package ru.swayfarer.swl2.exceptions;
 import java.lang.reflect.Constructor;
 
 import lombok.SneakyThrows;
+import ru.swayfarer.swl2.collections.CollectionsSWL;
+import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.collections.streams.DataStream;
 import ru.swayfarer.swl2.markers.Alias;
 import ru.swayfarer.swl2.markers.ConcattedString;
@@ -10,6 +12,23 @@ import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.string.StringUtils;
 
 public class ExceptionsUtils {
+	
+	public static String LAMBDA_GENERATED_METHOD_REGEX = StringUtils.regex()
+			.text("lambda$")
+			.some()
+			.num()
+	.build();
+	
+	public static String LAMBDA_GENERATED_METHOD_REGEX_2 = StringUtils.regex()
+			.something()
+			.text("$$Lambda$")
+			.something()
+			.text(".")
+			.some()
+			.num()
+			.text(".")
+			.something()
+	.build();
 	
 	/** Если метод вызван не из одного из указанных классов, то будет {@link Exception} */
 	@SneakyThrows
@@ -66,7 +85,7 @@ public class ExceptionsUtils {
 				offset ++;
 			}
 			
-			ret.setStackTrace(shiftStacktrace(stacktrace, offset + stacktraceOffset));
+			ret.setStackTrace(shiftStacktrace(stacktrace, offset + stacktraceOffset).toArray(StackTraceElement.class));
 			
 			return ret;
 		}
@@ -89,12 +108,12 @@ public class ExceptionsUtils {
 	 * @param stacktraceOffset Смещение стактрейса
 	 * @return Смещенный стакрейс
 	 */
-	public static StackTraceElement[] shiftStacktrace(StackTraceElement[] stacktrace, int stacktraceOffset)
+	public static  IExtendedList<StackTraceElement> shiftStacktrace(StackTraceElement[] stacktrace, int stacktraceOffset)
 	{
 		StackTraceElement[] newStackTrace = new StackTraceElement[stacktrace.length - stacktraceOffset];
 		System.arraycopy(stacktrace, stacktrace.length - newStackTrace.length, newStackTrace, 0, newStackTrace.length);
 		
-		return newStackTrace;
+		return CollectionsSWL.createExtendedList(newStackTrace);
 	}
 	
 	/**
@@ -102,7 +121,7 @@ public class ExceptionsUtils {
 	 * @param stacktraceStartOffset - Смещение начала стактейса. (Столько элементов будет из него удалено)
 	 * @return Актуальный стактейс с указанным смещением
 	 */
-	public static StackTraceElement[] getThreadStacktrace(int stacktraceStartOffset)
+	public static IExtendedList<StackTraceElement> getThreadStacktrace(int stacktraceStartOffset)
 	{
 		return shiftStacktrace(new Throwable().getStackTrace(), 1 + stacktraceStartOffset);
 	}
@@ -114,22 +133,22 @@ public class ExceptionsUtils {
 	 */
 	public static String getStacktraceClassAt(int classIndex)
 	{
-		StackTraceElement[] stackTraceElements = getThreadStacktrace(StacktraceOffsets.OFFSET_CALLER);
+		IExtendedList<StackTraceElement> stackTraceElements = getThreadStacktrace(StacktraceOffsets.OFFSET_CALLER);
 		
-		return stackTraceElements[classIndex].getClassName();
+		return stackTraceElements.get(classIndex).getClassName();
 	}
 	
 	/** Стактрейс источника вызова */
 	@Alias("getCallerStacktrace")
 	public static StackTraceElement caller()
 	{
-		return getThreadStacktrace(StacktraceOffsets.OFFSET_CALLER + 1)[0];
+		return getThreadStacktrace(StacktraceOffsets.OFFSET_CALLER + 1).getFirstElement();
 	}
 	
 	/** Стактрейс источника вызова */
 	public static StackTraceElement getCallerStacktrace()
 	{
-		return getThreadStacktrace(StacktraceOffsets.OFFSET_CALLER + 1)[0];
+		return getThreadStacktrace(StacktraceOffsets.OFFSET_CALLER + 1).getFirstElement();
 	}
 	
 	/**
@@ -144,6 +163,14 @@ public class ExceptionsUtils {
 		
 		
 		return name;
+	}
+	
+	/** Очистить от лямбд в генерированных классах */
+	public static IExtendedList<StackTraceElement> cleanFromGeneratedLambdas(IExtendedList<StackTraceElement> stackTraceElements)
+	{
+		return stackTraceElements.dataStream()
+				.filter((st) -> !st.getClassName().contains("$$Lambda$"))
+				.toList();
 	}
 	
 	/** Получить простое имя класса из каноничного */

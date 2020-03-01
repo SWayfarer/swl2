@@ -96,8 +96,7 @@ public class ClassLoaderSWL extends URLClassLoader {
 	/** Конструктор c указанием родительского класслоадера */
 	public ClassLoaderSWL(ClassLoader parent)
 	{
-		super(getUrls(parent).toArray(new URL[]
-		{}));
+		super(new URL[] {});
 		
 		this.parent = parent;
 

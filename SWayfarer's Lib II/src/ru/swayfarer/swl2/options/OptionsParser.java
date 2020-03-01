@@ -16,25 +16,31 @@ import ru.swayfarer.swl2.string.StringUtils;
 @SuppressWarnings("unchecked")
 public class OptionsParser {
 
+	/** Локализованное описание команды --help */
+	public String HELP_COMMAND_DESCRIPTION = "Shows this help";
+	
+	/** Локализованный заголовок помощи, выводимой командой --help */
+	public String HELP_HEADER_TEXT = "Help:";
+	
 	/** Логгер */
 	@InternalElement
 	public static ILogger logger = LoggingManager.getLogger();
-	
-	/** Локализованный текст помощи */
-	public String helpText = "Help:";
 	
 	/** Зарегистрированные опции */
 	@InternalElement
 	public IExtendedList<Option> registeredOptions = CollectionsSWL.createExtendedList();  
 	
 	/** Функция, которая будет вызывана, если попадется незарегистрированный агрумент */
-	public IFunction1NoR<String> missingOptionHandler;
+	public IFunction1NoR<String> unregisteredOptionHandler;
 	
 	/** Функция, которая вызовется, если для опции не указан обязательный агрумент */
 	public IFunction1NoR<String> missingValueHandler;
 	
 	/** Функция, которая вызовется, если для опции, не имеющей значения, оно будет указано */
 	public IFunction1NoR<String> notPossibleValueHandler;
+	
+	/** Функция, которая вызовется, если отсутствует одна из обязательных опций */
+	public IFunction1NoR<IExtendedList<Option>> missingOptionsHandler;
 	
 	/** Не добавлена обязательная опция */
 	public IExtendedList<Option> getRequiredMissing(IExtendedList<Option> options)
@@ -53,6 +59,12 @@ public class OptionsParser {
 	/** Инициализация опций через {@link Option#apply()}*/
 	public void init(ILogger logger, IExtendedList<Option> options)
 	{
+		IExtendedList<Option> missingOptions = getRequiredMissing(options);
+		
+		if (!CollectionsSWL.isNullOrEmpty(missingOptions))
+			if (missingOptionsHandler != null)
+				missingOptionsHandler.apply(missingOptions);
+		
 		logger.safe(() -> options.dataStream().each(Option::apply), "Error while applying options");
 	}
 	
@@ -65,7 +77,7 @@ public class OptionsParser {
 		if (logger == null)
 			return;
 		
-		logger.info(this.helpText);
+		logger.info(this.HELP_HEADER_TEXT);
 		
 		int maxOptionLenght = registeredOptions.dataStream()
 				.mapped((o) -> o.name.length())
@@ -99,8 +111,8 @@ public class OptionsParser {
 				
 				if (option == null)
 				{
-					if (missingOptionHandler != null)
-						missingOptionHandler.apply(argName);
+					if (unregisteredOptionHandler != null)
+						unregisteredOptionHandler.apply(argName);
 				}
 				else
 				{
@@ -119,16 +131,23 @@ public class OptionsParser {
 		return ret;
 	}
 	
+	/** Добавить опцию --help */
+	public <T extends OptionsParser> T addHelpOption(ILogger logger)
+	{
+		registerOption("help", HELP_COMMAND_DESCRIPTION, false, false, (o) -> showHelp(logger));
+		return (T) this;
+	}
+	
 	/** Зарегистрировать опцию */
-	public <T extends OptionsParser> T registerOption(String name, String description, boolean hasValue, IFunction1NoR<Option> initFun)
+	public <T extends OptionsParser> T registerOption(String name, String description, boolean hasValue, boolean isRequired, IFunction1NoR<Option> initFun)
 	{
 		return registerOption(new Option().setName(name).setDescription(description).setValueEnabled(hasValue).setInitFun(initFun));
 	}
 	
 	/** Зарегистрировать опцию */
-	public <T extends OptionsParser> T registerOption(String name, String description, boolean hasValue)
+	public <T extends OptionsParser> T registerOption(String name, String description, boolean hasValue, boolean isRequired)
 	{
-		return registerOption(new Option().setName(name).setDescription(description).setValueEnabled(hasValue));
+		return registerOption(new Option().setName(name).setDescription(description).setValueEnabled(hasValue).setRequired(isRequired));
 	}
 	
 	/** Зарегистрировать опцию */

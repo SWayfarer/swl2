@@ -1,7 +1,15 @@
 package ru.swayfarer.swl2.math;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Map;
 import java.util.Random;
+
+import ru.swayfarer.swl2.collections.CollectionsSWL;
+import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1;
+import ru.swayfarer.swl2.logger.ILogger;
+import ru.swayfarer.swl2.logger.LoggingManager;
+import ru.swayfarer.swl2.markers.InternalElement;
+import ru.swayfarer.swl2.math.hash.MessageDigestHashFun;
 
 /**
  * Математические утилиты 
@@ -10,6 +18,26 @@ import java.util.Random;
  */
 public class MathUtils {
 
+	/** Id MD5-хэша */
+	public static String HASH_MD5 = "md5";
+	
+	/** Id Jenkins-хэша */
+	public static String HASH_JENKINS = "jenkins";
+	
+	/** Id SHA-1-хэша */
+	public static String HASH_SHA_1 = "sha-1";
+	
+	/** Id SHA-256-хэша */
+	public static String HASH_SHA_256 = "sha-256";
+	
+	/** Логгер*/
+	@InternalElement
+	public static ILogger logger = LoggingManager.getLogger();
+	
+	/** Карта зарегистированных хеш-функций */
+	@InternalElement
+	public static Map<String, IFunction1<byte[], byte[]>> registeredHashFuns = CollectionsSWL.createConcurrentHashMap();
+	
 	/** Генератор случайных чисел */
 	public static Random rand = new Random();
 	
@@ -250,6 +278,50 @@ public class MathUtils {
 	public static boolean getChance(float f)
 	{
 		return rand.nextFloat() <= f;
+	}
+	
+	/** 
+	 * Получить хэш указанного типа
+	 * <h1> Примечание: </h1> 
+	 * Все id хэшей хранятся в нижнем регистре (т.е. маленькими буквами)
+	 */
+	public static byte[] getHash(String hashType, byte[] source)
+	{
+		String key = hashType.toLowerCase();
+		
+		IFunction1<byte[], byte[]> hashFun = registeredHashFuns.get(key);
+		
+		if (hashFun == null)
+		{
+			logger.error("Hash function with id", hashType, "does not exists! Returning null hash...");
+			return null;
+		}
+		
+		return hashFun.apply(source);
+	}
+
+	/** 
+	 * Зарегистрировать хэш-функцию по ее id
+	 * <h1> Примечание: </h1> 
+	 * Все id хэшей хранятся в нижнем регистре (т.е. маленькими буквами)
+	 */
+	public static void registerHashFun(String id, IFunction1<byte[], byte[]> hashFun)
+	{
+		String key = id.toLowerCase();
+		
+		IFunction1<byte[], byte[]> registeredHashFun = registeredHashFuns.get(key);
+		
+		if (registeredHashFun != null)
+			logger.warning("Overwriting already registered hash fun with id", id);
+		
+		registeredHashFuns.put(id, hashFun);
+	}
+	
+	public static void registerDefaultHashFuns()
+	{
+		registerHashFun(HASH_MD5, new MessageDigestHashFun("MD5"));
+		registerHashFun(HASH_SHA_1, new MessageDigestHashFun("SHA-1"));
+		registerHashFun(HASH_SHA_256, new MessageDigestHashFun("SHA-256"));
 	}
 	
 	/** Хешер, который делает Jenkins Hash'и */

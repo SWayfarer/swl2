@@ -705,4 +705,9 @@ public class DynamicByteBuffer implements Comparable<ByteBuffer> {
 	{
 		return (T) new DynamicByteBuffer(defaultCapacity, defaultExpandFactor, STRATEGY_DIRECT);
 	}
+	
+	public static <T extends DynamicByteBuffer> T allocateDirect(int capacity)
+	{
+		return (T) new DynamicByteBuffer(capacity, defaultExpandFactor, STRATEGY_DIRECT);
+	}
 }

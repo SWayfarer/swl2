@@ -44,7 +44,7 @@ public class TemplateLogFormatter implements IFunction2NoR<ILogger, LogInfo>{
 	{
 		addRule((logger, logInfo) -> {
 			
-			StackTraceElement callSource = logInfo.callTrace[0];
+			StackTraceElement callSource = logInfo.callTrace.getFirstElement();
 			
 			String text = template
 				.replace("%file%", callSource.getFileName())

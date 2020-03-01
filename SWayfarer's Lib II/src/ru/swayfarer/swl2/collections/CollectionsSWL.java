@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -50,6 +51,12 @@ public class CollectionsSWL {
 	
 	/** Создать {@link HashMap} */
 	public static <K, V> Map<K, V> createHashMap()
+	{
+		return new HashMap<>();
+	}
+	
+	/** Создать {@link IdentityHashMap} */
+	public static <K, V> Map<K, V> createIdentityMap()
 	{
 		return new HashMap<>();
 	}

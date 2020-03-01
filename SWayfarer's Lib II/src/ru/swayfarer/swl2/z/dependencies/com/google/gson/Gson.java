@@ -77,8 +77,6 @@ public class Gson {
 
 	public JsonFormatter formatter;
 
-	public boolean isPretty = false;
-
 	public static TypeAdapter DEFAULT_TYPE_ADAPTER = new TypeAdapterNotRequired(new PrimitiveTypeAdapter());
 
 	public static ModifierBasedExclusionStrategy DEFAULT_MODIFIER_BASED_EXCLUSION_STRATEGY = new ModifierBasedExclusionStrategy(true, new int[]

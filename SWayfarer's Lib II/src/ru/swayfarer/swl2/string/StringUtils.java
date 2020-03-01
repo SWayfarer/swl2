@@ -314,17 +314,20 @@ public class StringUtils {
 	/** */
 	public static boolean isMatchesByMask(String mask, Object... objects)
 	{
-		if (mask != null && mask.equals("*"))
-			return true;
+		return isMatchesByRegex(regexByMask(mask), objects);
+	}
+	
+	public static boolean isMatchesByRegex(String regex, Object... objects)
+	{
+		if (regex == null)
+			return false;
 		
 		if (objects == null || objects.length == 0)
 			return false;
 		
-		String pattern = regexByMask(mask);
-		
 		for (Object obj : objects)
 		{
-			if (!(obj+"").matches(pattern))
+			if (!(obj+"").matches(regex))
 				return false;
 		}
 		
