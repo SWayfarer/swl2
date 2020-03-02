@@ -65,6 +65,27 @@ public class ClassInfo {
 		return getType().getInternalName();
 	}
 	
+	/** Найти поле по имени и дескриптору */
+	public FieldInfo findField(String name, String desc)
+	{
+		if (desc == null)
+			return findField(name);
+		
+		return fields.dataStream().find((f) -> f.getName().equals(name) && f.getDescriptor().equals(desc)); 
+	}
+	
+	/** Найти поле по имени */
+	public FieldInfo findField(String name)
+	{
+		return fields.dataStream().find((f) -> f.getName().equals(name)); 
+	}
+	
+	/** Найти поле по имени и типу */
+	public FieldInfo findField(String name, Type type)
+	{
+		return findField(name, type.getDescriptor());
+	}
+	
 	/**
 	 * Получить информацию о поле по его имени
 	 */

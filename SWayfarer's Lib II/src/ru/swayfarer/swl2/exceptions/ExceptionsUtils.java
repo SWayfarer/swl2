@@ -160,8 +160,6 @@ public class ExceptionsUtils {
 	{
 		String name = getStacktraceClassAt(classIndex + 1);
 		
-		
-		
 		return name;
 	}
 	

@@ -3,6 +3,7 @@ package ru.swayfarer.swl2.asm;
 import ru.swayfarer.swl2.asm.informated.ClassInfo;
 import ru.swayfarer.swl2.asm.informated.FieldInfo;
 import ru.swayfarer.swl2.asm.informated.MethodInfo;
+import ru.swayfarer.swl2.asm.informated.VariableInfo;
 import ru.swayfarer.swl2.equals.EqualsUtils;
 import ru.swayfarer.swl2.string.StringUtils;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.MethodVisitor;
@@ -306,10 +307,22 @@ public class AsmUtils implements Opcodes{
 	}
 	
 	/** Вызывать загрузку объекта на стек из переменной с указанным id */ //
+	public static void invokeStore(MethodVisitor mv, VariableInfo variable)
+	{
+		invokeStore(mv, variable.getType(), variable.getId());
+	}
+	
+	/** Вызывать загрузку объекта на стек из переменной с указанным id */ //
 	public static void invokeLoad(MethodVisitor mv, Type type, int id)
 	{
 		if (type != Type.VOID_TYPE)
 			mv.visitVarInsn(getLoadOpcode(type), id);
+	}
+	
+	/** Вызывать загрузку объекта на стек из переменной с указанным id */ //
+	public static void invokeLoad(MethodVisitor mv, VariableInfo variable)
+	{
+		invokeLoad(mv, variable.getType(), variable.getId());
 	}
 	
 	/** Вызов филда, исользуя его {@link FieldInfo} */
