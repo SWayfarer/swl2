@@ -11,6 +11,7 @@ import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.ToString;
+import ru.swayfarer.swl2.asm.transformer.ditransformer.regetter.visitor.DynamicDI;
 import ru.swayfarer.swl2.classes.ReflectionUtils;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
@@ -134,22 +135,35 @@ public class DIManager {
 						}
 					}
 					
-					if (annotation.singleton())
+					switch(annotation.type())
 					{
-						contextElement = DIContextElementSingleton.builder()
+						case Singleton:
+						{
+							contextElement = DIContextElementSingleton.builder()
 								.associatedClass(method.getReturnType())
 								.value(method.invoke(obj))
 								.name(name)
 								.build();
-					}
-					else
-					{
-						contextElement = DIContextElementFromMethod.builder()
-								.associatedClass(method.getReturnType())
-								.method(method)
-								.sourceInstance(obj)
-								.name(name)
-								.build();
+							
+							break;
+						}
+						
+						default:
+						{
+							DIContextElementFromMethod element;
+							
+							contextElement = element = DIContextElementFromMethod.builder()
+									.associatedClass(method.getReturnType())
+									.method(method)
+									.sourceInstance(obj)
+									.name(name)
+									.build();
+							
+							if (annotation.type() == ContextElementType.ThreadLocalPrototype)
+								element.methodInvokationFun = new ThreadLocalMethodInvokationFun();
+							
+							break;
+						}
 					}
 					
 					context.setContextElement(name, method.getReturnType(), contextElement);
@@ -347,11 +361,35 @@ public class DIManager {
 		/** Имя элемента */
 		public String name() default "";
 		
+		/** Имя контекста */
 		public String context() default "";
 		
-		/** Использовать единственный экземпляр объекта */
-		public boolean singleton() default false;
+		/** Тип элемента контекста (см {@link ContextElementType} )*/
+		public ContextElementType type() default ContextElementType.Singleton;
 		
+	}
+	
+	/** Типы элементов контектов */
+	public static enum ContextElementType {
+		
+		/** 
+		 * Синглтон
+		 * <br> Единственный объект 
+		 */
+		Singleton,
+		
+		/** 
+		 * Прототип 
+		 * <br> Каждый раз новый элемент
+		 * <br> Если отметить иньектируемое поле {@link DynamicDI}, то каждое обращение к этому полю внутри класа будет возвращать новое значение 
+		 */
+		Prototype,
+		
+		/** 
+		 * {@link ThreadLocal}-синглтон 
+		 * <br> Возвращает новый INSTANCE для каждого потока 
+		 */
+		ThreadLocalPrototype
 	}
 	
 	/**
@@ -490,6 +528,48 @@ public class DIManager {
 	}
 	
 	/**
+	 * Функция, вызывающая метод и кэширующая его результат для текущего потока 
+	 * @author swayfarer
+	 *
+	 */
+	public static class ThreadLocalMethodInvokationFun implements IFunction2<Method, Object, Object> {
+
+		/** Логгер*/
+		@InternalElement
+		public static ILogger logger = LoggingManager.getLogger();
+		
+		/** {@link ThreadLocal}, в котором хранятся результаты работы метода для разных потоков */
+		@InternalElement
+		public ThreadLocal<Object> threadLocal;
+		
+		@Override
+		public Object apply(Method method, Object instance)
+		{
+			if (threadLocal == null) {
+				threadLocal = new ThreadLocal<Object>() {
+					
+					protected Object initialValue() {
+						
+						try
+						{
+							return method.invoke(instance);
+						}
+						catch (Throwable e)
+						{
+							logger.error(e, "Error while creating thread local instance for method", method, "of", instance);
+						}
+						
+						return null;
+					}
+					
+				};
+			}
+			
+			return threadLocal.get();
+		}
+	}
+	
+	/**
 	 * Элемент контекста, возвращающий значение из метода
 	 * @author swayfarer
 	 *
@@ -517,19 +597,26 @@ public class DIManager {
 		@InternalElement
 		public static ILogger logger = LoggingManager.getLogger();
 		
-		@Override
-		public Object getValue()
-		{
+		/** Функция, которая вызывает метод */
+		@Builder.Default
+		public IFunction2<Method, Object, Object> methodInvokationFun = (method, obj) -> {
+			
 			try
 			{
-				return method.invoke(sourceInstance);
+				return method.invoke(obj);
 			}
 			catch (Throwable e)
 			{
-				logger.error(e, "Error while getting value from", method, "of", sourceInstance);
+				logger.error(e, "Error while invoking method", method, "of object", obj);
 			}
 			
 			return null;
+		};
+		
+		@Override
+		public Object getValue()
+		{
+			return methodInvokationFun.apply(method, sourceInstance);
 		}
 
 		@Override
