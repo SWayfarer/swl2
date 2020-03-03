@@ -8,6 +8,7 @@ import ru.swayfarer.swl2.asm.transformer.nullsafe.NullSafeClassTransformer;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
 import ru.swayfarer.swl2.markers.InternalElement;
+import ru.swayfarer.swl2.string.StringUtils;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.MethodVisitor;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.Type;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.commons.AdviceAdapter;
@@ -19,6 +20,10 @@ import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.commons.AdviceAdapter;
  */
 public class NullSafeMethodVisitor extends AdviceAdapter {
 
+	/** Тип бросаемого исключения по умолчанию */
+	@InternalElement
+	public static Type DEFAULT_EXCEPTION_TYPE = Type.getType(IllegalArgumentException.class);
+	
 	/** Логгер */
 	@InternalElement
 	public ILogger logger = LoggingManager.getLogger();
@@ -45,6 +50,10 @@ public class NullSafeMethodVisitor extends AdviceAdapter {
 			
 			if (annotationInfo != null)
 			{
+				
+				Type exceptionType = annotationInfo.getParam("exception", DEFAULT_EXCEPTION_TYPE);
+				String message = annotationInfo.getParam("message", null);
+				
 				if (AsmUtils.isPrimitive(param.getType()))
 				{
 					logger.warning("Parameter '" + param.name + "' of method '" + methodInfo.owner + "::" + methodInfo.name + "' must can't be primitive for @NullSafe!");
@@ -52,15 +61,31 @@ public class NullSafeMethodVisitor extends AdviceAdapter {
 				}
 				
 				visitVarInsn(ALOAD, startVarId);
-				visitLdcInsn(Type.getType("Ljava/lang/IllegalArgumentException;"));
+				visitLdcInsn(exceptionType);
 				visitInsn(ICONST_1);
 				visitTypeInsn(ANEWARRAY, "java/lang/Object");
 				visitInsn(DUP);
 				visitInsn(ICONST_0);
-				visitLdcInsn(param.name);
-				visitLdcInsn(methodInfo.name);
-				visitLdcInsn(methodInfo.owner.name.replace("/", "."));
-				visitMethodInsn(INVOKESTATIC, Type.getInternalName(NullSafeClassTransformer.class), "getFormattedMessage", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", false);
+				
+				if (StringUtils.isEmpty(message))
+				{
+					visitLdcInsn(param.name);
+					visitLdcInsn(methodInfo.name);
+					visitLdcInsn(methodInfo.owner.name.replace("/", "."));
+					visitMethodInsn(INVOKESTATIC, Type.getInternalName(NullSafeClassTransformer.class), "getFormattedMessage", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", false);
+				}
+				else
+				{
+					message = message
+						.replace("%className%", methodInfo.getOwner().getCanonicalName())
+						.replace("%methodName%", methodInfo.name)
+						.replace("%parameterName%", param.getName())
+						.replace("%methodDescriptor%", methodInfo.getDescriptor())
+					;
+					
+					visitLdcInsn(message);
+				}
+				
 				visitInsn(AASTORE);
 				visitMethodInsn(INVOKESTATIC, "ru/swayfarer/swl2/exceptions/ExceptionsUtils", "IfNull", "(Ljava/lang/Object;Ljava/lang/Class;[Ljava/lang/Object;)V", false);
 			}
