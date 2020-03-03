@@ -159,7 +159,7 @@ public class ExceptionsUtils {
 	public static String getSimpleClassAt(int classIndex)
 	{
 		String name = getStacktraceClassAt(classIndex + 1);
-		
+		name = getClassSimpleName(name);
 		return name;
 	}
 	

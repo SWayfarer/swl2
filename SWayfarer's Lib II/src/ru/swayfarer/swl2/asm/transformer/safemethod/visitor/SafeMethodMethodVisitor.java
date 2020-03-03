@@ -118,7 +118,7 @@ public class SafeMethodMethodVisitor extends AdviceAdapter {
 					this.visitInsn(ICONST_0);
 					this.visitLdcInsn(message);
 					this.visitInsn(AASTORE);
-					this.visitMethodInsn(INVOKEINTERFACE, "ru/swayfarer/swl2/logger/ILogger", "info", "(Ljava/lang/Throwable;[Ljava/lang/Object;)V", true);
+					this.visitMethodInsn(INVOKEINTERFACE, "ru/swayfarer/swl2/logger/ILogger", "error", "(Ljava/lang/Throwable;[Ljava/lang/Object;)V", true);
 					
 					isLoggerGenerated = true;
 				}
@@ -146,7 +146,7 @@ public class SafeMethodMethodVisitor extends AdviceAdapter {
 		Label label3 = new Label();
 		this.visitJumpInsn(GOTO, label3);
 		this.visitLabel(catchBlockStart);
-		this.visitVarInsn(ASTORE, nextLocal - 1);
+		this.visitVarInsn(ASTORE, Math.max(nextLocal - 1, 0));
 		Label label4 = new Label();
 		this.visitLabel(label4);
 		

@@ -189,8 +189,9 @@ public class ClassLoaderSWL extends URLClassLoader {
 		ClassLoader context = currentThread.getContextClassLoader();
 		try
 		{
-			currentThread.setContextClassLoader(this);
-			ReflectionUtils.invokeMethod(ReflectionUtils.newInstanceOf(this.loadClass(className)), methodname, Arrays.asList(args));
+			Object obj = this.findClass(className).getConstructor().newInstance();
+			
+			ReflectionUtils.invokeMethod(obj, methodname, Arrays.asList(args));
 		}
 		catch (Throwable e)
 		{
@@ -323,6 +324,10 @@ public class ClassLoaderSWL extends URLClassLoader {
 					});
 					
 					ret = defineClass(transformedClassInfo.name, bytes, 0, bytes.length, getDomain(source));
+				}
+				else
+				{
+					logger.warning("Resource not found for class", name, "! Falling back to default classloader!");
 				}
 			}
 			catch (Throwable e)
