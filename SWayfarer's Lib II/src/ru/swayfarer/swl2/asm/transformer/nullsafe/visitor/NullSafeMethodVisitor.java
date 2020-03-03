@@ -69,9 +69,10 @@ public class NullSafeMethodVisitor extends AdviceAdapter {
 				
 				if (StringUtils.isEmpty(message))
 				{
-					visitLdcInsn(param.name);
-					visitLdcInsn(methodInfo.name);
 					visitLdcInsn(methodInfo.owner.name.replace("/", "."));
+					visitLdcInsn(methodInfo.name);
+					visitLdcInsn(param.name);
+					
 					visitMethodInsn(INVOKESTATIC, Type.getInternalName(NullSafeClassTransformer.class), "getFormattedMessage", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", false);
 				}
 				else
