@@ -322,6 +322,12 @@ public class MathUtils {
 		registerHashFun(HASH_MD5, new MessageDigestHashFun("MD5"));
 		registerHashFun(HASH_SHA_1, new MessageDigestHashFun("SHA-1"));
 		registerHashFun(HASH_SHA_256, new MessageDigestHashFun("SHA-256"));
+		registerHashFun(HASH_JENKINS, (bytes) -> Long.toHexString(getJenkinsHash(bytes)).getBytes());
+	}
+	
+	static
+	{
+		registerDefaultHashFuns();
 	}
 	
 	/** Хешер, который делает Jenkins Hash'и */

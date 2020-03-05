@@ -277,7 +277,7 @@ public class JsonParser implements JsonParserConstants {
   final private void Chars(StringBuffer strbuf) throws ParseException {
   char c;
     c = Char();
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    switch ( ( jj_ntk==-1) ? jj_ntk() : jj_ntk ) {
     case CHAR:
     case CNTRL_ESC:
     case HEX_ESC:

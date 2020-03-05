@@ -26,7 +26,7 @@ public class ThreadsUtils {
 		Class<?> key = factoryFun.getClass();
 		ThreadLocal<T> cachedThreadLocal = cachedThreadLocals.get(key);
 		
-		if (cachedThreadLocal != null)
+		if (cachedThreadLocal == null)
 		{
 			cachedThreadLocal = new ThreadLocal<>();
 			

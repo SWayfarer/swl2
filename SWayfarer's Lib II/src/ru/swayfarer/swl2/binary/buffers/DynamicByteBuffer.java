@@ -1,5 +1,8 @@
 package ru.swayfarer.swl2.binary.buffers;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -9,11 +12,14 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import ru.swayfarer.swl2.binary.BinaryUtils;
+import ru.swayfarer.swl2.exceptions.ExceptionsUtils;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
 import ru.swayfarer.swl2.markers.ConcattedString;
 import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.resource.streams.BytesInputStreamSWL;
+import ru.swayfarer.swl2.resource.streams.DataInputStreamSWL;
+import ru.swayfarer.swl2.resource.streams.DataOutputStreamSWL;
 import ru.swayfarer.swl2.string.StringUtils;
 
 /**
@@ -113,6 +119,12 @@ public class DynamicByteBuffer implements Comparable<ByteBuffer> {
 		this.expandFactor = expandFactor;
 	}
 	
+	/** Пустой ли буффер? */
+	public boolean isEmpty()
+	{
+		return lenght <= 0;
+	}
+	
 	public DynamicByteBuffer removeBytesFromStart(int n)
 	{
 		int index = 0;
@@ -136,14 +148,6 @@ public class DynamicByteBuffer implements Comparable<ByteBuffer> {
 		this.growStrategyId = strategyId;
 		
 		return this;
-	}
-	
-	/**
-	 * Получить байты буффера как {@link BytesInputStreamSWL}
-	 */
-	public BytesInputStreamSWL toInputStream()
-	{
-		return BytesInputStreamSWL.createStream(getOnlyUsedBytes());
 	}
 	
 	/**
@@ -709,5 +713,92 @@ public class DynamicByteBuffer implements Comparable<ByteBuffer> {
 	public static <T extends DynamicByteBuffer> T allocateDirect(int capacity)
 	{
 		return (T) new DynamicByteBuffer(capacity, defaultExpandFactor, STRATEGY_DIRECT);
+	}
+	
+	/** Получить поток для записи в байт-буффер */
+	public DataOutputStreamSWL toOutputStream()
+	{
+		return new DataOutputStreamSWL(new DynamicByteBufferOutputStream(this));
+	}
+	
+	public DataInputStreamSWL toInputStream()
+	{
+		return new DataInputStreamSWL(new DynamicByteBufferInputStream(this));
+	}
+	
+	public DataInputStreamSWL toCloneInputStream()
+	{
+		return new DataInputStreamSWL(BytesInputStreamSWL.createStream(getOnlyUsedBytes()));
+	}
+	
+	/**
+	 * Поток для чтения из байт-буффер
+	 * @author swayfarer
+	 *
+	 */
+	public static class DynamicByteBufferInputStream extends InputStream {
+
+		/** Обернутый буффер */
+		@InternalElement
+		public DynamicByteBuffer wrappedBuffer;
+		
+		/** Конструктор */
+		public DynamicByteBufferInputStream(DynamicByteBuffer wrappedBuffer)
+		{
+			ExceptionsUtils.IfNull(wrappedBuffer, IllegalArgumentException.class, "Wrapped DynamicByreBuffer can't be null!");
+			
+			this.wrappedBuffer = wrappedBuffer;
+			wrappedBuffer.position(0);
+		}
+		
+		public int read() throws IOException
+		{
+			if (!wrappedBuffer.hasRemaining())
+			{
+				return -1;
+			}
+			return BinaryUtils.toUnsignedByte(wrappedBuffer.get());
+		}
+
+		public int read(byte[] bytes, int off, int len) throws IOException
+		{
+			if (!wrappedBuffer.hasRemaining())
+			{
+				return -1;
+			}
+
+			len = Math.min(len, wrappedBuffer.remaining());
+			wrappedBuffer.get(bytes, off, len);
+			return len;
+		}
+	}
+	
+	/**
+	 * Поток для записи в байт-буффер
+	 * @author swayfarer
+	 *
+	 */
+	@InternalElement
+	public static class DynamicByteBufferOutputStream extends OutputStream {
+		
+		/** Обернутый буффер */
+		@InternalElement
+		public DynamicByteBuffer wrappedBuffer;
+		
+		/** Конструктор */
+		public DynamicByteBufferOutputStream(DynamicByteBuffer wrappedBuffer)
+		{
+			ExceptionsUtils.IfNull(wrappedBuffer, IllegalArgumentException.class, "Wrapped DynamicByreBuffer can't be null!");
+			
+			this.wrappedBuffer = wrappedBuffer;
+		}
+		
+		public void write(int b) throws IOException {
+			wrappedBuffer.put((byte) b);
+	    }
+
+	    public void write(byte[] bytes, int off, int len) throws IOException {
+	    	wrappedBuffer.put(bytes, off, len);
+	    }
 	}
 }

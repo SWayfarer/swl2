@@ -1,5 +1,6 @@
 package ru.swayfarer.swl2.string;
 
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -8,7 +9,11 @@ import ru.swayfarer.swl2.classes.ReflectionUtils;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.collections.streams.DataStream;
+import ru.swayfarer.swl2.exceptions.ExceptionsUtils;
+import ru.swayfarer.swl2.logger.ILogger;
+import ru.swayfarer.swl2.logger.LoggingManager;
 import ru.swayfarer.swl2.markers.ConcattedString;
+import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.string.regex.RegexBuilder;
 
 /**
@@ -18,6 +23,10 @@ import ru.swayfarer.swl2.string.regex.RegexBuilder;
  */
 public class StringUtils {
 
+	/** Логгер */
+	@InternalElement
+	public static ILogger logger = LoggingManager.getLogger();
+	
 	/** Символ CR */
 	public final static String CR  = ""+(char) 0x0D;
 	
@@ -74,6 +83,41 @@ public class StringUtils {
 		}
 		
 		return sb.toString();
+	}
+	
+	/**
+	 * Получить {@link Charset} по его имени
+	 * @param name Имя {@link Charset}'а
+	 */
+	public static Charset getCharset(String name)
+	{
+		try
+		{
+			if (Charset.isSupported(name))
+				return Charset.forName(name);
+			else
+				logger.warning("Charset '", name, "' is not supported!");
+		}
+		catch (Throwable e)
+		{
+			logger.error(e, "Error while getting charset for name", name);
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Получить {@link Charset} по его имени
+	 * @param name Имя {@link Charset}'а
+	 * @param defaultCharset чарсет, который вернется, если не найдется искомого. Не может быть null
+	 */
+	public static Charset getCharset(String name, Charset defaultCharset)
+	{
+		ExceptionsUtils.IfNull(defaultCharset, IllegalArgumentException.class, "Default charset can't be null!");
+		
+		Charset ret = getCharset(name);
+		
+		return ret == null ? defaultCharset : ret;
 	}
 	
 	/**

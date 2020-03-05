@@ -3,6 +3,7 @@ package ru.swayfarer.swl2.resource.rlink;
 import java.io.InputStream;
 import java.net.URL;
 
+import ru.swayfarer.swl2.binary.buffers.DynamicByteBuffer;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.exceptions.ExceptionsUtils;
@@ -10,6 +11,7 @@ import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1;
 import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.resource.file.FileSWL;
 import ru.swayfarer.swl2.resource.streams.DataInputStreamSWL;
+import ru.swayfarer.swl2.resource.streams.StreamsUtils;
 
 /**
  * Ссылка на ресурс
@@ -78,6 +80,36 @@ public class ResourceLink {
 	public FileSWL toFile()
 	{
 		return type.getFile(this);
+	}
+	
+	/** Получить все байты ресурса */
+	public byte[] toBytes()
+	{
+		DataInputStreamSWL dataInputStreamSWL = toStream();
+		
+		return dataInputStreamSWL == null ? null : dataInputStreamSWL.readAllSafe();
+	}
+	
+	/** Прочитать ресурс в буффер */
+	public DynamicByteBuffer toByteBuffer()
+	{
+		return toByteBuffer(DynamicByteBuffer.allocateDirect());
+	}
+	
+	/** Прочитать ресурс в буффер */
+	public DynamicByteBuffer toByteBuffer(DynamicByteBuffer buf)
+	{
+		DataInputStreamSWL dataInputStreamSWL = toStream();
+		
+		if (dataInputStreamSWL == null)
+			return null;
+		
+		if (buf == null)
+			buf = DynamicByteBuffer.allocateDirect(dataInputStreamSWL.availableSafe());
+		
+		StreamsUtils.copyStreamSafe(dataInputStreamSWL, buf.toOutputStream(), true, true);
+		
+		return buf;
 	}
 	
 	/** Получить соседние ссылки */

@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.RandomAccessFile;
 import java.net.URI;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
@@ -20,9 +21,12 @@ import ru.swayfarer.swl2.collections.streams.DataStream;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
+import ru.swayfarer.swl2.markers.ConcattedString;
 import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.math.MathUtils;
 import ru.swayfarer.swl2.resource.pathtransformers.PathTransforms;
+import ru.swayfarer.swl2.resource.rlink.RLUtils;
+import ru.swayfarer.swl2.resource.rlink.ResourceLink;
 import ru.swayfarer.swl2.resource.streams.DataInputStreamSWL;
 import ru.swayfarer.swl2.resource.streams.DataOutputStreamSWL;
 import ru.swayfarer.swl2.resource.streams.StreamsUtils;
@@ -46,6 +50,27 @@ public class FileSWL extends File {
 	public FileSWL()
 	{
 		this("%appDir%");
+	}
+	
+	/** Получить файл со случайным доступом */
+	public RandomAccessFile toRandomAccess(String mode)
+	{
+		try
+		{
+			return new RandomAccessFile(this, mode);
+		}
+		catch (Throwable e)
+		{
+			logger.error(e, "Error while getting random access file from", this);
+		}
+		
+		return null;
+	}
+	
+	/** Получить {@link ResourceLink} на этот файл */
+	public ResourceLink toRlink()
+	{
+		return RLUtils.file(this);
 	}
 	
 	/** Удалить (если папка, то включая подпапки и подфайлы) */
@@ -78,9 +103,9 @@ public class FileSWL extends File {
 	}
 	
 	/** Конструктор */
-	public FileSWL(File parent, String child)
+	public FileSWL(File parent, @ConcattedString Object... childName)
 	{
-		super(parent, PathTransforms.transform(child));
+		super(parent, PathTransforms.transform(StringUtils.concat(childName)));
 	}
 
 	/** Эквивалетнен ли хэш файла указанному */
@@ -94,10 +119,16 @@ public class FileSWL extends File {
 		return fileHash.equals(hash);
 	}
 	
-	/** Получить MD5-хэш файла */
+	/** Получить sha-256 хэш файла */
 	public String getHash()
 	{
-		return FilesUtils.getFileHash(this, MathUtils.HASH_MD5);
+		return FilesUtils.getFileHash(this, MathUtils.HASH_SHA_256);
+	}
+	
+	/** Получить хэш файла */
+	public String getHash(String hashType)
+	{
+		return FilesUtils.getFileHash(this, hashType);
 	}
 	
 	/** Получить манифест файла, если это jar */

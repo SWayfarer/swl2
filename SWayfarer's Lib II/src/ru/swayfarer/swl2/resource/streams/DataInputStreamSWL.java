@@ -93,6 +93,22 @@ public class DataInputStreamSWL extends DataInputStream {
 		return ret;
 	}
 	
+	/** Пропустить байты */
+	public <T extends DataInputStreamSWL> T forwardSafe(long bytesCount)
+	{
+		ExceptionsUtils.safe(() -> forward(bytesCount));
+		
+		return (T) this;
+	}
+	
+	/** Пропустить байты */
+	public <T extends DataInputStreamSWL> T forward(long bytesCount) throws IOException
+	{
+		skip(bytesCount);
+		
+		return (T) this;
+	}
+	
 	public boolean isClosed()
 	{
 		return isClosed;
@@ -143,12 +159,16 @@ public class DataInputStreamSWL extends DataInputStream {
 			
 			String s = new String(bytes, encoding);
 			
+			close();
+			
 			return s;
 		}
 		catch (Throwable e)
 		{
 			logger.error(e, "Error while reading stream", this, "as string");
 		}
+		
+		closeSafe();
 		
 		return null;
 	}

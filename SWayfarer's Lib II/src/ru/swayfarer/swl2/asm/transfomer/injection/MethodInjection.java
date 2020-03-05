@@ -321,7 +321,7 @@ public class MethodInjection implements IMethodInjection, Opcodes {
 			
 			ret.add(injection);
 		}
-		
+		 
 		return ret;
 	}
 

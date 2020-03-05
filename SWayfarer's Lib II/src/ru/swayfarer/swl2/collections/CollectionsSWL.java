@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
+import ru.swayfarer.swl2.binary.buffers.DynamicByteBuffer;
 import ru.swayfarer.swl2.classes.ReflectionUtils;
 import ru.swayfarer.swl2.collections.extended.ExtendedListWrapper;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
@@ -230,6 +231,12 @@ public class CollectionsSWL {
 	public static boolean isNullOrEmpty(byte[] arr)
 	{
 		return arr == null || arr.length == 0;
+	}
+	
+	/** Буффер пуст или равен null */
+	public static boolean isNullOrEmpty(DynamicByteBuffer buffer)
+	{
+		return buffer == null || buffer.isEmpty();
 	}
 	
 	
