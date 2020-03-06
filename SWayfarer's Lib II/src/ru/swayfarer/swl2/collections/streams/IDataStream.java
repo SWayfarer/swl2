@@ -118,7 +118,7 @@ public interface IDataStream<Element_Type> {
 	 * @param ref Ссылка, в которую будет помещен найденный элемент
 	 * @return Поток после проделанных операций
 	 */
-	public default <T extends IDataStream<Element_Type>> T find(IReference ref, IFunction1<? super Element_Type, Boolean> filter)
+	public default <T extends IDataStream<Element_Type>> T find(IReference<? super Element_Type> ref, IFunction1<? super Element_Type, Boolean> filter)
 	{
 		if (ref == null)
 			return (T) this;

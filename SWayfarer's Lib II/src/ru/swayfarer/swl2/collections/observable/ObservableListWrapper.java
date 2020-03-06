@@ -10,7 +10,6 @@ import ru.swayfarer.swl2.collections.extended.ExtendedListWrapper;
 import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.observable.IObservable;
 import ru.swayfarer.swl2.observable.SimpleObservable;
-import ru.swayfarer.swl2.reference.IReference;
 import ru.swayfarer.swl2.reference.SimpleReference;
 
 /**
