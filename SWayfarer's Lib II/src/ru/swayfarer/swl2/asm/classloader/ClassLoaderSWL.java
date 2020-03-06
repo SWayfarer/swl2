@@ -109,6 +109,10 @@ public class ClassLoaderSWL extends URLClassLoader {
 				addURL(url);
 			}
 		}
+		else
+		{
+			wrapParent();
+		}
 	}
 	
 	/** Добавить дамп классов по маске имени в директорию */

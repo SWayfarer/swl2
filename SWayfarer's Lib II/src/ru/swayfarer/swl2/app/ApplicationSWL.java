@@ -29,7 +29,7 @@ public abstract class ApplicationSWL {
 	public IExtendedList<Option> options;
 	
 	/** Логгер*/
-	public ILogger logger = LoggingManager.getLogger();
+	public ILogger logger = LoggingManager.getLogger(getClass().getSimpleName());
 	
 	/** Точка для подписки на событие выхода из приложения */
 	public IObservable<Void> eventExit = new SimpleObservable<>(); 

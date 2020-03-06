@@ -46,7 +46,7 @@ public class MethodInjection implements IMethodInjection, Opcodes {
 	
 	/** Дескриптор ссылки {@link IReference} */
 	@InternalElement
-	public static String REF_DESCRIPTOR = Type.getDescriptor(IReference.class);
+	public static String REF_DESCRIPTOR = Type.getDescriptor(SimpleReference.class);
 	
 	/** Логгер*/
 	@InternalElement

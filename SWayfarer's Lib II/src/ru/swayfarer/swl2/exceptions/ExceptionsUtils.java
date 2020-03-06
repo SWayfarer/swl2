@@ -209,6 +209,18 @@ public class ExceptionsUtils {
 	}
 	
 	/**
+	 * Бросить исключение, если проверяемый объект null
+	 * @param object Проверяемый объект
+ 	 * @param message Сообщение исключения
+	 */
+	@SneakyThrows
+	public static void IfNullArg(Object object, @ConcattedString Object... message)
+	{
+		if (object == null)
+			throw createThrowable(IllegalArgumentException.class, StringUtils.concatWithSpaces(message), 2);
+	}
+	
+	/**
 	 * Бросить исключение, если проверяемая строка пуста
 	 * @param str Проверяемая строка
 	 * @param classOfThrowable Класс создаваемого исключения

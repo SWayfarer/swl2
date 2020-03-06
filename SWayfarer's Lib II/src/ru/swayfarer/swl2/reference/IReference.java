@@ -1,16 +1,16 @@
 package ru.swayfarer.swl2.reference;
 
 /**
- * Ссылка на объект
+ * Интерфейс ссылки на объект
  * @author swayfarer
  *
  */
-public interface IReference {
+public interface IReference<Element_Type> {
 
 	/**
 	 * Получить объект
 	 */
-	public <T> T getValue();
+	public <T extends Element_Type> T getValue();
 	
 	/**
 	 * Была ли задана ссылка? 
@@ -18,6 +18,6 @@ public interface IReference {
 	public boolean isSetted();
 	
 	/** Задать значение ссылки */
-	public void setValue(Object obj);
+	public void setValue(Element_Type obj);
 	
 }

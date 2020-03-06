@@ -218,7 +218,7 @@ public class StringUtils {
 		if (fromEnd < 0)
 			fromEnd *= -1;
 		
-		return s.substring(fromStart, s.length() + fromEnd);
+		return s.substring(fromStart, s.length() - fromEnd);
 	}
 	
 	/** Получить билдер для регулярки */

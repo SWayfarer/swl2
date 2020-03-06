@@ -1,6 +1,8 @@
 package ru.swayfarer.swl2.collections.streams;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Random;
 import java.util.TreeSet;
 import java.util.stream.Stream;
@@ -263,6 +265,14 @@ public interface IDataStream<Element_Type> {
 	public default <T extends IDataStream<Element_Type>> T limit(int max)
 	{
 		return sub(0, max);
+	}
+	
+	/** Превратить в карту, где ключ и значение будут генерироваться двумя функциями для каждого элемента */
+	public default <Key_Type, Value_Type> Map<Key_Type, Value_Type> toMap(IFunction1<Element_Type, ? extends Key_Type> keyFactory, IFunction1<Element_Type, ? extends Value_Type> valueFactory)
+	{
+		Map<Key_Type, Value_Type> map = new HashMap<>();
+		each((e) -> map.put(keyFactory.apply(e), valueFactory.apply(e)));
+		return map;
 	}
 	
 	/**

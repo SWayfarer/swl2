@@ -218,7 +218,7 @@ public class ObservableListWrapper<Element_Type> extends ExtendedListWrapper<Ele
 	@Override
 	public boolean removeIf(Predicate<? super Element_Type> filter)
 	{
-		IReference isModified = new SimpleReference(false);
+		SimpleReference isModified = new SimpleReference(false);
 		
 		stream().forEach((e) -> {
 			if (filter.test(e))

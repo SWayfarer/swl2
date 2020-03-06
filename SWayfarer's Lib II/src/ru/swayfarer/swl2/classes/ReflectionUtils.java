@@ -4,15 +4,18 @@ import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
 
 import ru.swayfarer.swl2.collections.CollectionsSWL;
+import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.collections.streams.DataStream;
 import ru.swayfarer.swl2.equals.EqualsUtils;
 import ru.swayfarer.swl2.exceptions.ExceptionsUtils;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction2;
+import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction2NoR;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction3NoR;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
@@ -40,6 +43,42 @@ public class ReflectionUtils {
 		
 		return null;
 	};
+	
+	public static IExtendedList<Field> getAccessibleFields(Object obj)
+	{
+		return getAccessibleFields(obj.getClass());
+	}
+	
+	public static IExtendedList<Field> getAccessibleFields(Class<?> cl)
+	{
+		IExtendedList<Field> ret = CollectionsSWL.createExtendedList();
+		
+		for (Field field : cl.getDeclaredFields())
+		{
+			if (setAccessible(field))
+				ret.add(field);
+		}
+		
+		return ret;
+	}
+	
+	public static IExtendedList<Method> getAccessibleMethods(Object obj)
+	{
+		return getAccessibleMethods(obj.getClass());
+	}
+	
+	public static IExtendedList<Method> getAccessibleMethods(Class<?> cl)
+	{
+		IExtendedList<Method> ret = CollectionsSWL.createExtendedList();
+		
+		for (Method method : cl.getDeclaredMethods())
+		{
+			if (setAccessible(method))
+				ret.add(method);
+		}
+		
+		return ret;
+	}
 	
 	/** Функция для задания значения поля*/
 	public static IFunction3NoR<Field, Object, Object> fieldSetAccessor = (field, instance, value) -> {
@@ -446,5 +485,74 @@ public class ReflectionUtils {
 		}
 		
 		return false;
+	}
+	
+	/** Статическое ли поле? */
+	public static boolean isStatic(Field field)
+	{
+		return Modifier.isStatic(field.getModifiers());
+	}
+	
+	/** Статическое ли поле? */
+	public static boolean isStatic(Method method)
+	{
+		return Modifier.isStatic(method.getModifiers());
+	}
+	
+	/** 
+	 * Выполнить функцию для каждого метода указанного класса
+	 * <h1> Функция принимает: </h1>
+	 * Метод, инстанс класса
+	 * <br> Каждая из функций выполняется в отдельном try-catch
+	 */
+	public static void forEachMethod(Class<?> cl, Object instance, IFunction2NoR<Method, Object> fun)
+	{
+		Method[] methods = cl.getDeclaredMethods();
+		
+		setAccessible(methods);
+		
+		for (Method method : methods)
+		{
+			logger.safe(() -> {
+				
+				if (instance != null || isStatic(method))
+					fun.apply(method, instance);
+			
+			}, "Error while processing fun", fun, "for method", method, "of class", cl, "at object", instance);
+		}
+	}
+	
+	/** 
+	 * Выполнить функцию для каждого поля указанного класса
+	 * <h1> Функция принимает: </h1>
+	 * Поле, инстанс класса, значение
+	 * <br> Каждая из функций выполняется в отдельном try-catch
+	 */
+	public static void forEachField(Object instance, IFunction3NoR<Field, Object, Object> fun)
+	{
+		forEachField(instance.getClass(), instance, fun);
+	}
+	
+	/** 
+	 * Выполнить функцию для каждого поля указанного класса
+	 * <h1> Функция принимает: </h1>
+	 * Поле, инстанс класса, значение
+	 * <br> Каждая из функций выполняется в отдельном try-catch
+	 */
+	public static void forEachField(Class<?> cl, Object instance, IFunction3NoR<Field, Object, Object> fun)
+	{
+		Field[] fields = cl.getDeclaredFields();
+		
+		setAccessible(fields);
+		
+		for (Field field : fields)
+		{
+			logger.safe(() -> {
+				
+				if (instance != null || isStatic(field))
+					fun.apply(field, instance, field.get(instance));
+			
+			}, "Error while processing fun", fun, "for field", field, "of class", cl, "at object", instance);
+		}
 	}
 }

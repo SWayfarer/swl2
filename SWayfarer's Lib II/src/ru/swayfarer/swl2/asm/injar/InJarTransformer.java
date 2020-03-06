@@ -1,6 +1,5 @@
 package ru.swayfarer.swl2.asm.injar;
 
-import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +14,7 @@ import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
 import ru.swayfarer.swl2.markers.InternalElement;
+import ru.swayfarer.swl2.reference.AbstractReference;
 import ru.swayfarer.swl2.reference.IReference;
 import ru.swayfarer.swl2.reference.SimpleReference;
 import ru.swayfarer.swl2.resource.file.FileSWL;
@@ -59,6 +59,7 @@ public class InJarTransformer {
 		addExistingClass(InjectionAsm.class);
 		addExistingClass(IReference.class);
 		addExistingClass(SimpleReference.class);
+		addExistingClass(AbstractReference.class);
 		
 		return this;
 	}

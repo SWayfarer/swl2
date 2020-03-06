@@ -4,11 +4,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1;
+import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction2NoR;
 import ru.swayfarer.swl2.json.NonJson;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.config.files.FileInfo;
+import ru.swayfarer.swl2.logger.event.LogEvent;
 import ru.swayfarer.swl2.logger.handlers.LogArchiverHandler;
 import ru.swayfarer.swl2.markers.InternalElement;
+import ru.swayfarer.swl2.observable.subscription.ISubscription;
 import ru.swayfarer.swl2.resource.file.FileSWL;
 import ru.swayfarer.swl2.string.StringUtils;
 
@@ -95,7 +98,7 @@ public class ArchivingInfo {
 			}
 			
 			if (archiveCondition != null)
-				logger.evtPostLogging().subscribe(new LogArchiverHandler(new FileSWL(archiveFolder), new FileSWL(fileInfo.filePath).createIfNotFoundSafe()).setArchiveConditionFun(archiveCondition).setFileNameTemplate(archiveName));
+				logger.evtPostLogging().subscribe((IFunction2NoR<ISubscription<LogEvent>, LogEvent>) new LogArchiverHandler(new FileSWL(archiveFolder), new FileSWL(fileInfo.filePath).createIfNotFoundSafe()).setArchiveConditionFun(archiveCondition).setFileNameTemplate(archiveName));
 		}
 	}
 	
