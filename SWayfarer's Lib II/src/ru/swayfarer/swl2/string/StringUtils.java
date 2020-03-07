@@ -140,10 +140,10 @@ public class StringUtils {
 	{
 		try
 		{
-			if (Charset.isSupported(name))
+			if (!StringUtils.isEmpty(name) && Charset.isSupported(name))
 				return Charset.forName(name);
 			else
-				logger.warning("Charset '", name, "' is not supported!");
+				logger.error("Charset '", name, "' is not supported!");
 		}
 		catch (Throwable e)
 		{

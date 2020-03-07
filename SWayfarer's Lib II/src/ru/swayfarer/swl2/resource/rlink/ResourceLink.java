@@ -12,6 +12,7 @@ import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.resource.file.FileSWL;
 import ru.swayfarer.swl2.resource.streams.DataInputStreamSWL;
 import ru.swayfarer.swl2.resource.streams.StreamsUtils;
+import ru.swayfarer.swl2.string.StringUtils;
 
 /**
  * Ссылка на ресурс
@@ -68,6 +69,17 @@ public class ResourceLink {
 		InputStream stream = type.getStream(this);
 		
 		return stream == null ? null : DataInputStreamSWL.of(stream);
+	}
+	
+	/** Получить строку в формате rlink */
+	public String toRlinkString()
+	{
+		String last = type.getLastRegisteredPrefix();
+		
+		if (StringUtils.isEmpty(last))
+			return content;
+		
+		return last + ":" + content;
 	}
 	
 	/** Получить {@link URL} из ресурса */

@@ -21,6 +21,10 @@ public abstract class ResourceType {
 	@InternalElement
 	public String name;
 	
+	/** Последний префикс, который регитрировали */
+	@InternalElement
+	public String lastRegisteredPrefix;
+	
 	/**
 	 * Констуктор, выбирающий в качестве имени источника имя класса
 	 */
@@ -38,6 +42,11 @@ public abstract class ResourceType {
 		{
 			this.name = getClass().getName();
 		}
+	}
+	
+	public String getLastRegisteredPrefix()
+	{
+		return StringUtils.isEmpty(lastRegisteredPrefix) ? "" : lastRegisteredPrefix;
 	}
 	
 	/** Получить имя источника ресурсов */

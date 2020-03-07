@@ -5,11 +5,14 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import ru.swayfarer.swl2.collections.streams.DataStream;
 import ru.swayfarer.swl2.exceptions.ExceptionsUtils;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
 import ru.swayfarer.swl2.markers.ConcattedString;
 import ru.swayfarer.swl2.markers.InternalElement;
+import ru.swayfarer.swl2.reference.IReference;
+import ru.swayfarer.swl2.reference.ParameterizedReference;
 import ru.swayfarer.swl2.resource.file.FileSWL;
 import ru.swayfarer.swl2.resource.pathtransformers.PathTransforms;
 import ru.swayfarer.swl2.resource.rlink.types.ClassPathResourceType;
@@ -147,6 +150,11 @@ public class RLUtils {
 		return null;
 	}
 	
+	public static boolean exists(ResourceLink rlink)
+	{
+		return rlink != null && rlink.isExists();
+	}
+	
 	public static FileSWL getSourceFile(String searchedResource, URL url)
 	{
 		try
@@ -215,9 +223,25 @@ public class RLUtils {
 		if (registeredResourceTypes.containsKey(s))
 			return false;
 		
+		type.lastRegisteredPrefix = s;
 		registeredResourceTypes.put(s, type);
 		
 		return true;
+	}
+	
+	/** Получить префикс ресурса */
+	public static String getResourcePrefix(ResourceType type)
+	{
+		IReference<String> prefix = new ParameterizedReference<>();
+		
+		DataStream.of(registeredResourceTypes.entrySet())
+			.each((e) -> {
+				if (e.getValue().equals(type))
+					prefix.setValue(e.getKey());
+					
+			});
+		
+		return prefix.getValue();
 	}
 	
 	/** Регистрация стандартных типов ресурсов */

@@ -1,5 +1,6 @@
 package ru.swayfarer.swl2.exceptions;
 
+import java.io.FileNotFoundException;
 import java.lang.reflect.Constructor;
 
 import lombok.SneakyThrows;
@@ -9,6 +10,8 @@ import ru.swayfarer.swl2.collections.streams.DataStream;
 import ru.swayfarer.swl2.markers.Alias;
 import ru.swayfarer.swl2.markers.ConcattedString;
 import ru.swayfarer.swl2.markers.InternalElement;
+import ru.swayfarer.swl2.resource.rlink.RLUtils;
+import ru.swayfarer.swl2.resource.rlink.ResourceLink;
 import ru.swayfarer.swl2.string.StringUtils;
 
 public class ExceptionsUtils {
@@ -216,6 +219,18 @@ public class ExceptionsUtils {
 	{
 		if (condition)
 			throw createThrowable(classOfThrowable, StringUtils.concatWithSpaces(message), 2);
+	}
+	
+	/**
+	 * Бросить исключение, если выполняется условие
+	 * @param condition Условие
+ 	 * @param message Сообщение исключения
+	 */
+	@SneakyThrows
+	public static void IfNotExists(ResourceLink rlink, @ConcattedString Object... message)
+	{
+		if (!RLUtils.exists(rlink))
+			throw createThrowable(FileNotFoundException.class, StringUtils.concatWithSpaces(message), 2);
 	}
 	
 	/**

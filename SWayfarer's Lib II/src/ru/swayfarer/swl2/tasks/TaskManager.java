@@ -30,4 +30,10 @@ public class TaskManager {
 		return (T) task;
 	}
 	
+	public static void waitFor(Iterable<ITask> tasks)
+	{
+		for (ITask task : tasks)
+			while (!task.isCompleted()) {}
+	}
+	
 }
