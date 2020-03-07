@@ -81,8 +81,10 @@ public class DirectorySnapshot {
 		snapshot.name = dir.getName();
 		
 		FilesUtils.forEachFile(null, (f) -> {
+
 			FileSnapshot fileSnapshot = FileSnapshot.of(f, dir, snapshot.hashingType);
 			snapshot.addFile(fileSnapshot);
+			
 		}, dir);
 		
 		return snapshot;

@@ -41,8 +41,12 @@ public class FilesUtils {
 
 		if (initialFile.isFile() && filter.apply(initialFile))
 			fun.apply(initialFile);
-		else
-			initialFile.getSubFiles((file) -> file.isDirectory() || finallyFilter.apply(file)).parrallelDataStream().each((file) -> forEachFile(finallyFilter, fun, file));
+		else if (initialFile.isDirectory())
+			initialFile.getSubFiles((f) -> f.isDirectory() || finallyFilter.apply(f))
+				.parrallelDataStream()
+				.each((file) -> {
+					forEachFile(finallyFilter, fun, file);
+				});
 	}
 	
 	/** Получить хэш файла */

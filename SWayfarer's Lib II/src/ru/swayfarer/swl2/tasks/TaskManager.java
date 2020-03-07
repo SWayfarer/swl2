@@ -1,5 +1,7 @@
 package ru.swayfarer.swl2.tasks;
 
+import java.util.Queue;
+
 import ru.swayfarer.swl2.exceptions.ExceptionsUtils;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1;
 
@@ -30,9 +32,11 @@ public class TaskManager {
 		return (T) task;
 	}
 	
-	public static void waitFor(Iterable<ITask> tasks)
+	public static void waitFor(Queue<ITask> tasks)
 	{
-		for (ITask task : tasks)
+		ITask task = null;
+		
+		while ( (task = tasks.poll() ) != null)
 			while (!task.isCompleted()) {}
 	}
 	
