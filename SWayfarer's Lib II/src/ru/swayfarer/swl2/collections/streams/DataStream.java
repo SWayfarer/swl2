@@ -2,8 +2,8 @@ package ru.swayfarer.swl2.collections.streams;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Deque;
 import java.util.LinkedHashSet;
-import java.util.Queue;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
@@ -16,11 +16,8 @@ import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction2NoR;
 import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.system.SystemUtils;
 import ru.swayfarer.swl2.tasks.ITask;
-import ru.swayfarer.swl2.tasks.TaskCompleteHandler;
-import ru.swayfarer.swl2.tasks.TaskEvent;
 import ru.swayfarer.swl2.tasks.TaskManager;
 import ru.swayfarer.swl2.tasks.factories.ThreadPoolTaskFactory;
-import ru.swayfarer.swl2.threads.ThreadsUtils;
 
 /**
  * Простая реализация {@link IDataStream}
@@ -40,6 +37,16 @@ public class DataStream<Element_Type> implements IDataStream<Element_Type>{
 	/** Создает ли новый поток при каждой операции? */
 	@InternalElement
 	public boolean isCreatingNewOnWrap = true;
+	
+	/** Обертка над фабрикой тасков, чтобы не сделать дедлока */
+	@InternalElement
+	public static ThreadLocal<ThreadPoolTaskFactory> taskFactoryThreadLocal = new ThreadLocal<>() {
+		
+		protected ThreadPoolTaskFactory initialValue() 
+		{
+			return new ThreadPoolTaskFactory(1000, SystemUtils.getCpuCoresCount()).setName("DataStreamsPool");
+		}
+	};
 	
 	/** Конструктор */
 	public DataStream(IExtendedList<Element_Type> elements)
@@ -222,7 +229,7 @@ public class DataStream<Element_Type> implements IDataStream<Element_Type>{
 	{
 		int next = 0;
 		
-		TaskCompleteHandler completeHandler = new TaskCompleteHandler();
+		Deque<ITask> tasks = new ConcurrentLinkedDeque<>();
  		
 		if (isParallel())
 		{
@@ -231,7 +238,7 @@ public class DataStream<Element_Type> implements IDataStream<Element_Type>{
 				final int id = next ++;
 				ITask task = getThreadPoolTaskFactory().execute(() -> fun.apply(id, element));
 				
-				completeHandler.addTask(task);
+				tasks.offer(task);
 			}
 		}
 		else
@@ -242,14 +249,15 @@ public class DataStream<Element_Type> implements IDataStream<Element_Type>{
 			}
 		}
 		 
-		completeHandler.waitFor();
+		TaskManager.waitFor(tasks);
 		
 		return (T) this;
 	}
 	
+	/** Получить локальный для этого потока экзекьютор */
 	public ThreadPoolTaskFactory getThreadPoolTaskFactory()
 	{
-		return ThreadsUtils.getThreadLocal(() -> new ThreadPoolTaskFactory(1000, SystemUtils.getCpuCoresCount()).setName("DataStreamsPool"));
+		return taskFactoryThreadLocal.get();
 	}
 
 	/** Отсортировать поток, сравнивая элементы по указанному компаратору */
