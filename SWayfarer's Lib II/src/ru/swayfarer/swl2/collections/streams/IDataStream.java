@@ -221,6 +221,14 @@ public interface IDataStream<Element_Type> {
 		return filtered(new TreeSet<Element_Type>(comparator.asJavaComparator())::add);
 	}
 	
+	/**
+	 * Оставить только не-null объекты
+	 * @return Поток данных с проведенными изменениями
+	 */
+	public default <T extends IDataStream<Element_Type>> T noNull()
+	{
+		return filter((e) -> e != null);
+	}
 	
 	/**
 	 * Удалить все дублирующиеся элементы

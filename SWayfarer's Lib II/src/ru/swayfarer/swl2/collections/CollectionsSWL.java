@@ -10,12 +10,14 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import ru.swayfarer.swl2.binary.buffers.DynamicByteBuffer;
 import ru.swayfarer.swl2.classes.ReflectionUtils;
 import ru.swayfarer.swl2.collections.extended.ExtendedListWrapper;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
+import ru.swayfarer.swl2.collections.weak.WeakList;
 import ru.swayfarer.swl2.exceptions.ExceptionsUtils;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.SimpleLoggerSWL;
@@ -129,6 +131,18 @@ public class CollectionsSWL {
 		return ret;
 	}
 	
+	/** Создать новый слабый лист */
+	public static <T> WeakList<T> createWeakList()
+	{
+		return new WeakList<>();
+	}
+	
+	/** Создать слабую карту */
+	public static <K, V> Map<K, V> createWeakMap()
+	{
+		return new WeakHashMap<>();
+	}
+	
 	/** Создать раширенный лист с начальными элементами */
 	public static <T> IExtendedList<T> createExtendedList(Collection<T> elements)
 	{
@@ -146,6 +160,14 @@ public class CollectionsSWL {
 		if (!isNullOrEmpty(elements))
 			for (T element : elements)
 				wrappedList.add(element);
+		
+		return new ExtendedListWrapper<>(wrappedList);
+	}
+	
+	/** Создать раширенный лист с заданной капасити */
+	public static <T> IExtendedList<T> createExtendedList(int capacity)
+	{
+		List<T> wrappedList = new ArrayList<>(capacity);
 		
 		return new ExtendedListWrapper<>(wrappedList);
 	}
@@ -219,6 +241,12 @@ public class CollectionsSWL {
 		list = new ArrayList<>(list);
 		Collections.shuffle(list);
 		return list;
+	}
+	
+	/** Получить последний элемент листа */
+	public static <T> T getLastElement(List<T> list)
+	{
+		return isNullOrEmpty(list) ? null : list.get(list.size() - 1);
 	}
 	
 	/** Массив пуст или равен null */

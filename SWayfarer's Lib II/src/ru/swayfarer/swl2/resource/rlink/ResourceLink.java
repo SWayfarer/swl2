@@ -96,6 +96,14 @@ public class ResourceLink {
 		return toByteBuffer(DynamicByteBuffer.allocateDirect());
 	}
 	
+	/** Прочитать ресурс как одну строку */
+	public String toSingleString()
+	{
+		DataInputStreamSWL dis = toStream();
+		
+		return dis == null ? null : dis.readAllAsUtf8();
+	}
+	
 	/** Прочитать ресурс в буффер */
 	public DynamicByteBuffer toByteBuffer(DynamicByteBuffer buf)
 	{

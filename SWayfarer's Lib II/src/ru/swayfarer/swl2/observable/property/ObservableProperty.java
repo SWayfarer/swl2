@@ -24,6 +24,13 @@ public class ObservableProperty<Element_Type> extends PropertyContainer {
 	
 	public ISubscription<ChangeEvent> bindingEventSubscribe;
 	
+	public ObservableProperty() {}
+	
+	public ObservableProperty(Element_Type initialValue)
+	{
+		this.setValue(initialValue);
+	}
+	
 	/**
 	 * Подписаться на изменения проперти. Когда цель подписки будет меняться, эначение этой будет задано на аналогичное 
 	 * @param target Цель подписки

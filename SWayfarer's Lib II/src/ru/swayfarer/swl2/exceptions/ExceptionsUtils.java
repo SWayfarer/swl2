@@ -163,6 +163,18 @@ public class ExceptionsUtils {
 		return name;
 	}
 	
+	/**
+	 * Получить имя (без пакта) класса в текущем стактрейсе под указанным номером
+	 * @param classIndex номер класса
+	 * @return Имя класса
+	 */
+	public static String getPackageAt(int classIndex)
+	{
+		String name = getStacktraceClassAt(classIndex + 1);
+		name = getClassPackage(name);
+		return name;
+	}
+	
 	/** Очистить от лямбд в генерированных классах */
 	public static IExtendedList<StackTraceElement> cleanFromGeneratedLambdas(IExtendedList<StackTraceElement> stackTraceElements)
 	{
@@ -177,6 +189,17 @@ public class ExceptionsUtils {
 		if (canonicalName.contains(".") && !canonicalName.endsWith("."))
 		{
 			canonicalName = canonicalName.substring(canonicalName.lastIndexOf(".") + 1);
+		}
+		
+		return canonicalName;
+	}
+	
+	/** Получить простое имя класса из каноничного */
+	public static String getClassPackage(String canonicalName)
+	{
+		if (canonicalName.contains(".") && !canonicalName.endsWith("."))
+		{
+			canonicalName = canonicalName.substring(0, canonicalName.lastIndexOf("."));
 		}
 		
 		return canonicalName;

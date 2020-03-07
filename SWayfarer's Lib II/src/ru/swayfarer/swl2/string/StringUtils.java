@@ -1,6 +1,7 @@
 package ru.swayfarer.swl2.string;
 
 import java.nio.charset.Charset;
+import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -86,6 +87,52 @@ public class StringUtils {
 	}
 	
 	/**
+	 * Создать лист со всеми комбинаряцми в формате iterables[0].rand()+iterables[1].rand()+iterables[?].rand()
+	 * @param iterables Строки для комбинации
+	 * @return Лист полученных комбинаций 
+	 */
+	public static IExtendedList<String> unite(Collection<?>... iterables)
+	{
+		int lenght = 1;
+		int size = 0;
+		
+		for (int i1 = 0; i1 < iterables.length; i1 ++)
+		{
+			size = iterables[i1].size();
+			
+			if (size > 0)
+				lenght *= size;
+		}
+		
+		String[] result = new String[lenght];
+		
+		int index = 0;
+		int lenghtMin1 = 0;
+		
+		for (int i1 = 0; i1 < lenght; i1 ++)
+			result[i1] = "";
+		
+		for (int i1 = 0; i1 < iterables.length; i1 ++)
+		{
+			Object[] objs = iterables[i1].toArray();
+			
+			if (objs != null && objs.length > 0)
+			{
+				lenghtMin1 = objs.length - 1;
+				
+				for (int i2 = 0; i2 < lenght; i2 ++)
+				{
+					index = lenghtMin1 == 0 ? 0 : i2 % lenghtMin1;
+					
+					result[i2] += ""+objs[index];
+				}
+			}
+		}
+		
+		return CollectionsSWL.createExtendedList(result);
+	}
+	
+	/**
 	 * Получить {@link Charset} по его имени
 	 * @param name Имя {@link Charset}'а
 	 */
@@ -168,6 +215,78 @@ public class StringUtils {
 	public static boolean isEmpty(Object obj)
 	{
 		return obj == null || obj.toString().isEmpty();
+	}
+	
+	/**
+	 * Является ли строка Float'ом?
+	 * @param s Проверяемая строка
+	 * @return True, если является
+	 */
+	public static boolean isFloat(Object s)
+	{
+		try
+		{
+			Float.valueOf(s+"");
+			return true;
+		}
+		catch (Throwable e) {}
+		
+		return false;
+	}
+	
+	/**
+	 * Является ли строка Double'ом?
+	 * @param s Проверяемая строка
+	 * @return True, если является
+	 */
+	public static boolean isDouble(Object s)
+	{
+		try
+		{
+			Double.valueOf(s+"");
+			return true;
+		}
+		catch (Throwable e) {}
+		
+		return false;
+	}
+	
+	/**
+	 * Является ли строка {@link Integer}'ом?
+	 * @param s Проверяемая строка
+	 * @return True, если является
+	 */
+	public static boolean isInteger(String s)
+	{
+		try
+		{
+			Integer.valueOf(s);
+			
+			return true;
+		}
+		catch (Throwable e)
+		{
+			return false;
+		}
+	}
+	
+	/**
+	 * Является ли строка {@link Boolean}'ом?
+	 * @param s Проверяемая строка
+	 * @return True, если является
+	 */
+	public static boolean isBoolean(String s)
+	{
+		try
+		{
+			Boolean.valueOf(s);
+			
+			return true;
+		}
+		catch (Throwable e)
+		{
+			return false;
+		}
 	}
 	
 	/** */

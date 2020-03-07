@@ -83,6 +83,13 @@ public class RLUtils {
 		return rlink == null ? null : rlink.toStream();
 	}
 	
+	/** Получить ресурс в том же пакете, что и класс, откуда вызван метод */
+	public static ResourceLink pkg(@ConcattedString Object... text)
+	{
+		ResourceLink rlink = createLink("/" + ExceptionsUtils.getPackageAt(1).replace(".", "/") + "/" + StringUtils.concat(text));
+		return rlink;
+	}
+	
 	/** Создать ссылку */
 	public static ResourceLink createLink(String path)
 	{
