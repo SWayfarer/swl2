@@ -3,6 +3,7 @@ package ru.swayfarer.swl2.resource.comparsion.dirs;
 import java.util.HashMap;
 import java.util.Map;
 
+import lombok.Data;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.exceptions.ExceptionsUtils;
@@ -12,6 +13,7 @@ import ru.swayfarer.swl2.resource.file.FileSWL;
 import ru.swayfarer.swl2.resource.file.FilesUtils;
 
 /** Снимок директории */
+@Data
 public class DirectorySnapshot {
 	
 	/** Тип хэширования, применявшийся при создании снимка */
