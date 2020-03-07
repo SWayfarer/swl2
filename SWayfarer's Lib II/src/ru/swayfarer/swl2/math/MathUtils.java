@@ -1,6 +1,8 @@
 package ru.swayfarer.swl2.math;
 
 import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 import java.util.Random;
 
@@ -111,6 +113,21 @@ public class MathUtils {
 	public static String toBase(Object num, int fromBase, int toBase)
 	{
 		return toBase(toDex(num, fromBase), toBase);
+	}
+	
+	/** Поддерживается ли алгоритм? */
+	public static boolean isMessageDigestsSupported(String key)
+	{
+		try
+		{
+			MessageDigest.getInstance(key);
+			
+			return true;
+		}
+		catch (NoSuchAlgorithmException e)
+		{
+			return false;
+		}
 	}
 	
 	/** Перевести число из 10-чной СС в base-ную*/

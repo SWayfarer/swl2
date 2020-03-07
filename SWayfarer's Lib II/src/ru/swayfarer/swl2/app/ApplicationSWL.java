@@ -23,6 +23,9 @@ import ru.swayfarer.swl2.options.OptionsParser;
  */
 public abstract class ApplicationSWL {
 	
+	/** Время старта приложения */
+	public long startTime = System.currentTimeMillis();
+	
 	/** Парсер опций */
 	public OptionsParser optionsParser;
 	
@@ -33,6 +36,9 @@ public abstract class ApplicationSWL {
 	
 	/** Точка для подписки на событие выхода из приложения */
 	public IObservable<Void> eventExit = new SimpleObservable<>(); 
+	
+	/** Показывать ли время работы приложения при его закрытии? */
+	public boolean isShowingWorkTimeOnExit = true;
 
 	/** 
 	 * Настроить класслоадер, который будет грузить приложение 
@@ -63,6 +69,11 @@ public abstract class ApplicationSWL {
 		start(options);
 		postStart(options);
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> eventExit.next(null)));
+		
+		eventExit.subscribe((e) -> {
+			if (isShowingWorkTimeOnExit)
+				logger.info("Application work time", System.currentTimeMillis() - startTime, "milisis");
+		});
 	}
 	
 	/** Вызов стартера приложения из указанного класса */

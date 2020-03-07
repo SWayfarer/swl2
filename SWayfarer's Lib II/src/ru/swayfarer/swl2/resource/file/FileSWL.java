@@ -52,6 +52,14 @@ public class FileSWL extends File {
 		this("%appDir%");
 	}
 	
+	/** Получить все байты файла */
+	public byte[] getData()
+	{
+		DataInputStreamSWL dis = toInputStream();
+		
+		return dis == null ? null : dis.readAllSafe();
+	}
+	
 	/** Получить файл со случайным доступом */
 	public RandomAccessFile toRandomAccess(String mode)
 	{

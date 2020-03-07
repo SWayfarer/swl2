@@ -12,7 +12,7 @@ import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1NoR;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
 import ru.swayfarer.swl2.markers.InternalElement;
-import ru.swayfarer.swl2.resource.streams.StreamsUtils;
+import ru.swayfarer.swl2.math.MathUtils;
 
 /** 
  * Утилиты для работы с файлами 
@@ -46,57 +46,74 @@ public class FilesUtils {
 	}
 	
 	/** Получить хэш файла */
-	public static String getFileHash(File file, String hashType)
+	public static String getFileHash(FileSWL file, String hashType)
+	{
+		if (!MathUtils.isMessageDigestsSupported(hashType))
+			return new String(MathUtils.getHash(hashType, file.getData()));
+		
+		return getFileHashByMessageDigest(file, hashType);
+	}
+	
+	/** Получить хэш файла */
+	public static String getFileHashByMessageDigest(File file, String hashType)
 	{
 		InputStream fis = null;
 		
 		try
 		{
 			if (!file.exists())
-				return "Sorry, but file must be... existing? =)";
+				return "no hash!";
 			
 			fis = new FileInputStream(file);
 	
-			byte[] readBuffer = new byte[StreamsUtils.BUFFER_SIZE];
-			MessageDigest digest = MessageDigest.getInstance(hashType); 
+			byte[] buffer = new byte[1024];
+			MessageDigest complete = MessageDigest.getInstance(hashType); 
 			int numRead;
 	
 			do
 			{
-				numRead = fis.read(readBuffer);
+				numRead = fis.read(buffer);
 				if (numRead > 0)
 				{
-					digest.update(readBuffer, 0, numRead);
+					complete.update(buffer, 0, numRead);
 				}
 			} 
 			while (numRead != -1);
 	
 			fis.close();
 			
-			byte[] hashBytes = digest.digest();
+			byte[] bytes = complete.digest();
 			
 			String result = "";
 	
-			for (int i = 0; i < hashBytes.length; i++)
+			for (int i = 0; i < bytes.length; i++)
 			{
-				result += Integer.toString((hashBytes[i] & 0xff) + 0x100, 16).substring(1);
+				result += Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1);
 			}
 			
 			return result;
 		}
 		catch (NoSuchAlgorithmException e)
 		{
-			logger.error("Error while creating hash for file '", file.getAbsolutePath(), "'. Alghroritm '", hashType, "' does not exists!");
+			logger.error("Error while creating hash for file '"+file.getAbsolutePath()+"'. Alghroritm '"+hashType+"' does not exists!");
 			
-			ExceptionsUtils.safe(fis::close);
+			
+			
+			if (fis != null)
+			{
+				try {fis.close();}catch(Throwable e2) {}
+			}
 		}
 		catch (Throwable e)
 		{
-			logger.error(e, "Error while creating hash for file '", file.getAbsolutePath());
+			e.printStackTrace();
 			
-			ExceptionsUtils.safe(fis::close);
+			if (fis != null)
+			{
+				try {}catch(Throwable e2) {}
+			}
 		}
-	    
+		
 		return null;
 	}
 }
