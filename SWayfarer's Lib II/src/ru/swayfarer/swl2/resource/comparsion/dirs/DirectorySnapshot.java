@@ -7,6 +7,7 @@ import lombok.Data;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.exceptions.ExceptionsUtils;
+import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1;
 import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.math.MathUtils;
 import ru.swayfarer.swl2.resource.file.FileSWL;
@@ -70,7 +71,7 @@ public class DirectorySnapshot {
 	}
 	
 	/** Получить снимок указанной директории */
-	public static DirectorySnapshot valueOf(FileSWL dir, String hashingType)
+	public static DirectorySnapshot valueOf(FileSWL dir, String hashingType, IFunction1<FileSWL, Boolean> filter)
 	{
 		if (dir == null || !dir.isExistingDir())
 			return null;
@@ -80,7 +81,7 @@ public class DirectorySnapshot {
 		
 		snapshot.name = dir.getName();
 		
-		FilesUtils.forEachFile(null, (f) -> {
+		FilesUtils.forEachFile(filter, (f) -> {
 
 			FileSnapshot fileSnapshot = FileSnapshot.of(f, dir, snapshot.hashingType);
 			snapshot.addFile(fileSnapshot);
