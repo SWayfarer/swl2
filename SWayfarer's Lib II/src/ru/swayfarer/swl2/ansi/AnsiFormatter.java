@@ -112,6 +112,9 @@ public class AnsiFormatter {
 	/** Получить цвет со значением по-умолчанию */
 	public String getColor(String code, String defaultColor)
 	{
+		if (StringUtils.isInteger(code))
+			return "\u001B[" + code + "m";
+		
 		String ret = colorCodes.get(code);
 		return ret == null ? defaultColor : ret;
 	}
