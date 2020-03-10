@@ -21,6 +21,8 @@ public class FileSnapshot {
 	@InternalElement
 	public String name;
 	
+	public FileSnapshot() {}
+	
 	/** Получить снимок указанного файла */
 	public static FileSnapshot of(FileSWL file, FileSWL rootDir, String hashingType)
 	{

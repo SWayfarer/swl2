@@ -10,10 +10,10 @@ public interface ILogLevel {
 	
 	public static interface StandartLoggingLevels {
 
-		public static final ILogLevel LEVEL_INFO = SimpleLogLevel.of("Info", Level.INFO, 1);
-		public static final ILogLevel LEVEL_WARNING = SimpleLogLevel.of("Warning", Level.WARNING, 2);
-		public static final ILogLevel LEVEL_ERROR = SimpleLogLevel.of("Error", Level.SEVERE, 3);
-		public static final ILogLevel LEVEL_FATAL = SimpleLogLevel.of("Fatal", Level.SEVERE, 4);
+		public static final ILogLevel LEVEL_INFO = SimpleLogLevel.of("&{gr}Info&{}", Level.INFO, 1);
+		public static final ILogLevel LEVEL_WARNING = SimpleLogLevel.of("&{yl}Warning&{}", Level.WARNING, 2);
+		public static final ILogLevel LEVEL_ERROR = SimpleLogLevel.of("&{rd}Error&{}", Level.SEVERE, 3);
+		public static final ILogLevel LEVEL_FATAL = SimpleLogLevel.of("&{yl}Fatal&{}", Level.SEVERE, 4);
 		
 	}
 	

@@ -6,6 +6,7 @@ import ru.swayfarer.swl2.exceptions.IUnsafeRunnable;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction2NoR;
 import ru.swayfarer.swl2.logger.ILogLevel.StandartLoggingLevels;
 import ru.swayfarer.swl2.logger.event.LogEvent;
+import ru.swayfarer.swl2.logger.formatter.AnsiColorsFormatter;
 import ru.swayfarer.swl2.logger.formatter.DecoratorFormatter;
 import ru.swayfarer.swl2.logger.formatter.TemplateLogFormatter;
 import ru.swayfarer.swl2.logger.handlers.LogRedirectHandler;
@@ -138,6 +139,20 @@ public interface ILogger {
 	
 	/** Получить место, из которого логгер был создан */
 	public Vector<StackTraceElement> getFrom();
+	
+	/** Добавить форматтер, не удаляя текущий */
+	public default <T extends ILogger> T appendFormatter(IFunction2NoR<ILogger, LogInfo> newFormatter)
+	{
+		IFunction2NoR<ILogger, LogInfo> formatter = getFormatter();
+		setFormatter(formatter == null ? newFormatter : formatter.andThan(newFormatter));
+		return (T) this;
+	}
+	
+	/** Включить поддержку цветов через {@link AnsiColorsFormatter#instance} */
+	public default <T extends ILogger> T enableColoring()
+	{
+		return appendFormatter(AnsiColorsFormatter.instance);
+	}
 	
 	/** Задать место, из которого был создан логгер */
 	public <T extends ILogger> T setFrom(Vector<StackTraceElement> from);

@@ -34,10 +34,15 @@ public class SimpleLoggerSWL implements ILogger, StandartLoggingLevels, Stacktra
 	public IObservable<LogEvent> eventLogging = new SimpleObservable<>();
 	public IObservable<LogEvent> eventPostLogging = new SimpleObservable<>();
 	
+	public static boolean coloringEnabledByDefault = true;
+	
 	public SimpleLoggerSWL()
 	{
 		this(ExceptionsUtils.getSimpleClassAt(OFFSET_CALLER));
 		setFrom(OFFSET_CALLER);
+		
+		if (coloringEnabledByDefault)
+			enableColoring();
 	}
 	
 	public SimpleLoggerSWL(String name)
@@ -47,6 +52,9 @@ public class SimpleLoggerSWL implements ILogger, StandartLoggingLevels, Stacktra
 		printer = defaultPrinter;
 		setFrom(OFFSET_CALLER);
 		setDecoratorSeq(defaultDecoratorSeq);
+		
+		if (coloringEnabledByDefault)
+			enableColoring();
 	}
 	
 	@Override

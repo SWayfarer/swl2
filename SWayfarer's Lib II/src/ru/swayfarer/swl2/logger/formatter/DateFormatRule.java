@@ -18,7 +18,7 @@ public class DateFormatRule implements IFunction2NoR<ILogger, LogInfo>{
 
 	public static final String DATE_REGEX = StringUtils.regex()
 			.text("%date[")
-				.something()
+				.not("%[", "]%")
 			.text("]%")
 		.build();
 	

@@ -1,6 +1,10 @@
 package ru.swayfarer.swl2.string.regex;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import ru.swayfarer.swl2.markers.InternalElement;
+import ru.swayfarer.swl2.string.StringUtils;
 
 /**
  * Билдер для регулярок
@@ -13,7 +17,7 @@ public class RegexBuilder {
 
 	/** Символы, имеющие в регулярках спеуиальное значение */
 	@InternalElement
-	public static final String REGEX_SYMBOLS = "\\<([{^-=$!|]})?*+.>";
+	public static final String REGEX_SYMBOLS = "\\<([{^-=$!|]})?*+.>%";
 	
 	/** Билдер, в который добавляется контент регулярки */
 	@InternalElement
@@ -28,21 +32,70 @@ public class RegexBuilder {
 	 */
 	public <T extends RegexBuilder> T text(String text)
 	{
+		text = blockRegexSymbols(text);
+		builder.append(text);
+		return onAppendEnd();
+	}
+	
+	public String blockRegexSymbols(String text)
+	{
 		for (char ch : REGEX_SYMBOLS.toCharArray())
 		{
 			text = text.replace(""+ch, "\\"+ch);
 		}
 		
-		builder.append(text);
-		return onAppendEnd();
+		return text;
 	}
 	
 	/** НЕ указаные символы */
 	public <T extends RegexBuilder> T not(String text)
 	{
-		builder.append("[^");
-		text(text);
-		builder.append("]");
+		text = blockRegexSymbols(text);
+		if (text.length() == 1)
+		{
+			builder.append("[^");
+			text(text);
+			builder.append("]");
+		}
+		else
+		{
+			builder.append("((?!" + text + ").)*");
+		}
+		
+		return (T) this;
+	}
+	
+	/** НЕ указаные символы */
+	public <T extends RegexBuilder> T notRaw(String text)
+	{
+		if (text.length() == 1)
+		{
+			builder.append("[^");
+			text(text);
+			builder.append("]");
+		}
+		else
+		{
+			builder.append("((?!" + text + ").)*");
+		}
+		
+		return (T) this;
+	}
+	
+	/** НЕ указаные символы (соединяет через |) */
+	public <T extends RegexBuilder> T not(String... texts)
+	{
+		List<String> blockedStrings = new ArrayList<>();
+		
+		for (String str : texts)
+		{
+			blockedStrings.add(blockRegexSymbols(str));
+		}
+		
+		String text = StringUtils.concat("|", blockedStrings.toArray());
+		
+		builder.append("((?!" + text + ").)*");
+		
 		return (T) this;
 	}
 	
