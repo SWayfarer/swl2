@@ -40,7 +40,7 @@ public class DataStream<Element_Type> implements IDataStream<Element_Type>{
 	
 	/** Обертка над фабрикой тасков, чтобы не сделать дедлока */
 	@InternalElement
-	public static ThreadLocal<ThreadPoolTaskFactory> taskFactoryThreadLocal = new ThreadLocal<>() {
+	public static ThreadLocal<ThreadPoolTaskFactory> taskFactoryThreadLocal = new ThreadLocal<ThreadPoolTaskFactory>() {
 		
 		protected ThreadPoolTaskFactory initialValue() 
 		{

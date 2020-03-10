@@ -193,6 +193,7 @@ public class ClassLoaderSWL extends URLClassLoader {
 		ClassLoader context = currentThread.getContextClassLoader();
 		try
 		{
+			currentThread.setContextClassLoader(this);
 			Object obj = this.findClass(className).getConstructor().newInstance();
 			
 			ReflectionUtils.invokeMethod(obj, methodname, Arrays.asList(args));
