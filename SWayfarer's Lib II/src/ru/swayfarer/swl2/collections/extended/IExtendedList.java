@@ -10,6 +10,7 @@ import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.streams.DataStream;
 import ru.swayfarer.swl2.collections.streams.IDataStream;
 import ru.swayfarer.swl2.exceptions.ExceptionsUtils;
+import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1NoR;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction2;
 import ru.swayfarer.swl2.logger.ILogLevel.StandartLoggingLevels;
 import ru.swayfarer.swl2.logger.ILogger;
@@ -45,6 +46,12 @@ public interface IExtendedList<Element_Type> extends List<Element_Type>{
 			add(elem);
 		
 		return (T) this;
+	}
+	
+	/** Аналог {@link #forEach(java.util.function.Consumer)} */
+	public default void each(IFunction1NoR<Element_Type> fun)
+	{
+		forEach(fun.asJavaConsumer());
 	}
 	
 	public default <T extends IExtendedList<Element_Type>> T sortBy(IFunction2<Element_Type, Element_Type, Integer> comparatorFun)
