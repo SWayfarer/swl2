@@ -164,6 +164,24 @@ public class CollectionsSWL {
 		return new ExtendedListWrapper<>(wrappedList);
 	}
 	
+	/** Создать раширенный лист с начальными элементами */
+	public static IExtendedList<Character> createExtendedList(char element)
+	{
+		return createExtendedList(new char[] {element});
+	}
+	
+	/** Создать раширенный лист с начальными элементами */
+	public static IExtendedList<Character> createExtendedList(char... elements)
+	{
+		List<Character> wrappedList = new ArrayList<>();
+		
+		if (elements != null && elements.length != 0)
+			for (char element : elements)
+				wrappedList.add(element);
+		
+		return new ExtendedListWrapper<>(wrappedList);
+	}
+	
 	/** Создать раширенный лист с заданной капасити */
 	public static <T> IExtendedList<T> createExtendedList(int capacity)
 	{

@@ -190,6 +190,6 @@ public class ListWrapper<Element_Type> implements List<Element_Type>{
 	@Override
 	public String toString()
 	{
-		return getClass() + ": " + wrappedList;
+		return getClass().getSimpleName() + ": " + wrappedList;
 	}
 }

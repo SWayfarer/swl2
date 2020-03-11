@@ -94,6 +94,37 @@ public class ReflectionUtils {
 		}
 	};
 	
+	/** Очистить от отбертки класс, если присутствует */
+	public static Class<?> cleanFromWrapper(Class<?> cl)
+	{
+		if (cl == Byte.class)
+			return byte.class;
+		else if (cl == Short.class)
+			return short.class;
+		else if (cl == Integer.class)
+			return int.class;
+		else if (cl == Long.class)
+			return long.class;
+		else if (cl == Float.class)
+			return float.class;
+		else if (cl == Double.class)
+			return double.class;
+		else if (cl == Byte[].class)
+			return byte[].class;
+		else if (cl == Short[].class)
+			return short[].class;
+		else if (cl == Integer[].class)
+			return int[].class;
+		else if (cl == Long[].class)
+			return long[].class;
+		else if (cl == Float[].class)
+			return float[].class;
+		else if (cl == Double[].class)
+			return double[].class;
+		
+		return cl;
+	}
+	
 	/** Очистить от массива в классе, если присутствует */
 	public static Class<?> cleanFromArray(Class<?> cl)
 	{

@@ -500,16 +500,32 @@ public class StringUtils {
 	/** Соединить объекты, разместив разделитель между ними */
 	public static String concat(String splitter, Object... text)
 	{
+		return concatWith(splitter, 0, text.length, text);
+	}
+	
+	/** Соединить объекты, разместив разделитель между ними */
+	public static String concatWith(String splitter, int start, int end, Object... text)
+	{
 		if (text == null || text.length == 0)
 			return null;
+		
+		if (end < 0)
+			end = text.length;
+		else
+			end = Math.min(end, text.length);
+		
+		if (start < 0)
+			start = 0;
+		else if (start > text.length)
+			start = text.length;
 		
 		if (splitter == null || splitter.isEmpty())
 		{
 			boolean isSomeNotNull = false;
 			
-			for (Object obj : text) 
+			for (int i1 = start; i1 < end; i1 ++) 
 			{
-				if (obj != null)
+				if (text[i1] != null)
 				{
 					isSomeNotNull = true;
 					break;
@@ -524,8 +540,10 @@ public class StringUtils {
 		
 		boolean isNoFirst = false;
 		
-		for (Object obj : text)
+		for (int i1 = start; i1 < end; i1 ++)
 		{
+			Object obj = text[i1];
+			
 			if (isNoFirst && splitter != null)
 				builder.append(splitter);
 			
