@@ -46,7 +46,9 @@ public class SwconfWriter {
 	public void write(SwconfString str)
 	{
 		writePrefix(str);
+		writeLiteral();
 		stringBuilder.append(str.getValue());
+		writeLiteral();
 	}
 	
 	public void write(SwconfBoolean bool)

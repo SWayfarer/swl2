@@ -1,6 +1,7 @@
 package ru.swayfarer.swl2.swconf.serialization;
 
 import ru.swayfarer.swl2.swconf.primitives.SwconfObject;
+import ru.swayfarer.swl2.swconf.serialization.formatter.PrettySwconfFormatter;
 
 public class Test {
 
@@ -13,6 +14,7 @@ public class Test {
 		
 		SwconfObject object = reader.readSwconf(swconf);
 		
+		writer.registeredFormatters.add(new PrettySwconfFormatter());
 		writer.write(object);
 		
 		System.out.println(writer.toSwconfString());
