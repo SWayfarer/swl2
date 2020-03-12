@@ -49,6 +49,12 @@ public class ReflectionUtils {
 		return getAccessibleFields(obj.getClass());
 	}
 	
+	/** Является ли класс числом? */
+	public static boolean isNumber(Class<?> cl)
+	{
+		return EqualsUtils.objectEqualsSome(cl, Number.class, byte.class, Byte.class, short.class, Short.class, int.class, Integer.class, long.class, Long.class, float.class, Float.class, double.class, Double.class);
+	}
+	
 	public static IExtendedList<Field> getAccessibleFields(Class<?> cl)
 	{
 		IExtendedList<Field> ret = CollectionsSWL.createExtendedList();

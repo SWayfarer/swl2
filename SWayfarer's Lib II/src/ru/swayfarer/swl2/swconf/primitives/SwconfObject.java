@@ -37,6 +37,12 @@ public class SwconfObject extends SwconfPrimitive {
 		return true;
 	}
 	
+	/** Получить дочерний элемент */
+	public <T extends SwconfPrimitive> T getChild(String name)
+	{
+		return (T) children.get(name);
+	}
+	
 	public String toString()
 	{
 		StringBuilder builder = new StringBuilder();
