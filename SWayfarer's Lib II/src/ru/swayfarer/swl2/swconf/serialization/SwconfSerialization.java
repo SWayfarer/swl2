@@ -1,5 +1,6 @@
 package ru.swayfarer.swl2.swconf.serialization;
 
+import ru.swayfarer.swl2.classes.ReflectionUtils;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.logger.ILogger;
@@ -59,7 +60,13 @@ public class SwconfSerialization {
 	}
 	
 	/** Сериализовать */
-	public SwconfPrimitive serialize(Class<?> cl, Object obj, ISwconfSerializationProvider provider)
+	public <T extends SwconfPrimitive> T serialize(Object obj)
+	{
+		return serialize(obj.getClass(), obj, null);
+	}
+	
+	/** Сериализовать */
+	public <T extends SwconfPrimitive> T serialize(Class<?> cl, Object obj, ISwconfSerializationProvider provider)
 	{
 		if (provider == null)
 			provider = getProviderFor(cl);
@@ -70,7 +77,19 @@ public class SwconfSerialization {
 			return null;
 		}
 		
-		return provider.serialize(obj);
+		return (T) provider.serialize(obj);
+	}
+	
+	/** Десериализовать */
+	public <T> T deserialize(Class<?> cl, SwconfPrimitive primitive)
+	{
+		return deserialize(ReflectionUtils.forceCast(cl), null, primitive, null);
+	}
+	
+	/** Десериализовать */
+	public <T> T deserialize(T instance, SwconfPrimitive primitive)
+	{
+		return deserialize(ReflectionUtils.forceCast(instance.getClass()), instance, primitive, null);
 	}
 	
 	/** Десериализовать */
@@ -84,6 +103,9 @@ public class SwconfSerialization {
 			logger.warning("Serialization provider for class", cl, "was not found! Please, &{gr}register some provider that accepts it &{}to using (de)serialization! Skiping...");
 			return null;
 		}
+		
+		if (instance == null)
+			instance = (T) provider.createNewInstance(cl, primitive);
 		
 		return (T) provider.deserialize(cl, instance, primitive);
 	}

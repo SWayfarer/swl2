@@ -16,7 +16,7 @@ public class SwconfObject extends SwconfPrimitive {
 
 	/** Дочерние элементы */
 	@InternalElement
-	public Map<String, SwconfPrimitive> children = CollectionsSWL.createIdentityMap();
+	public Map<String, SwconfPrimitive> children = CollectionsSWL.createLinkedMap();
 	
 	/** Конструктор */
 	public SwconfObject()
