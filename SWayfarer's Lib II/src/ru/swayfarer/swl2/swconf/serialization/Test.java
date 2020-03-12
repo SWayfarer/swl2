@@ -34,6 +34,8 @@ public class Test {
 		
 		public boolean someBoolean = false;
 		
+		public boolean[] booleans = new boolean[] {true, true, false};
+		
 	}
 	
 	@ToString

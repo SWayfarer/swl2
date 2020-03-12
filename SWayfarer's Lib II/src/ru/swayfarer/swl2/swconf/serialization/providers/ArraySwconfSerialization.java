@@ -35,6 +35,8 @@ public class ArraySwconfSerialization implements ISwconfSerializationProvider<Sw
 	@Override
 	public Object deserialize(Class<?> cl, Object obj, SwconfArray swconfObject)
 	{
+		cl = cl.getComponentType();
+		
 		Object array = Array.newInstance(cl, swconfObject.elements.size());
 		
 		for (int i1 = 0; i1 < swconfObject.elements.size(); i1 ++)
