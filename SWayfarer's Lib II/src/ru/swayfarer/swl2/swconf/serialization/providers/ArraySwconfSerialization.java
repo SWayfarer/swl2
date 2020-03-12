@@ -2,13 +2,29 @@ package ru.swayfarer.swl2.swconf.serialization.providers;
 
 import java.lang.reflect.Array;
 
+import ru.swayfarer.swl2.exceptions.ExceptionsUtils;
+import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.swconf.primitives.SwconfArray;
 import ru.swayfarer.swl2.swconf.serialization.ISwconfSerializationProvider;
 import ru.swayfarer.swl2.swconf.serialization.SwconfSerialization;
 
+/**
+ * Провайдер для массивов 
+ * @author swayfarer
+ *
+ */
 public class ArraySwconfSerialization implements ISwconfSerializationProvider<SwconfArray, Object> {
 
+	/** Сериализация, которая будет использована для элементов массива */
+	@InternalElement
 	public SwconfSerialization serialization;
+	
+	/** Консктруктор */
+	public ArraySwconfSerialization(SwconfSerialization serialization)
+	{
+		ExceptionsUtils.IfNullArg(serialization, "Array's elements serialization can't be null!");
+		this.serialization = serialization;
+	}
 	
 	@Override
 	public boolean isAccetps(Class<?> type)

@@ -4,15 +4,46 @@ import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
+import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.swconf.primitives.SwconfPrimitive;
+import ru.swayfarer.swl2.swconf.serialization.providers.ArraySwconfSerialization;
+import ru.swayfarer.swl2.swconf.serialization.providers.BooleanSwconfSerializationProvider;
+import ru.swayfarer.swl2.swconf.serialization.providers.NumberSwconfSerializationProvider;
+import ru.swayfarer.swl2.swconf.serialization.providers.ReflectionSwconfSerializationProvider;
+import ru.swayfarer.swl2.swconf.serialization.providers.StringSwconfSerializationProvider;
 
 @SuppressWarnings( {"rawtypes", "unchecked"} )
 public class SwconfSerialization {
 
+	/** Провайдер, использующий рефлексию */
+	@InternalElement
+	public ReflectionSwconfSerializationProvider reflectionProvider;
+	
+	/** Логгер */
+	@InternalElement
 	public static ILogger logger = LoggingManager.getLogger();
 	
 	/** Зарегистрированные провайдеры для (де)сериализации */
+	@InternalElement
 	public IExtendedList<ISwconfSerializationProvider> registeredProviders = CollectionsSWL.createExtendedList();
+	
+	/** Конструктор */
+	public SwconfSerialization()
+	{
+		registerDefaultProviders();
+	}
+	
+	/** Зарегистрировать стандартных провайдеров */
+	public <T extends SwconfSerialization> T registerDefaultProviders() 
+	{
+		registerProvider(new NumberSwconfSerializationProvider());
+		registerProvider(new StringSwconfSerializationProvider());
+		registerProvider(new BooleanSwconfSerializationProvider());
+		registerProvider(new ArraySwconfSerialization(this));
+		registerProvider(reflectionProvider = new ReflectionSwconfSerializationProvider(this));
+		
+		return (T) this;
+	}
 	
 	/** Зарегистрировать провайдера для (де)сериализации */
 	public <PrimitiveType extends SwconfPrimitive, ObjectType, T extends SwconfSerialization> T registerProvider(ISwconfSerializationProvider<PrimitiveType, ObjectType> provider) 

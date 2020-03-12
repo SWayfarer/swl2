@@ -6,21 +6,42 @@ import java.util.Map;
 import ru.swayfarer.swl2.classes.ReflectionUtils;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
+import ru.swayfarer.swl2.exceptions.ExceptionsUtils;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
+import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.swconf.primitives.SwconfObject;
 import ru.swayfarer.swl2.swconf.primitives.SwconfPrimitive;
 import ru.swayfarer.swl2.swconf.serialization.ISwconfSerializationProvider;
 import ru.swayfarer.swl2.swconf.serialization.SwconfSerialization;
 
+/**
+ * Провайдер для объектов, у которых есть поля. Обычно используется, если не нашлось более подходящего, ибо универсален.
+ * @author swayfarer
+ *
+ */
 public class ReflectionSwconfSerializationProvider implements ISwconfSerializationProvider<SwconfObject, Object> {
 
+	/** Логгер */
+	@InternalElement
 	public static ILogger logger = LoggingManager.getLogger();
 	
+	/** Сериализация, которая будет использоваться для дочерних элементов */
+	@InternalElement
 	public SwconfSerialization serialization;
 	
+	/** Кэшированные доступные поля */
+	@InternalElement
 	public Map<Class<?>, Map<String, Field>> cachedFields = CollectionsSWL.createIdentityMap();
 	
+	/** Конструктор */
+	public ReflectionSwconfSerializationProvider(SwconfSerialization serialization)
+	{
+		ExceptionsUtils.IfNullArg(serialization, "Object's elements serialization can't be null!");
+		this.serialization = serialization;
+	}
+	
+	/** Получить доступные поля */
 	public Map<String, Field> getAccessibleFields(Class<?> cl)
 	{
 		 Map<String, Field> ret = cachedFields.get(cl);
