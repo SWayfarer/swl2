@@ -138,6 +138,15 @@ public interface IExtendedList<Element_Type> extends List<Element_Type>{
 		
 		return (T) this;
 	}
+	
+	/** Добавить элемент, если эквивалетный не содежрится */
+	public default <T extends IExtendedList<Element_Type>> T addExclusive(int pos, Element_Type type)
+	{
+		if (!contains(type))
+			add(pos, type);
+		
+		return (T) this;
+	}
 
 	/** Сдвинуть элементы влево */
 	public default <T extends IExtendedList<Element_Type>> T shiftLeft()

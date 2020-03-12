@@ -78,7 +78,7 @@ public class ReflectionSwconfSerializationProvider implements ISwconfSerializati
 			
 			if (primitive != null)
 			{
-				Object value = serialization.deserialize(field.getType(), null, primitive, null);
+				Object value = serialization.deserialize(field.getType(), null, primitive, field, null);
 				
 				logger.safe(() -> field.set(obj, value), "Error while setting field " + field);
 			}

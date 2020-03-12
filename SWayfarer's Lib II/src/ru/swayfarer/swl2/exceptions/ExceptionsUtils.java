@@ -45,6 +45,12 @@ public class ExceptionsUtils {
 		}
 	}
 	
+	/** Бросить исключение о неподдерживаемой операции */
+	public static void unsupportedOperation(@ConcattedString Object... text)
+	{
+		throw new UnsupportedOperationException(StringUtils.concatWithSpaces(text));
+	}
+	
 	/** Если метод вызван не из своего класса, то будет {@link Exception} */
 	@SneakyThrows
 	public static void IfCallerNotSelf()

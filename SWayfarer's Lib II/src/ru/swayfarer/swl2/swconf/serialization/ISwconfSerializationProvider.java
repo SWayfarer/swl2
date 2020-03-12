@@ -1,5 +1,7 @@
 package ru.swayfarer.swl2.swconf.serialization;
 
+import java.lang.reflect.Field;
+
 import ru.swayfarer.swl2.swconf.primitives.SwconfPrimitive;
 
 /**
@@ -16,6 +18,12 @@ public interface ISwconfSerializationProvider<SwconfPrimivitveType extends Swcon
 	
 	/** Десериализовать объект из Swconf */
 	public Object_Type deserialize(Class<?> cl, Object_Type obj, SwconfPrimivitveType swconfObject);
+	
+	/** Десериализовать объект из Swconf */
+	public default Object_Type deserialize(Field field, Class<?> cl, Object_Type obj, SwconfPrimivitveType swconfObject)
+	{
+		return deserialize(cl, obj, swconfObject);
+	}
 	
 	/** Сериализовать объект */
 	public SwconfPrimivitveType serialize(Object_Type obj); 

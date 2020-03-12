@@ -1,6 +1,7 @@
 package ru.swayfarer.swl2.collections;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -147,6 +148,11 @@ public class CollectionsSWL {
 	public static <K, V> Map<K, V> createWeakMap()
 	{
 		return new WeakHashMap<>();
+	}
+	
+	public static Class<?> getListType(final List<?> aListWithSomeType) throws ClassNotFoundException
+	{
+		return Class.forName(((ParameterizedType) aListWithSomeType.getClass().getGenericSuperclass()).getActualTypeArguments()[0].getTypeName());
 	}
 	
 	/** Создать раширенный лист с начальными элементами */

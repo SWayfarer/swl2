@@ -1,5 +1,7 @@
 package ru.swayfarer.swl2.swconf.serialization;
 
+import java.lang.reflect.Field;
+
 import ru.swayfarer.swl2.classes.ReflectionUtils;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
@@ -9,6 +11,7 @@ import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.swconf.primitives.SwconfPrimitive;
 import ru.swayfarer.swl2.swconf.serialization.providers.ArraySwconfSerialization;
 import ru.swayfarer.swl2.swconf.serialization.providers.BooleanSwconfSerializationProvider;
+import ru.swayfarer.swl2.swconf.serialization.providers.ListSwconfSerializationProvider;
 import ru.swayfarer.swl2.swconf.serialization.providers.NumberSwconfSerializationProvider;
 import ru.swayfarer.swl2.swconf.serialization.providers.ReflectionSwconfSerializationProvider;
 import ru.swayfarer.swl2.swconf.serialization.providers.StringSwconfSerializationProvider;
@@ -34,14 +37,21 @@ public class SwconfSerialization {
 		registerDefaultProviders();
 	}
 	
+	/** Найти зарегистрированного провайдера по его классу */
+	public <T extends ISwconfSerializationProvider> T findRegisteredProvider(Class<T> cl)
+	{
+		return (T) registeredProviders.dataStream().find((e) -> e.getClass().equals(cl));
+	}
+	
 	/** Зарегистрировать стандартных провайдеров */
 	public <T extends SwconfSerialization> T registerDefaultProviders() 
 	{
+		registerProvider(reflectionProvider = new ReflectionSwconfSerializationProvider(this));
 		registerProvider(new NumberSwconfSerializationProvider());
 		registerProvider(new StringSwconfSerializationProvider());
 		registerProvider(new BooleanSwconfSerializationProvider());
 		registerProvider(new ArraySwconfSerialization(this));
-		registerProvider(reflectionProvider = new ReflectionSwconfSerializationProvider(this));
+		registerProvider(new ListSwconfSerializationProvider(this));
 		
 		return (T) this;
 	}
@@ -49,7 +59,7 @@ public class SwconfSerialization {
 	/** Зарегистрировать провайдера для (де)сериализации */
 	public <PrimitiveType extends SwconfPrimitive, ObjectType, T extends SwconfSerialization> T registerProvider(ISwconfSerializationProvider<PrimitiveType, ObjectType> provider) 
 	{
-		registeredProviders.addExclusive(provider);
+		registeredProviders.addExclusive(0, provider);
 		return (T) this;
 	}
 	
@@ -95,6 +105,12 @@ public class SwconfSerialization {
 	/** Десериализовать */
 	public <T> T deserialize(Class<T> cl, T instance, SwconfPrimitive primitive, ISwconfSerializationProvider provider)
 	{
+		return deserialize(cl, instance, primitive, null, provider);
+	}
+	
+	/** Десериализовать */
+	public <T> T deserialize(Class<T> cl, T instance, SwconfPrimitive primitive, Field field, ISwconfSerializationProvider provider)
+	{
 		if (provider == null)
 			provider = getProviderFor(cl);
 		
@@ -107,6 +123,6 @@ public class SwconfSerialization {
 		if (instance == null)
 			instance = (T) provider.createNewInstance(cl, primitive);
 		
-		return (T) provider.deserialize(cl, instance, primitive);
+		return (T) provider.deserialize(field, cl, instance, primitive);
 	}
 }
