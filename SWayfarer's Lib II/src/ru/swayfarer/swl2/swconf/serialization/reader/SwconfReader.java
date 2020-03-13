@@ -1,4 +1,4 @@
-package ru.swayfarer.swl2.swconf.serialization;
+package ru.swayfarer.swl2.swconf.serialization.reader;
 
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;

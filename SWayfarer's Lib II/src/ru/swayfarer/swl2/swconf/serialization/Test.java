@@ -11,6 +11,7 @@ import ru.swayfarer.swl2.swconf.primitives.SwconfObject;
 import ru.swayfarer.swl2.swconf.serialization.comments.CommentSwconf;
 import ru.swayfarer.swl2.swconf.serialization.formatter.PrettyFormattedWriter;
 import ru.swayfarer.swl2.swconf.serialization.formatter.PrettySwconfFormatter;
+import ru.swayfarer.swl2.swconf.serialization.reader.SwconfReader;
 import ru.swayfarer.swl2.swconf.serialization.writer.ISwconfWriter;
 import ru.swayfarer.swl2.swconf.serialization.writer.SwconfWriter;
 
