@@ -34,6 +34,32 @@ public interface IExtendedList<Element_Type> extends List<Element_Type>{
 	/** Будет ли бросаться */
 	public <T extends IExtendedList<Element_Type>> T setConcurrent(boolean isConcurrent);
 	
+	/** Задать все элементы */
+	public default <E extends Element_Type, T extends IExtendedList<Element_Type>> T setAll(E... content)
+	{
+		clear();
+		
+		for (E e : content)
+		{
+			add(e);
+		}
+		
+		return (T) this;
+	}
+	
+	/** Задать все элементы */
+	public default <E extends Element_Type, T extends IExtendedList<Element_Type>> T setAll(Iterable<E> $i)
+	{
+		clear();
+		
+		for (E e : $i)
+		{
+			add(e);
+		}
+		
+		return (T) this;
+	}
+	
 	/**
 	 * Если элемент присутствует, то удалить его
 	 * <br> Если отсутствует, то добавить

@@ -22,6 +22,8 @@ public class SwconfReader {
 	
 	public StringBuilder stringBuilder = new StringBuilder();
 	
+	public StringBuilder commentBuilder = new StringBuilder();
+	
 	public CurrentReadingInfo currentReadingInfo;
 	
 	public IExtendedList<CurrentReadingInfo> readingInfos = CollectionsSWL.createExtendedList();
@@ -32,6 +34,12 @@ public class SwconfReader {
 		currentReadingInfo = new CurrentReadingInfo();
 		readingInfos.add(currentReadingInfo);
 		cleanBuilder();
+		return (T) this;
+	}
+	
+	public <T extends SwconfReader> T setFormat(SwconfFormat format) 
+	{
+		this.swconfFormat = format;
 		return (T) this;
 	}
 	
@@ -50,7 +58,29 @@ public class SwconfReader {
 		
 		while (reader.hasNextElement())
 		{
-			if (!reader.skipSome(swconfFormat.ignore))
+			if (currentReadingInfo.isInExlusion)
+			{
+				if (reader.skipSome(swconfFormat.exclusionEnds))
+				{
+					onExclusionClosed();
+				}
+				else
+				{
+					commentBuilder.append(reader.next());
+				}
+			}
+			else if (currentReadingInfo.isInLiteral)
+			{
+				if (reader.skipSome(swconfFormat.literalBounds))
+				{
+					onLiteral();
+				}
+				else
+				{
+					readCurrent();
+				}
+			}
+			else if (!reader.skipSome(swconfFormat.ignore))
 			{
 				if (reader.skipSome(swconfFormat.blockStarts))
 				{
@@ -75,6 +105,11 @@ public class SwconfReader {
 				else if (reader.skipSome(swconfFormat.equals))
 				{
 					onEqual();
+				}
+				
+				else if (reader.skipSome(swconfFormat.exclusionStarts))
+				{
+					onExclusionStarted();
 				}
 				
 				else if (reader.skipSome(swconfFormat.elementSplitters))
@@ -148,9 +183,13 @@ public class SwconfReader {
 			primitive = new SwconfBoolean().setValue(Boolean.valueOf(value));
 		else if (StringUtils.isDouble(value))
 			primitive = new SwconfNum().setValue(Double.valueOf(value));
+		else if (!StringUtils.isEmpty(value))
+			primitive = new SwconfString().setValue(value);
 		
 		if (primitive != null)
 		{
+			checkComment(primitive);
+			
 			if (currentReadingInfo.isInArray())
 			{
 				currentReadingInfo.array.addChild(primitive);
@@ -168,17 +207,29 @@ public class SwconfReader {
 		}
 	}
 	
+	public void checkComment(SwconfPrimitive primitive)
+	{
+		String comment = currentReadingInfo.lastComment;
+		
+		if (!StringUtils.isEmpty(comment))
+		{
+			primitive.setComment(comment);
+			currentReadingInfo.lastComment = null;
+		}
+	}
+	
 	public void newArray()
 	{
 		currentReadingInfo.array = new SwconfArray();
 		currentReadingInfo.array.setName(currentReadingInfo.lastReadedName);
 		currentReadingInfo.root.addChild(currentReadingInfo.array);
+		checkComment(currentReadingInfo.array);
 	}
 	
 	public void endArray()
 	{
 		onArrayClosed();
-		currentReadingInfo.reset();
+		currentReadingInfo.array = null;
 	}
 	
 	public void onArrayClosed()
@@ -190,6 +241,18 @@ public class SwconfReader {
 	{
 		readProperty();
 		currentReadingInfo.reset();
+	}
+	
+	public void onExclusionStarted()
+	{
+		currentReadingInfo.isInExlusion = true;
+	}
+	
+	public void onExclusionClosed()
+	{
+		currentReadingInfo.isInExlusion = false;
+		currentReadingInfo.lastComment = commentBuilder.toString();
+		commentBuilder.delete(0, commentBuilder.length());
 	}
 	
 	public CurrentReadingInfo closeLayer()
@@ -213,6 +276,8 @@ public class SwconfReader {
 		
 		this.currentReadingInfo = readingInfo;
 		
+		checkComment(object);
+		
 		return readingInfo;
 	}
 	
@@ -222,6 +287,8 @@ public class SwconfReader {
 	}
 	
 	public class CurrentReadingInfo {
+		
+		public boolean isInExlusion;
 		
 		public SwconfObject root;
 		
@@ -233,6 +300,8 @@ public class SwconfReader {
 		
 		public boolean thereWasLiteral;
 		
+		public String lastComment;
+		
 		public boolean isInArray()
 		{
 			return array != null;
@@ -243,6 +312,7 @@ public class SwconfReader {
 			lastReadedName = "";
 			isInLiteral = false;
 			thereWasLiteral = false;
+			isInExlusion = false;
 			array = null;
 		}
 	}

@@ -14,6 +14,9 @@ public class SwconfPrimitive {
 	/** Имя */
 	public String name;
 	
+	/** Коментарий */
+	public String comment;
+	
 	/** Сырое значение */
 	public Object rawValue;
 	
@@ -61,6 +64,13 @@ public class SwconfPrimitive {
 		return (SwconfString) this;
 	}
 	
+	/** Задать коментарий */
+	public <T extends SwconfPrimitive> T setComment(@ConcattedString Object... text) 
+	{
+		this.comment = StringUtils.concatWithSpaces(text);
+		return (T) this;
+	}
+	
 	/** Булиевый ли этот объект? */
 	public boolean isBoolean()
 	{
@@ -94,6 +104,6 @@ public class SwconfPrimitive {
 	@Override
 	public String toString()
 	{
-		return getClass().getSimpleName() + " [name=" + name + ", rawValue=" + rawValue + "]";
+		return getClass().getSimpleName() + " [name=" + name + ", rawValue=" + rawValue + ", comment=" + comment + "]";
 	}
 }

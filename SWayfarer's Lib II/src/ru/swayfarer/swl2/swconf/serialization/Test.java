@@ -8,17 +8,21 @@ import java.util.List;
 import lombok.ToString;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.swconf.primitives.SwconfObject;
+import ru.swayfarer.swl2.swconf.serialization.comments.CommentSwconf;
+import ru.swayfarer.swl2.swconf.serialization.formatter.PrettyFormattedWriter;
 import ru.swayfarer.swl2.swconf.serialization.formatter.PrettySwconfFormatter;
+import ru.swayfarer.swl2.swconf.serialization.writer.ISwconfWriter;
+import ru.swayfarer.swl2.swconf.serialization.writer.SwconfWriter;
 
 public class Test {
 
 	public static void main(String[] args)
 	{
 		
-		String swconf = "r = 4, d = '434343', name = {qwe = '323323', e = 5}, arr = [1, 2, 3, 4, 5, 6]";
+		String swconf = "/** 123 */r = 4, d = '434343', name = {qwe = '323323', e = 5}, arr = [1, 2, 3, 4, 5, 6]";
 		
 		SwconfReader reader = new SwconfReader();
-		SwconfWriter writer = new SwconfWriter();
+		ISwconfWriter writer = new SwconfWriter();
 		SwconfSerialization serialization = new SwconfSerialization();
 		
 		TestClass testClass = new TestClass();
@@ -30,8 +34,11 @@ public class Test {
 		
 		TestClass class1 = serialization.deserialize(TestClass.class, object);
 		
-		writer.registeredFormatters.add(new PrettySwconfFormatter());
+		writer = PrettyFormattedWriter.of(writer);
+		
+		writer.startWriting();
 		writer.write(object);
+		writer.endWriting();
 		
 		System.out.println(writer.toSwconfString());
 	}
@@ -68,6 +75,7 @@ public class Test {
 		public String helloWorldStr = "Hello, World!";
 		public int helloInt = 4;
 		
+		@CommentSwconf("Hello, World!")
 		public TestClass2 testClass2 = new TestClass2();
 		
 	}

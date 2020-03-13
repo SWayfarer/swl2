@@ -2,6 +2,7 @@ package ru.swayfarer.swl2.swconf.format;
 
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
+import ru.swayfarer.swl2.string.StringUtils;
 
 /**
  * Пользовательский формат Swconf
@@ -32,6 +33,11 @@ public class SwconfFormat {
 	public IExtendedList<String> equals = CollectionsSWL.createExtendedList("=");
 	
 	/** Игнорируемые вне литералов символы */
-	public IExtendedList<String> ignore = CollectionsSWL.createExtendedList(" ", "	");
+	public IExtendedList<String> ignore = CollectionsSWL.createExtendedList(" ", "	", StringUtils.CR, StringUtils.LF, StringUtils.CRLF);
 	
+	/** Начало блока исключения (Игнорируемого читалкой) */
+	public IExtendedList<String> exclusionStarts = CollectionsSWL.createExtendedList("/**", "--[");
+	
+	/** Конец блока-исключения (Игнорируемого читалкой) */
+	public IExtendedList<String> exclusionEnds = CollectionsSWL.createExtendedList("*/", "]--");
 }
