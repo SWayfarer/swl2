@@ -2,15 +2,33 @@ package ru.swayfarer.swl2.swconf.format;
 
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
+import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction0;
+import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1;
 import ru.swayfarer.swl2.string.StringUtils;
+import ru.swayfarer.swl2.swconf.serialization.reader.SwconfReader;
+import ru.swayfarer.swl2.swconf.serialization.writer.ISwconfWriter;
+import ru.swayfarer.swl2.swconf.serialization.writer.SwconfWriter;
 
 /**
  * Пользовательский формат Swconf
  * @author swayfarer
  *
  */
+@SuppressWarnings("unchecked")
 public class SwconfFormat {
 
+	/** Функция, возвращающая {@link ISwconfWriter} для этого формата */
+	public IFunction0<ISwconfWriter> writerFun = () -> new SwconfWriter().setFormat(this);
+	
+	/** Функция, возвращаюшая {@link SwconfReader} для этого формата */
+	public IFunction0<SwconfReader> readerFun = () -> new SwconfReader().setFormat(this);
+	
+	/** Разворачивалка имен пропертей */
+	public IFunction1<String, String> propertyNameUnwrapper = (s) -> s;
+	
+	/** Оборачивалка имен пропертей s*/
+	public IFunction1<String, String> propertyNameWrapper = (s) -> s; 
+	
 	/** Начала массива */
 	public IExtendedList<String> arrayStarts = CollectionsSWL.createExtendedList("[");
 	
@@ -40,4 +58,14 @@ public class SwconfFormat {
 	
 	/** Конец блока-исключения (Игнорируемого читалкой) */
 	public IExtendedList<String> exclusionEnds = CollectionsSWL.createExtendedList("*/", "]--");
+	
+	public <T extends ISwconfWriter> T getWriter()
+	{
+		return (T) writerFun.apply();
+	}
+	
+	public <T extends SwconfReader> T getReader()
+	{
+		return (T) readerFun.apply();
+	}
 }

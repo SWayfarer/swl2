@@ -101,10 +101,19 @@ public class ReflectionSwconfSerializationProvider implements ISwconfSerializati
 		
 		Map<String, Field> fields = getAccessibleFields(obj.getClass());
 		
+		CommentSwconf classCommentAnnotation = obj.getClass().getAnnotation(CommentSwconf.class);
+		
+		if (classCommentAnnotation != null)
+		{
+			object.setComment(classCommentAnnotation.value());
+		}
+		
 		for (Field field : fields.values())
 		{
 			logger.safe(() -> {
-				SwconfPrimitive primitive = serialization.serialize(field.getType(), field.get(obj), null);
+				Class<?> classOfField = field.getType();
+				
+				SwconfPrimitive primitive = serialization.serialize(classOfField, field.get(obj), null);
 				primitive.setName(field.getName());
 				object.addChild(primitive);
 				

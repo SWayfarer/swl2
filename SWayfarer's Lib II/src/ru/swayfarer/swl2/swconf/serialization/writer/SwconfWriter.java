@@ -165,9 +165,16 @@ public class SwconfWriter implements ISwconfWriter {
 		
 		if (!StringUtils.isEmpty(name))
 		{
-			parent.writeRaw(name);
+			name = swconfFormat.propertyNameWrapper.apply(name);
+			
+			parent.writeName(name);
 			parent.writeEqual(); 
 		}
+	}
+	
+	public void writeName(String name)
+	{
+		parent.writeRaw(name);
 	}
 	
 	@Override
@@ -266,6 +273,13 @@ public class SwconfWriter implements ISwconfWriter {
 			parent.writeRaw(comment);
 			parent.writeExclusionEnd();
 		}
+	}
+
+	@Override
+	public <T extends ISwconfWriter> T setFormat(SwconfFormat format)
+	{
+		this.swconfFormat = format;
+		return (T) this;
 	}
 	
 }

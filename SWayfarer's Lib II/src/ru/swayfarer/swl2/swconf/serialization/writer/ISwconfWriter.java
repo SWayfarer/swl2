@@ -1,6 +1,7 @@
 package ru.swayfarer.swl2.swconf.serialization.writer;
 
 import ru.swayfarer.swl2.markers.ConcattedString;
+import ru.swayfarer.swl2.swconf.format.SwconfFormat;
 import ru.swayfarer.swl2.swconf.primitives.SwconfArray;
 import ru.swayfarer.swl2.swconf.primitives.SwconfBoolean;
 import ru.swayfarer.swl2.swconf.primitives.SwconfNum;
@@ -78,7 +79,13 @@ public interface ISwconfWriter {
 	/** Записать текст в виде исключения */
 	public void writeExclusion(String comment);
 	
+	/** Записать имя */
+	public void writeName(String name);
+	
 	/** Задать родителя */
 	public <T extends ISwconfWriter> T setParent(ISwconfWriter writer);
+	
+	/** Задать формат */
+	public <T extends ISwconfWriter> T setFormat(SwconfFormat format);
 
 }

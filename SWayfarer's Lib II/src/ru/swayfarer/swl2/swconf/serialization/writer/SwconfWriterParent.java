@@ -3,6 +3,7 @@ package ru.swayfarer.swl2.swconf.serialization.writer;
 import ru.swayfarer.swl2.exceptions.ExceptionsUtils;
 import ru.swayfarer.swl2.markers.ConcattedString;
 import ru.swayfarer.swl2.markers.InternalElement;
+import ru.swayfarer.swl2.swconf.format.SwconfFormat;
 import ru.swayfarer.swl2.swconf.primitives.SwconfArray;
 import ru.swayfarer.swl2.swconf.primitives.SwconfBoolean;
 import ru.swayfarer.swl2.swconf.primitives.SwconfNum;
@@ -170,6 +171,19 @@ public class SwconfWriterParent implements ISwconfWriter {
 	public void writeExclusion(String comment)
 	{
 		wrappedWriter.writeExclusion(comment);
+	}
+
+	@Override
+	public <T extends ISwconfWriter> T setFormat(SwconfFormat format)
+	{
+		wrappedWriter.setFormat(format);
+		return (T) this;
+	}
+
+	@Override
+	public void writeName(String name)
+	{
+		wrappedWriter.writeRaw(name);
 	}
 
 }

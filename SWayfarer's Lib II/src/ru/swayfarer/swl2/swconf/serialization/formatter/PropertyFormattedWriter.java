@@ -15,5 +15,28 @@ public class PropertyFormattedWriter extends SwconfWriterParent {
 	{
 		// Nope!
 	}
+	
+	@Override
+	public void writeExclusion(String comment)
+	{
+		String[] split = comment.split("\n");
+		
+		if (split.length > 1)
+		{
+			for (String s : split)
+			{
+				parent.writeExclusion(s);
+			}
+		}
+		else
+		{
+			super.writeExclusion(comment);
+		}
+	}
+	
+	public static PropertyFormattedWriter of(ISwconfWriter writer)
+	{
+		return new PropertyFormattedWriter(writer);
+	}
 
 }

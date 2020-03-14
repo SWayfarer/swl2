@@ -16,15 +16,16 @@ import ru.swayfarer.swl2.swconf.primitives.SwconfString;
 
 @SuppressWarnings("unchecked")
 public class SwconfReader {
-
+	
 	public StringReaderSWL reader;
+	
 	public SwconfFormat swconfFormat = new SwconfFormat();
 	
 	public StringBuilder stringBuilder = new StringBuilder();
 	
 	public StringBuilder commentBuilder = new StringBuilder();
 	
-	public CurrentReadingInfo currentReadingInfo;
+	public CurrentReadingInfo currentReadingInfo, prevReadingInfo;
 	
 	public IExtendedList<CurrentReadingInfo> readingInfos = CollectionsSWL.createExtendedList();
 	
@@ -71,7 +72,7 @@ public class SwconfReader {
 			}
 			else if (currentReadingInfo.isInLiteral)
 			{
-				if (reader.skipSome(swconfFormat.literalBounds))
+				if (isAtLiteralBound())
 				{
 					onLiteral();
 				}
@@ -118,7 +119,7 @@ public class SwconfReader {
 					cleanBuilder();
 				}
 				
-				else if (reader.skipSome(swconfFormat.literalBounds))
+				else if (isAtLiteralBound())
 				{
 					onLiteral();
 				}
@@ -128,6 +129,11 @@ public class SwconfReader {
 					readCurrent();
 				}
 			}
+			
+			if (hasNoLayers())
+			{
+				return prevReadingInfo.root;
+			}
 		}
 		
 		readProperty();
@@ -135,10 +141,15 @@ public class SwconfReader {
 		return currentReadingInfo.root;
 	}
 	
+	public boolean isAtLiteralBound()
+	{
+		return isReadingPropertyValue() && reader.skipSome(swconfFormat.literalBounds);
+	}
+	
 	public void onEqual()
 	{
 		currentReadingInfo.thereWasLiteral = false;
-		currentReadingInfo.lastReadedName = stringBuilder.toString();
+		currentReadingInfo.lastReadedName = swconfFormat.propertyNameUnwrapper.apply(stringBuilder.toString());
 		
 		cleanBuilder();
 	}
@@ -160,6 +171,11 @@ public class SwconfReader {
 	{
 		stringBuilder = new StringBuilder();
 		return (T) this;
+	}
+	
+	public boolean isReadingPropertyValue()
+	{
+		return currentReadingInfo.isInArray() || !StringUtils.isEmpty(currentReadingInfo.lastReadedName);
 	}
 	
 	public boolean hasProperty()
@@ -205,6 +221,11 @@ public class SwconfReader {
 			}
 			cleanBuilder();
 		}
+	}
+	
+	public boolean hasNoLayers()
+	{
+		return readingInfos.isEmpty();
 	}
 	
 	public void checkComment(SwconfPrimitive primitive)
@@ -258,6 +279,7 @@ public class SwconfReader {
 	public CurrentReadingInfo closeLayer()
 	{
 		onBlockClosed();
+		prevReadingInfo = readingInfos.getFirstElement();
 		readingInfos.removeFirstElement();
 		currentReadingInfo = getReadingInfo();
 		return currentReadingInfo;
@@ -265,20 +287,25 @@ public class SwconfReader {
 	
 	public CurrentReadingInfo newLayer(@ConcattedString Object... name)
 	{
-		SwconfObject object = new SwconfObject();
-		object.setName(name);
-		currentReadingInfo.root.addChild(object);
+		if (isReadingPropertyValue())
+		{
+			SwconfObject object = new SwconfObject();
+			object.setName(name);
+			currentReadingInfo.root.addChild(object);
+			
+			CurrentReadingInfo readingInfo = new CurrentReadingInfo();
+			readingInfo.root = object;
+			
+			readingInfos.add(0, readingInfo);
+			
+			this.currentReadingInfo = readingInfo;
+			
+			checkComment(object);
+			
+			return readingInfo;
+		}
 		
-		CurrentReadingInfo readingInfo = new CurrentReadingInfo();
-		readingInfo.root = object;
-		
-		readingInfos.add(0, readingInfo);
-		
-		this.currentReadingInfo = readingInfo;
-		
-		checkComment(object);
-		
-		return readingInfo;
+		return currentReadingInfo;
 	}
 	
 	public CurrentReadingInfo getReadingInfo()
@@ -301,6 +328,8 @@ public class SwconfReader {
 		public boolean thereWasLiteral;
 		
 		public String lastComment;
+		
+		public boolean isStartsWithBlock;
 		
 		public boolean isInArray()
 		{
