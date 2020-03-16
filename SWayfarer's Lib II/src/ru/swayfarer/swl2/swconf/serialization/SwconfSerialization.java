@@ -121,7 +121,9 @@ public class SwconfSerialization {
 		}
 		
 		if (instance == null)
+		{
 			instance = (T) provider.createNewInstance(cl, primitive);
+		}
 		
 		return (T) provider.deserialize(field, cl, instance, primitive);
 	}

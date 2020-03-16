@@ -68,9 +68,14 @@ public abstract class ResourceType {
 	public abstract boolean isExists(ResourceLink rlink);
 	
 	/** Получить поток данных из ресурса */
-	public abstract <T extends InputStream> T getStream(ResourceLink rlink);
+	public abstract <T extends InputStream> T getInputStream(ResourceLink rlink);
 	
 	/** Получить соседние ресурсы  */
 	public abstract IExtendedList<ResourceLink> getAdjacentLinks(ResourceLink rlink, boolean isDeep, IFunction1<ResourceLink, Boolean> filter);
 	
+	/** Получить поток для записи */
+	public abstract java.io.OutputStream getOutStream(ResourceLink rlink);
+	
+	/** Можно ли писать в поток? */
+	public abstract boolean isWritable(ResourceLink rlink);
 }

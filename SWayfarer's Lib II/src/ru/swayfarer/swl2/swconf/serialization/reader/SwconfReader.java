@@ -178,14 +178,9 @@ public class SwconfReader {
 		return currentReadingInfo.isInArray() || !StringUtils.isEmpty(currentReadingInfo.lastReadedName);
 	}
 	
-	public boolean hasProperty()
-	{
-		return !StringUtils.isEmpty(currentReadingInfo.lastReadedName);
-	}
-	
 	public void readProperty()
 	{
-		if (!hasProperty())
+		if (!isReadingPropertyValue())
 			return;
 		
 		SwconfObject root = currentReadingInfo.root;
@@ -245,6 +240,7 @@ public class SwconfReader {
 		currentReadingInfo.array.setName(currentReadingInfo.lastReadedName);
 		currentReadingInfo.root.addChild(currentReadingInfo.array);
 		checkComment(currentReadingInfo.array);
+		currentReadingInfo.lastReadedName = "";
 	}
 	
 	public void endArray()
@@ -292,6 +288,7 @@ public class SwconfReader {
 			SwconfObject object = new SwconfObject();
 			object.setName(name);
 			currentReadingInfo.root.addChild(object);
+			currentReadingInfo.lastReadedName = "";
 			
 			CurrentReadingInfo readingInfo = new CurrentReadingInfo();
 			readingInfo.root = object;

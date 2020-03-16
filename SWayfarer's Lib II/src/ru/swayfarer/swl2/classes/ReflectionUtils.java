@@ -7,6 +7,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
+import java.util.Map;
 
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
@@ -20,15 +21,26 @@ import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction3NoR;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
 import ru.swayfarer.swl2.markers.InternalElement;
+import ru.swayfarer.swl2.string.StringUtils;
 
+/**
+ * Утилиты для работы с рефлексией
+ * @author swayfarer
+ *
+ */
 @SuppressWarnings( { "unchecked", "rawtypes" } )
 public class ReflectionUtils {
 
 	/** Логгер */
 	@InternalElement
 	public static ILogger logger = LoggingManager.getLogger();
+	
+	/** Кэшированные элменты */
+	@InternalElement
+	public static Map<Class<?>, Map<String, Field>> cachedAccessibleFields = CollectionsSWL.createIdentityMap();
 
 	/** Функция для получения доступа к значению поля */
+	@InternalElement
 	public static IFunction2<Field, Object, Object> fieldGetAccessor = (field, instance) -> {
 		
 		try
@@ -44,9 +56,61 @@ public class ReflectionUtils {
 		return null;
 	};
 	
-	public static IExtendedList<Field> getAccessibleFields(Object obj)
+	/** Есть ли у поля аннотация? */
+	public static boolean hasAnnotation(Field field, Class<?> annotationClass)
+	{
+		return field.getAnnotation(forceCast(annotationClass)) != null;
+	}
+	
+	/** Получить все доступные поля объекта */
+	public static Map<String, Field> getAccessibleFields(Object obj)
 	{
 		return getAccessibleFields(obj.getClass());
+	}
+	
+	/** Получить значение статического поля класса */
+	public static <T> T getFieldValue(Class<?> cl, Object... names)
+	{
+		return getFieldValue(cl, null, names);
+	}
+	
+	/** Получить значение поля объекта */
+	public static <T> T getFieldValue(Object instance, Object... names)
+	{
+		return getFieldValue(instance.getClass(), instance, names);
+	}
+	
+	/** Получить значение поля */
+	public static <T> T getFieldValue(Class<?> cl, Object instance, Object... names)
+	{
+		Map<String, Field> fields = getAccessibleFields(cl);
+		
+		for (Object obj : names)
+		{
+			String name = String.valueOf(obj);
+			
+			if (StringUtils.isEmpty(name))
+				continue;
+			
+			Field field = fields.get(name);
+			
+			try
+			{
+				if (field != null)
+				{
+					if (instance == null && !Modifier.isStatic(field.getModifiers()))
+						continue;
+					
+					return (T) field.get(instance);
+				}
+			}
+			catch (Throwable e)
+			{
+				logger.error(e, "Error while getting field value");
+			}
+		}
+		
+		return null;
 	}
 	
 	/** Является ли класс числом? */
@@ -55,14 +119,25 @@ public class ReflectionUtils {
 		return EqualsUtils.objectEqualsSome(cl, Number.class, byte.class, Byte.class, short.class, Short.class, int.class, Integer.class, long.class, Long.class, float.class, Float.class, double.class, Double.class);
 	}
 	
-	public static IExtendedList<Field> getAccessibleFields(Class<?> cl)
+	/** Получить доступные поля */
+	public static Map<String, Field> getAccessibleFields(Class<?> cl)
 	{
-		IExtendedList<Field> ret = CollectionsSWL.createExtendedList();
+		Map<String, Field> ret = cachedAccessibleFields.get(cl);
 		
-		for (Field field : cl.getDeclaredFields())
+		if (ret == null)
 		{
-			if (setAccessible(field))
-				ret.add(field);
+			ret = CollectionsSWL.createHashMap();
+			
+			while (cl != null && cl != Object.class)
+			{
+				for (Field field : cl.getDeclaredFields())
+				{
+					if (setAccessible(field))
+						ret.put(field.getName(), field);
+				}
+				
+				cl = cl.getSuperclass();
+			}
 		}
 		
 		return ret;

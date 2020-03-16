@@ -15,6 +15,7 @@ import ru.swayfarer.swl2.swconf.primitives.SwconfPrimitive;
 import ru.swayfarer.swl2.swconf.serialization.ISwconfSerializationProvider;
 import ru.swayfarer.swl2.swconf.serialization.SwconfSerialization;
 import ru.swayfarer.swl2.swconf.serialization.comments.CommentSwconf;
+import ru.swayfarer.swl2.swconf.serialization.comments.IgnoreSwconf;
 
 /**
  * Провайдер для объектов, у которых есть поля. Обычно используется, если не нашлось более подходящего, ибо универсален.
@@ -49,9 +50,7 @@ public class ReflectionSwconfSerializationProvider implements ISwconfSerializati
 		 
 		 if (ret == null)
 		 {
-			 ret = ReflectionUtils.getAccessibleFields(cl)
-					 .dataStream()
-					 .toMap((e) -> e.getName(), (e) -> e);
+			 ret = ReflectionUtils.getAccessibleFields(cl);
 			 
 			 cachedFields.put(cl, ret);
 		 }
@@ -75,6 +74,9 @@ public class ReflectionSwconfSerializationProvider implements ISwconfSerializati
 		
 		for (Field field : accessibleFields.values())
 		{
+			if (ReflectionUtils.hasAnnotation(IgnoreSwconf.class, field))
+				continue;
+			
 			SwconfPrimitive primitive = swconfObject.getChild(field.getName());
 			
 			if (primitive != null)
@@ -110,6 +112,9 @@ public class ReflectionSwconfSerializationProvider implements ISwconfSerializati
 		
 		for (Field field : fields.values())
 		{
+			if (ReflectionUtils.hasAnnotation(IgnoreSwconf.class, field))
+				continue;
+			
 			logger.safe(() -> {
 				Class<?> classOfField = field.getType();
 				

@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 
 import ru.swayfarer.swl2.collections.CollectionsSWL;
@@ -47,7 +48,7 @@ public class FileResourceType extends ResourceType {
 
 	/** Получить входящий поток */
 	@Override
-	public <T extends InputStream> T getStream(ResourceLink rlink)
+	public <T extends InputStream> T getInputStream(ResourceLink rlink)
 	{
 		File file = new File(rlink.content);
 		
@@ -103,6 +104,18 @@ public class FileResourceType extends ResourceType {
 		rlink.toFile().getParentFile().getSubfiles().forEach((file) -> FileAdjacentFinder.addFileAdjacents(file, isDeep, ret));
 		
 		return ret;
+	}
+
+	@Override
+	public OutputStream getOutStream(ResourceLink rlink)
+	{
+		return rlink != null ? rlink.toFile().toOutputStream() : null;
+	}
+
+	@Override
+	public boolean isWritable(ResourceLink rlink)
+	{
+		return rlink != null;
 	}
 
 }

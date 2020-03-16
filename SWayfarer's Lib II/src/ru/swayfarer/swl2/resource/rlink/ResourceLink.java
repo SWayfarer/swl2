@@ -11,6 +11,7 @@ import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1;
 import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.resource.file.FileSWL;
 import ru.swayfarer.swl2.resource.streams.DataInputStreamSWL;
+import ru.swayfarer.swl2.resource.streams.DataOutputStreamSWL;
 import ru.swayfarer.swl2.resource.streams.StreamsUtils;
 import ru.swayfarer.swl2.string.StringUtils;
 
@@ -66,9 +67,23 @@ public class ResourceLink {
 	/** Получить поток данных из ресурса */
 	public DataInputStreamSWL toStream()
 	{
-		InputStream stream = type.getStream(this);
+		InputStream stream = type.getInputStream(this);
 		
 		return stream == null ? null : DataInputStreamSWL.of(stream);
+	}
+	
+	/** Получить поток для записи данных */
+	public DataOutputStreamSWL toOutStream()
+	{
+		java.io.OutputStream stream = type.getOutStream(this);
+		
+		return stream == null ? null : DataOutputStreamSWL.of(stream);
+	}
+	
+	/** Можно ли записывать в ресурс? */
+	public boolean isWritable()
+	{
+		return type.isWritable(this);
 	}
 	
 	/** Получить строку в формате rlink */

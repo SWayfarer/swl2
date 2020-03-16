@@ -57,7 +57,7 @@ public class CollectionsSWL {
 	/** Создать {@link HashMap} */
 	public static <K, V> Map<K, V> createHashMap()
 	{
-		return new HashMap<>();
+		return new LinkedHashMap<>();
 	}
 	
 	public static <K, V> Map<K, V> createLinkedMap()

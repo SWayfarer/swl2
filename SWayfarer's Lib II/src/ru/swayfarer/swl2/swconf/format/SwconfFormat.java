@@ -5,6 +5,7 @@ import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction0;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1;
 import ru.swayfarer.swl2.string.StringUtils;
+import ru.swayfarer.swl2.swconf.serialization.formatter.PrettyFormattedWriter;
 import ru.swayfarer.swl2.swconf.serialization.reader.SwconfReader;
 import ru.swayfarer.swl2.swconf.serialization.writer.ISwconfWriter;
 import ru.swayfarer.swl2.swconf.serialization.writer.SwconfWriter;
@@ -59,11 +60,26 @@ public class SwconfFormat {
 	/** Конец блока-исключения (Игнорируемого читалкой) */
 	public IExtendedList<String> exclusionEnds = CollectionsSWL.createExtendedList("*/", "]--");
 	
+	/** Получить {@link ISwconfWriter} для этого формата */
 	public <T extends ISwconfWriter> T getWriter()
 	{
-		return (T) writerFun.apply();
+		return getWriter(false);
 	}
 	
+	/** Получить {@link ISwconfWriter} для этого формата */
+	public <T extends ISwconfWriter> T getWriter(boolean isPretty)
+	{
+		T ret = (T) writerFun.apply();
+		
+		if (isPretty)
+		{
+			ret = (T) PrettyFormattedWriter.of(ret);
+		}
+		
+		return ret;
+	}
+	
+	/** Получить {@link SwconfReader} для этого формата */
 	public <T extends SwconfReader> T getReader()
 	{
 		return (T) readerFun.apply();

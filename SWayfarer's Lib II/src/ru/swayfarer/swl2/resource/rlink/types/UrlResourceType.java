@@ -3,6 +3,7 @@ package ru.swayfarer.swl2.resource.rlink.types;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 
@@ -85,7 +86,7 @@ public class UrlResourceType extends ResourceType{
 
 	/** Получить поток данных из ресурса */
 	@Override
-	public <T extends InputStream> T getStream(ResourceLink rlink)
+	public <T extends InputStream> T getInputStream(ResourceLink rlink)
 	{
 		URL url = rlinkToURL(rlink);
 		
@@ -171,5 +172,17 @@ public class UrlResourceType extends ResourceType{
 		
 		registerDefaultAdjacentFinders();
 		
+	}
+
+	@Override
+	public OutputStream getOutStream(ResourceLink rlink)
+	{
+		return null;
+	}
+
+	@Override
+	public boolean isWritable(ResourceLink rlink)
+	{
+		return false;
 	}
 }
