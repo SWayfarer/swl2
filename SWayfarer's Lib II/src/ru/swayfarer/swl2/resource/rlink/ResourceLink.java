@@ -131,6 +131,14 @@ public class ResourceLink {
 		return dis == null ? null : dis.readAllAsUtf8();
 	}
 	
+	/** Прочитать ресурс как одну строку */
+	public String toSingleString(String encoding)
+	{
+		DataInputStreamSWL dis = toStream();
+		
+		return dis == null ? null : dis.readAllAsString(encoding);
+	}
+	
 	/** Прочитать ресурс в буффер */
 	public DynamicByteBuffer toByteBuffer(DynamicByteBuffer buf)
 	{

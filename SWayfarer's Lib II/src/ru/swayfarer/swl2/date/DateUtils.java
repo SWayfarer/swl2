@@ -34,6 +34,36 @@ public class DateUtils {
 		return milisis / MILISIS_IN_SECOND;
 	}
 	
+	/** Перевести секунды в милисекунды */
+	public static long fromSecs(long secs)
+	{
+		return secs * MILISIS_IN_SECOND;
+	}
+	
+	/** Перевести минуты в милисекунды */
+	public static long fromMins(long mins)
+	{
+		return mins * MILISIS_IN_MINUTE;
+	}
+	
+	/** Перевести часы в милисекунды */
+	public static long fromHours(long hours)
+	{
+		return hours * MILISIS_IN_HOUR;
+	}
+	
+	/** Перевести дни в милисекунды */
+	public static long fromDays(long days)
+	{
+		return days * MILISIS_IN_DAY;
+	}
+	
+	/** Перенести недели в милисекунды */
+	public static long fromWeeks(long weeks)
+	{
+		return weeks * MILISIS_IN_WEEK;
+	}
+	
 	/** Перевести милисекунды в минуты */
 	public static long toMinutes(long milisis)
 	{

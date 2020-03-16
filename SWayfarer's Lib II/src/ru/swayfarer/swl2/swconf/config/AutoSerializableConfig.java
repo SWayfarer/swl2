@@ -11,12 +11,16 @@ import ru.swayfarer.swl2.markers.ConcattedString;
 import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.observable.IObservable;
 import ru.swayfarer.swl2.observable.SimpleObservable;
+import ru.swayfarer.swl2.observable.property.ObservableProperty;
 import ru.swayfarer.swl2.resource.rlink.RLUtils;
 import ru.swayfarer.swl2.resource.rlink.ResourceLink;
+import ru.swayfarer.swl2.resource.streams.DataInputStreamSWL;
+import ru.swayfarer.swl2.resource.streams.DataOutputStreamSWL;
 import ru.swayfarer.swl2.string.StringUtils;
 import ru.swayfarer.swl2.swconf.format.SwconfFormat;
 import ru.swayfarer.swl2.swconf.primitives.SwconfObject;
 import ru.swayfarer.swl2.swconf.serialization.SwconfSerialization;
+import ru.swayfarer.swl2.swconf.serialization.comments.TextContainerSwconf;
 import ru.swayfarer.swl2.swconf.serialization.comments.IgnoreSwconf;
 import ru.swayfarer.swl2.swconf.serialization.reader.SwconfReader;
 import ru.swayfarer.swl2.swconf.serialization.writer.ISwconfWriter;
@@ -27,7 +31,7 @@ import ru.swayfarer.swl2.threads.ThreadsUtils;
  * @author swayfarer
  *
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class AutoSerializableConfig {
 	
 	/** Информация о конфиге */
@@ -35,7 +39,7 @@ public class AutoSerializableConfig {
 	public ConfigInfo configInfo = new ConfigInfo();
 	
 	/** Событие постпроцессинга конфига по полям */
-	@InternalElement
+	@InternalElement @IgnoreSwconf
 	public IObservable<FieldPostProcessingEvent> eventPostProcessing = new SimpleObservable<>();
 	
 	/** Логгер */
@@ -61,11 +65,75 @@ public class AutoSerializableConfig {
 	public <T extends AutoSerializableConfig> T load() 
 	{
 		SwconfReader reader = configInfo.configurationFormat.getReader();
-		SwconfObject object = reader.readSwconf(configInfo.resourceLink.toSingleString());
+		DataInputStreamSWL dis = configInfo.resourceLink.toStream();
+		
+		if (dis == null)
+		{
+			logger.error("Can't read resource", configInfo.resourceLink, "by config", this);
+			return (T) this;
+		}
+		
+		configureIn(dis);
+		
+		SwconfObject object = reader.readSwconf(dis.readAllAsString());
 		SwconfSerialization serialization = getSwconfSerialization();
 		serialization.deserialize(this, object);
 		
 		return (T) this;
+	}
+	
+	/** Настроить читающий поток */
+	@InternalElement
+	public void configureIn(DataInputStreamSWL is)
+	{
+		TextContainerSwconf encodingSwconf = getClass().getAnnotation(TextContainerSwconf.class);
+		
+		if (encodingSwconf != null)
+		{
+			String lineSplitter = encodingSwconf.lineSplitter();
+			String newEncoding = encodingSwconf.encoding();
+			
+			if (StringUtils.isEncodingSupported(newEncoding))
+			{
+				is.setEncoding(newEncoding);
+			}
+			else
+			{
+				logger.warning("Encoding '", newEncoding, "' for config", this, "is not supported by this jvm! Falling back to UTF-8!");
+			}
+			
+			if (!StringUtils.isEmpty(lineSplitter))
+			{
+				is.setLineSplitter(lineSplitter);
+			}
+		}
+	}
+	
+	/** Настроить пишуший поток */
+	@InternalElement
+	public void configureOut(DataOutputStreamSWL os)
+	{
+		TextContainerSwconf encodingSwconf = getClass().getAnnotation(TextContainerSwconf.class);
+		
+		if (encodingSwconf != null)
+		{
+			String lineSplitter = encodingSwconf.lineSplitter();
+			String newEncoding = encodingSwconf.encoding();
+			
+			if (StringUtils.isEncodingSupported(newEncoding))
+			{
+				os.setEncoding(newEncoding);
+			}
+			else
+			{
+				logger.warning("Encoding '", newEncoding, "' for config", this, "is not supported by this jvm! Falling back to UTF-8!");
+			}
+			
+			if (!StringUtils.isEmpty(lineSplitter))
+			{
+				os.setLineSplitter(lineSplitter);
+			}
+		}
 	}
 	
 	/** Сохранить конфиг в ссылку {@link #resourceLink} */
@@ -81,8 +149,15 @@ public class AutoSerializableConfig {
 		ISwconfWriter writer = configInfo.configurationFormat.getWriter(true);
 		SwconfObject object = serialization.serialize(this);
 		
+		writer.startWriting();
 		writer.write(object);
-		configInfo.resourceLink.toOutStream().writeString(writer.toSwconfString());
+		writer.endWriting();
+		
+		DataOutputStreamSWL dos = configInfo.resourceLink.toOutStream();
+		
+		configureOut(dos);
+		
+		dos.writeString(writer.toSwconfString());
 		
 		return (T) this;
 	}
@@ -123,6 +198,21 @@ public class AutoSerializableConfig {
 		});
 	}
 	
+	/** Слушать изменения в отдельном потоке раз в {@link ConfigInfo#DEFAULT_SAVE_DELAY} */
+	public <T extends AutoSerializableConfig> T listen() 
+	{
+		return listen(ConfigInfo.DEFAULT_SAVE_DELAY);
+	}
+	
+	/** Слушать изменения в конфиге раз в указанное в милисекундах время */
+	public <T extends AutoSerializableConfig> T listen(long delay) 
+	{
+		configInfo.saveDelayInMilisis = delay;
+		ConfigurationSaveThread thread = new ConfigurationSaveThread(this);
+		thread.start();
+		return (T) this;
+	}
+	
 	/** Задать ссылку на конфиг */
 	public <T extends AutoSerializableConfig> T setResourceLink(ResourceLink rlink) 
 	{
@@ -134,6 +224,22 @@ public class AutoSerializableConfig {
 	public <T extends AutoSerializableConfig> T setResourceLink(@ConcattedString Object... text) 
 	{
 		return setResourceLink(RLUtils.createLink(StringUtils.concat(text)));
+	}
+	
+	public void registerDefaultPostProcessors()
+	{
+		eventPostProcessing.subscribe((e) -> {
+			Object obj = e.value;
+			
+			if (obj instanceof ObservableProperty)
+			{
+				ObservableProperty property = (ObservableProperty) obj;
+				
+				property.eventChange.subscribe((event) -> {
+					configInfo.isNeedsToSave = true;
+				});
+			}
+		});
 	}
 	
 	/**

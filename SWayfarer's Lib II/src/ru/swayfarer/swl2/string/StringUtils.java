@@ -86,6 +86,12 @@ public class StringUtils {
 		return sb.toString();
 	}
 	
+	/** Вывести в консоль все поддерживаемые кодировки */
+	public static void printAvailableEncodings()
+	{
+		Charset.availableCharsets().keySet().forEach(System.out::println);
+	}
+	
 	/**
 	 * Создать лист со всеми комбинаряцми в формате iterables[0].rand()+iterables[1].rand()+iterables[?].rand()
 	 * @param iterables Строки для комбинации
@@ -140,7 +146,7 @@ public class StringUtils {
 	{
 		try
 		{
-			if (!StringUtils.isEmpty(name) && Charset.isSupported(name))
+			if (isEncodingSupported(name))
 				return Charset.forName(name);
 			else
 				logger.error("Charset '", name, "' is not supported!");
@@ -165,6 +171,13 @@ public class StringUtils {
 		Charset ret = getCharset(name);
 		
 		return ret == null ? defaultCharset : ret;
+	}
+	
+	/** Поддерживается ли эта кодировка? */
+	public static boolean isEncodingSupported(@ConcattedString Object... text)
+	{
+		String enc = concat(text);
+		return !isEmpty(enc) && Charset.isSupported(enc);
 	}
 	
 	/**
