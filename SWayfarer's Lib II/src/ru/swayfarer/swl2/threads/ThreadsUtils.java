@@ -3,6 +3,7 @@ package ru.swayfarer.swl2.threads;
 import java.util.Map;
 
 import ru.swayfarer.swl2.collections.CollectionsSWL;
+import ru.swayfarer.swl2.exceptions.ExceptionsUtils;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction0;
 
 /**
@@ -15,6 +16,12 @@ public class ThreadsUtils {
 
 	/** Зарегистрированные {@link ThreadLocal}'ы относительно их функций-факторей */
 	public static Map<Class<?>, ThreadLocal> cachedThreadLocals = CollectionsSWL.createIdentityMap();
+	
+	/** Безопасный {@link Thread#sleep(long)} */
+	public static void sleepSafe(long milisis)
+	{
+		ExceptionsUtils.safe(() -> Thread.sleep(milisis));
+	}
 	
 	/**
 	 *  Получить локальное для потока значение через функцию-фактрю 
