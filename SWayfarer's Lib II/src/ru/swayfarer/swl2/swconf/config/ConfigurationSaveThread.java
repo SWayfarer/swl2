@@ -26,6 +26,10 @@ public class ConfigurationSaveThread extends Thread {
 	{
 		ExceptionsUtils.IfNullArg(cfg, "Handled config can't be null!");
 		this.cfg = cfg;
+		setDaemon(true);
+		
+		// Добавляем в закрытие приложения принудительное сохранение конфига, чтобы все сделанные изменеия сохранились
+		Runtime.getRuntime().addShutdownHook(new Thread(() -> saveConfig()));
 	}
 	
 	@Override
