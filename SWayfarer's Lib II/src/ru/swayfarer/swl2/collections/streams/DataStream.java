@@ -353,4 +353,16 @@ public class DataStream<Element_Type> implements IDataStream<Element_Type>{
 	{
 		return new DataStream<>(CollectionsSWL.createExtendedList(elements));
 	}
+
+	@Override
+	public boolean contains(IFunction1<Element_Type, Boolean> filter)
+	{
+		for (Element_Type e : elements)
+		{
+			if (filter.apply(e) == Boolean.TRUE)
+				return true;
+		}
+		
+		return false;
+	}
 }

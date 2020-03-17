@@ -77,6 +77,9 @@ public interface IDataStream<Element_Type> {
 	 */
 	public boolean contains(Element_Type element);
 	
+	/** Есть ли элемент, удовлетворяющий фильру? */
+	public boolean contains(IFunction1<Element_Type, Boolean> filter);
+	
 	/**
 	 * Пустой ли поток данных?
 	 * @return True, если пустой, иначе False
