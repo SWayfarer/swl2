@@ -7,6 +7,10 @@ import java.io.OutputStream;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipOutputStream;
 
+import javax.crypto.Cipher;
+import javax.crypto.CipherOutputStream;
+
+import ru.swayfarer.swl2.crypto.Cryptor;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
 import ru.swayfarer.swl2.markers.Alias;
@@ -267,6 +271,18 @@ public class DataOutputStreamSWL extends DataOutputStream{
 		}
 		
 		return null;
+	}
+	
+	/** Закриптовать поток */
+	public DataOutputStreamSWL crypted(Cryptor cryptor)
+	{
+		return wrap(new CipherOutputStream(this, cryptor.getEncryptCipher()));
+	}
+	
+	/** Закриптовать поток */
+	public DataOutputStreamSWL crypted(Cipher cipher)
+	{
+		return wrap(new CipherOutputStream(this, cipher));
 	}
 	
 	/** Получить {@link ZipOutputStream} */

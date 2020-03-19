@@ -19,7 +19,7 @@ public abstract class AbstractAsmTransformer implements IClassTransformer {
 	/** Логгер */
 	@InternalElement
 	public ILogger logger = LoggingManager.getLogger();
-	
+
 	/**
 	 * Преобразовать класс
 	 * @param name Каноничное имя класса. То, под которым его знает класслоадер
@@ -33,7 +33,7 @@ public abstract class AbstractAsmTransformer implements IClassTransformer {
 	{
 		transform(name, bytes, reader, writer);
 	}
-	
+
 	/**
 	 * Преобразовать класс
 	 * @param name Каноничное имя класса. То, под которым его знает класслоадер
@@ -43,58 +43,58 @@ public abstract class AbstractAsmTransformer implements IClassTransformer {
 	 * @return трансформированные байты класса, из которых он будет загружен
 	 */
 	public void transform(String name, byte[] bytes, ClassReader reader, ClassWriter writer) {}
-	
-	
+
+
 	@Override
-	public byte[] transform(String name, byte[] bytes, TransformedClassInfo info) 
+	public byte[] transform(String name, byte[] bytes, TransformedClassInfo info)
 	{
 		try
 		{
 			ClassReader reader = createClassReader(bytes);
 			ClassWriter writer = createClassWriter(reader, bytes);
-			
+
 			transform(name, bytes, reader, writer, info);
-			
+
 			byte[] ret = writer.toByteArray();
-			
+
 			return ret;
 		}
 		catch (Throwable e)
 		{
 			logger.error(e, "Error while transforming class", name, "by", this);
 		}
-		
+
 		return bytes;
 	}
-	
+
 	/** Создать читалку классов */
 	protected ClassReader createClassReader(byte[] bytecode)
 	{
 		return new ClassReader(bytecode);
 	}
-	
+
 	/** Создать писалку классов */
 	protected ClassWriter createClassWriter(ClassReader reader, int flags)
 	{
 		return new ClassWriter(reader, flags);
 	}
-	
+
 	/** Применить визитора к читалке */
 	protected void acceptCV(ClassReader reader, byte[] bytes, ClassVisitor visit)
 	{
 		reader.accept(visit, isJava7(bytes) ? ClassReader.SKIP_FRAMES : ClassReader.EXPAND_FRAMES);
 	}
-	
+
 	/** Создать писалку классов на основе читалки и байтов класса */
 	protected ClassWriter createClassWriter(ClassReader reader, byte[] bytes)
 	{
-		return new ClassWriter(reader, 0);
+		return new ClassWriter(reader, isJava7(bytes) ? ClassWriter.COMPUTE_MAXS : ClassWriter.COMPUTE_FRAMES);
 	}
-	
+
 	/** Является ли класс классом Java7? */
 	protected boolean isJava7(byte[] bytes)
 	{
 		return ((((bytes[6] & 0xFF) << 8) | (bytes[7] & 0xFF)) > 50);
 	}
-	
+
 }

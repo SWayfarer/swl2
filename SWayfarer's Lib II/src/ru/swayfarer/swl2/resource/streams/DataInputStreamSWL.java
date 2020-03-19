@@ -11,9 +11,13 @@ import java.util.Stack;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipInputStream;
 
+import javax.crypto.Cipher;
+import javax.crypto.CipherInputStream;
+
 import ru.swayfarer.swl2.binary.BinaryUtils;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
+import ru.swayfarer.swl2.crypto.Cryptor;
 import ru.swayfarer.swl2.exceptions.ExceptionsUtils;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
@@ -107,6 +111,16 @@ public class DataInputStreamSWL extends DataInputStream {
 		skip(bytesCount);
 		
 		return (T) this;
+	}
+	
+	public DataInputStreamSWL crypted(Cryptor cryptor)
+	{
+		return crypted(cryptor.getDecryptCypher());
+	}
+	
+	public DataInputStreamSWL crypted(Cipher cipher)
+	{
+		return wrap(new CipherInputStream(this, cipher));
 	}
 	
 	public boolean isClosed()
