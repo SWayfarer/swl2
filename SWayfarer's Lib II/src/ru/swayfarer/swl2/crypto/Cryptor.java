@@ -47,7 +47,6 @@ public class Cryptor {
 			if (indexOfSlash > 0)
 			{
 				algoritmName = algoritmName.substring(0, indexOfSlash);
-				System.out.println(algoritmName);
 			}
 			
 			this.key = getKey(algoritmName, keyBytes);
