@@ -13,6 +13,7 @@ import ru.swayfarer.swl2.string.StringUtils;
 
 /**
  * Шифровальщик 
+ * <br> Обертка над двумя {@link Cipher}'ами
  * @author swayfarer
  *
  */
@@ -34,6 +35,21 @@ public class Cryptor {
 	/** Ключ для шифровки */
 	@InternalElement
 	public SecretKey key;
+	
+	/** Конструктор без инициализации шифрования */
+	public Cryptor() {}
+	
+	/** Конструктор с указанием типа шифрования и ключа */
+	public Cryptor(String cryptType, String key)
+	{
+		load(cryptType, key);
+	}
+	
+	/** Конструктор с указанием типа шифрования и ключа */
+	public Cryptor(String cryptType, byte[] keyBytes)
+	{
+		load(cryptType, keyBytes);
+	}
 	
 	/** Загрузить, зная тип шифрования и ключ */
 	public <T extends Cryptor> T load(String cryptType, byte[] keyBytes) 
@@ -68,6 +84,7 @@ public class Cryptor {
 	}
 	
 	/** Получить ключ */
+	@InternalElement
 	public SecretKey getKey(String keyType, byte[] keyBytes)
 	{
 		if (StringUtils.isEmpty(keyType) || CollectionsSWL.isNullOrEmpty(keyBytes))

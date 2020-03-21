@@ -113,16 +113,19 @@ public class DataInputStreamSWL extends DataInputStream {
 		return (T) this;
 	}
 	
+	/** Читать поток как зашифрованный */
 	public DataInputStreamSWL crypted(Cryptor cryptor)
 	{
 		return crypted(cryptor.getDecryptCypher());
 	}
 	
+	/** Читать поток как зашифрованный */
 	public DataInputStreamSWL crypted(Cipher cipher)
 	{
 		return wrap(new CipherInputStream(this, cipher));
 	}
 	
+	/** Закрыт ли поток? */
 	public boolean isClosed()
 	{
 		return isClosed;
