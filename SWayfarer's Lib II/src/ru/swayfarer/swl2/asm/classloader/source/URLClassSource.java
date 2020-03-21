@@ -105,10 +105,23 @@ public class URLClassSource implements IClassInfoSource {
 	}
 	
 	/** Получить источник классов, обращающийся к другому класслоадеру */
-	public static URLClassSource wrapClassloader(ClassLoader loader)
+	public static URLClassSource wrapClassloaders(ClassLoader... loaders)
 	{
 		URLClassSource ret = new URLClassSource();
-		ret.urlSource = (name) -> loader.getResource(name);
+		
+		ret.urlSource = (name) -> {
+			
+			for (ClassLoader loader : loaders)
+			{
+				URL url = loader.getResource(name);
+				
+				if (url != null)
+					return url;
+			}
+			
+			return null;
+			
+		};
 		return ret;
 	}
 

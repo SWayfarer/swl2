@@ -52,17 +52,23 @@ public class FxmlFileFinder {
 		ResourceLink ret;
 		
 		if ((ret = findFxmlPath(name, lowerCaseName)) != null)
-			return ret;
-		else if (name.endsWith("Gui") && name.length() > 3)
 		{
-			ret = findFxmlPath(name.substring(0, name.length() - 3), lowerCaseName.substring(0, name.length() - 3));
+			return ret;
+		}
+		else if (lowerCaseName.endsWith("gui") && name.length() > 3)
+		{
+			name = StringUtils.subString(0, -3, name);
+			
+			lowerCaseName = name.toLowerCase();
+			
+			ret = findFxmlPath(name, lowerCaseName);
 			
 			if (ret != null)
 			{
 				return ret;
 			}
 		}
-		else if (name.startsWith("Gui") && name.length() > 3)
+		else if (lowerCaseName.startsWith("gui") && name.length() > 3)
 		{
 			ret = findFxmlPath(name.substring(3), lowerCaseName.substring(3));
 			

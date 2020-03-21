@@ -8,6 +8,8 @@ import ru.swayfarer.swl2.classes.ReflectionUtils;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.exceptions.ExceptionsUtils;
+import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1NoR;
+import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction2NoR;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
 import ru.swayfarer.swl2.markers.InternalElement;
@@ -39,6 +41,12 @@ public abstract class ApplicationSWL {
 	
 	/** Показывать ли время работы приложения при его закрытии? */
 	public boolean isShowingWorkTimeOnExit = true;
+	
+	/** Включен ли postStart? */
+	public boolean isPostStartEnabled;
+	
+	/** Стартер для приложения */
+	public IFunction2NoR<IExtendedList<String>, IFunction1NoR<IExtendedList<String>>> applicationStarter = (args, method) -> method.apply(args);
 
 	/** 
 	 * Настроить класслоадер, который будет грузить приложение 
@@ -66,14 +74,18 @@ public abstract class ApplicationSWL {
 		preStart(options);
 		this.options = optionsParser.parse(options);
 		optionsParser.init(logger, this.options);
-		start(options);
-		postStart(options);
+		
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> eventExit.next(null)));
 		
 		eventExit.subscribe((e) -> {
 			if (isShowingWorkTimeOnExit)
 				logger.info("Application work time", System.currentTimeMillis() - startTime, "milisis");
 		});
+		
+		applicationStarter.apply(options, this::start);
+		
+		if (isPostStartEnabled)
+			applicationStarter.apply(options, this::postStart);
 	}
 	
 	/** Вызов стартера приложения из указанного класса */

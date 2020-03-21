@@ -109,6 +109,12 @@ public class CssManager {
 		return registeredCssUpdateHandlers.get(scene);
 	}
 	
+	/** Очистить все css */
+	public synchronized void clear()
+	{
+		cssLinks.clear();
+	}
+	
 	/** Применить ко всем сценам  */
 	public synchronized void applyAll()
 	{

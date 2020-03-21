@@ -421,6 +421,7 @@ public class FileSWL extends File {
 	{
 		try
 		{
+			createIfNotFound();
 			return new FileOutputStream(this, isAppend);
 		}
 		catch (Throwable e)

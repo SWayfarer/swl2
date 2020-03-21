@@ -88,7 +88,7 @@ public abstract class FxmlWindow {
 			return false;
 		
 		FxmlWindowsTracker.setWindowShowing(this, true);
-		showAndWaitOnce();
+		showAndWait();
 		
 		return true;
 	}
@@ -186,9 +186,7 @@ public abstract class FxmlWindow {
 			
 			FXMLLoader loader = new FXMLLoader(StringUtils.getCharset(encoding, DEFAULT_CHARSET));
 			
-			logger.info(1);
 			Object controller = InternalControllerFactory.generateController(fxmlRlink);
-			logger.info(controller);
 			
 			logger.info("Controller is", controller);
 			

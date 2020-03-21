@@ -5,6 +5,7 @@ import java.util.Map;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.exceptions.ExceptionsUtils;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction0;
+import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction0NoR;
 
 /**
  * Утилиты для работы с потоками 
@@ -21,6 +22,15 @@ public class ThreadsUtils {
 	public static void sleepSafe(long milisis)
 	{
 		ExceptionsUtils.safe(() -> Thread.sleep(milisis));
+	}
+	
+	/** Запустить в новом потоке */
+	public static Thread newThread(IFunction0NoR run, boolean isDaemon)
+	{
+		Thread thread = new Thread(run.asJavaRunnable());
+		thread.setDaemon(isDaemon);
+		thread.start();
+		return thread;
 	}
 	
 	/**

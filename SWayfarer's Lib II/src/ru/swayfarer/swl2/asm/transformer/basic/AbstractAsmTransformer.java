@@ -88,7 +88,7 @@ public abstract class AbstractAsmTransformer implements IClassTransformer {
 	/** Создать писалку классов на основе читалки и байтов класса */
 	protected ClassWriter createClassWriter(ClassReader reader, byte[] bytes)
 	{
-		return new ClassWriter(reader, isJava7(bytes) ? ClassWriter.COMPUTE_MAXS : ClassWriter.COMPUTE_FRAMES);
+		return createClassWriter(reader, isJava7(bytes) ? ClassWriter.COMPUTE_FRAMES : ClassWriter.COMPUTE_MAXS);
 	}
 
 	/** Является ли класс классом Java7? */

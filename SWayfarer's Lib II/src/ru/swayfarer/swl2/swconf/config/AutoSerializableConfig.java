@@ -169,6 +169,17 @@ public class AutoSerializableConfig {
 		return ThreadsUtils.getThreadLocal(() -> new SwconfSerialization());
 	}
 	
+	/** Создать когфиг, если не было до этого */
+	public <T extends AutoSerializableConfig> T createIfNotFound() 
+	{
+		if (!configInfo.resourceLink.isExists())
+		{
+			save();
+		}
+		
+		return (T) this;
+	}
+	
 	/** Инициализация конфига */
 	@InternalElement
 	public void init()

@@ -54,7 +54,7 @@ public class ClassLoaderSWL extends URLClassLoader {
 
 	/** Исключения, которые будут загружены стандартным загрузчиком */
 	@InternalElement
-	public IExtendedList<String> systemExclusions = CollectionsSWL.createExtendedList("java.");
+	public IExtendedList<String> systemExclusions = CollectionsSWL.createExtendedList("java.", "javax.", "sun.");
 
 	/** Исключения, которые будут загружены стандартным загрузчиком */
 	@InternalElement
@@ -132,7 +132,17 @@ public class ClassLoaderSWL extends URLClassLoader {
 	/** Использовать родительский класслоадер в качестве {@link #classInfoSource} */
 	public <T extends ClassLoaderSWL> T wrapParent()
 	{
-		classInfoSource = URLClassSource.wrapClassloader(parent);
+		classInfoSource = URLClassSource.wrapClassloaders(parent);
+		return (T) this;
+	}
+	
+	/** Использовать родительский класслоадер в качестве {@link #classInfoSource} */
+	public <T extends ClassLoaderSWL> T wrapParentAnd(ClassLoader... loaders)
+	{
+		IExtendedList<ClassLoader> list = CollectionsSWL.createExtendedList(loaders);
+		list.add(getParent());
+		
+		classInfoSource = URLClassSource.wrapClassloaders(list.toArray(ClassLoader.class));
 		return (T) this;
 	}
 	
