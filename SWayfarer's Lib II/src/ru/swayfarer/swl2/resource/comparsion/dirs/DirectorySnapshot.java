@@ -61,7 +61,6 @@ public class DirectorySnapshot {
 			}
 			
 			compareSnapshotFiles.remove(e.name);
-			System.out.println(compareSnapshotFiles.size());
 			
 		});
 		

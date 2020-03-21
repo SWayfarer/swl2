@@ -380,11 +380,6 @@ public class ReflectionUtils {
 			
 			for (Method method : methods)
 			{
-				if (method.getName().equals("launch"))
-				{
-					System.out.println(isParamsAccepted(method.getParameters(), false, args));
-				}
-				
 				if (method.getName().equals(name) && isParamsAccepted(method.getParameters(), false, args))
 					return method;
 			}

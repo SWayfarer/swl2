@@ -37,8 +37,6 @@ public class AdaptiveWrapperClassSource extends URLClassSource{
 						name = StringUtils.subString(0, -6, name);
 					}
 					
-					System.out.println(name);
-					
 					Class<?> cl = Class.forName(name);
 					ClassLoader loader = cl.getClassLoader();
 					

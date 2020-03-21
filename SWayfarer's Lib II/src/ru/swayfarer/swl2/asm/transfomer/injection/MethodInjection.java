@@ -111,7 +111,6 @@ public class MethodInjection implements IMethodInjection, Opcodes {
 			// Загружаем все параметры метода-цели на стек, чтобы передать их во втавляемый метод
 			for (VariableInfo parameterInfo : targetMethodInfo.parameters)
 			{
-				System.out.println("Adding " + parameterInfo);
 				methodVisitor.visitVarInsn(parameterInfo.getType().getOpcode(ILOAD), currentParamId ++);
 			}
 			
@@ -196,7 +195,6 @@ public class MethodInjection implements IMethodInjection, Opcodes {
 		{
 			if (!targetMethodInfo.isVoid())
 			{
-				System.out.println(refInfo.returnVarId);
 				methodVisitor.visitVarInsn(methodReturnType.getOpcode(ILOAD), refInfo.returnVarId);
 				methodVisitor.visitInsn(methodReturnType.getOpcode(IRETURN));
 			}

@@ -95,7 +95,6 @@ final class JsonDeserializationContextDefault implements JsonDeserializationCont
 		JsonObjectDeserializationVisitor<T> visitor = new JsonObjectDeserializationVisitor<T>(jsonObject, typeOfT, navigatorFactory, objectConstructor, typeAdapter, deserializers, context);
 		Object target = visitor.getTarget();
 		ObjectNavigator on = navigatorFactory.create(target, typeOfT);
-		System.out.println(visitor.getClass());
 		on.accept(visitor);
 		return visitor.getTarget();
 	}
@@ -106,7 +105,6 @@ final class JsonDeserializationContextDefault implements JsonDeserializationCont
 		JsonObjectDeserializationVisitor<T> visitor = new JsonObjectDeserializationVisitor<T>(jsonObject, instance.getClass(), navigatorFactory, objectConstructor, instance, typeAdapter, deserializers, context);
 		Object target = visitor.getTarget();
 		ObjectNavigator on = navigatorFactory.create(target, instance.getClass());
-		System.out.println(visitor.getClass());
 		on.accept(visitor);
 		return visitor.getTarget();
 	}

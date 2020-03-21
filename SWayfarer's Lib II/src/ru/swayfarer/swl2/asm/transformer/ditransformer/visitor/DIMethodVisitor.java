@@ -73,8 +73,6 @@ public class DIMethodVisitor extends AdviceAdapter {
 			
 			if (annotationInfo != null)
 			{
-				System.out.println("Annotation not null for " + fieldInfo.name);
-				
 				String contextName = annotationInfo.getParam("context");
 				
 				String elementName = annotationInfo.getParam("name");

@@ -206,7 +206,6 @@ public interface ILogger {
 		
 		if (stacktraceOffset >= stackTraceElements.length)
 		{
-			System.out.println("Сорян");
 			return (T) this;
 		}
 		

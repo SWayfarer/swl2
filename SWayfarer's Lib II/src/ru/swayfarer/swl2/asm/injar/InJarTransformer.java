@@ -196,12 +196,6 @@ public class InJarTransformer {
 										
 										bytes = transformer.transform(entryName, bytes, transformedClassInfo);
 										
-										if (len != bytes.length)
-										{
-											System.out.println(PathTransforms.transform("%temp%"));
-											System.out.println("Transformed "+entryName);
-										}
-										
 										if (!transformedClassInfo.name.equals(entryName))
 										{
 											entry = new ZipEntry(transformedClassInfo.name+".class");
@@ -240,8 +234,6 @@ public class InJarTransformer {
 					FileSWL destFile = new FileSWL(dest).createIfNotFound();
 					
 					tmpFile.copyTo(destFile);
-					
-					System.out.println(tmpFile.getAbsolutePath() + " | " + destFile.getAbsolutePath());
 					
 					tmpParent.remove();
 				}
