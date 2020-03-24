@@ -28,6 +28,12 @@ public class FilesUtils {
 	/** Для каждого файла, проходящего указанный фильтр, выполнить функцию */
 	public static void forEachFile(IFunction1<FileSWL, Boolean> filter, IFunction1NoR<FileSWL> fun, FileSWL initialFile)
 	{
+		forEachFile(filter, fun, initialFile, true);
+	}
+	
+	/** Для каждого файла, проходящего указанный фильтр, выполнить функцию */
+	public static void forEachFile(IFunction1<FileSWL, Boolean> filter, IFunction1NoR<FileSWL> fun, FileSWL initialFile, boolean isParrallel)
+	{
 		if (filter == null)
 			filter = (f) -> true;
 
@@ -45,7 +51,7 @@ public class FilesUtils {
 			initialFile.getSubFiles((f) -> f.isDirectory() || finallyFilter.apply(f))
 				.parrallelDataStream()
 				.each((file) -> {
-					forEachFile(finallyFilter, fun, file);
+					forEachFile(finallyFilter, fun, file, isParrallel);
 				});
 	}
 	

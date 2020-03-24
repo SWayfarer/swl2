@@ -5,6 +5,7 @@ import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import java.util.TreeSet;
 
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.streams.DataStream;
@@ -44,6 +45,15 @@ public interface IExtendedList<Element_Type> extends List<Element_Type>{
 			add(e);
 		}
 		
+		return (T) this;
+	}
+	
+	/** Удалить дубликаты */
+	public default <T extends IExtendedList<Element_Type>> T distinct() 
+	{
+		TreeSet<Element_Type> set = new TreeSet<>(this);
+		clear();
+		addAll(set);
 		return (T) this;
 	}
 	

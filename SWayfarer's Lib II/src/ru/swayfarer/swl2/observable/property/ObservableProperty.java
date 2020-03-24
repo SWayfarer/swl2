@@ -89,9 +89,9 @@ public class ObservableProperty<Element_Type> extends PropertyContainer {
 	}
 	
 	/** Подписаться на изменения проперти */
-	public <T extends ObservableProperty<Element_Type>> T addChangeHandler(IReference ref)
+	public <T extends ObservableProperty<Element_Type>> T addChangeHandler(IReference<IFunction1NoR<ChangeEvent>> ref)
 	{
-		eventChange.subscribe((evt) -> ((IFunction1NoR<ChangeEvent>)ref.getValue()).apply(evt));
+		eventChange.subscribe((evt) -> ref.getValue().apply(evt));
 		return (T) this;
 	}
 	

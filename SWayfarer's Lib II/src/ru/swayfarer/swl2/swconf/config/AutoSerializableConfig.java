@@ -61,6 +61,17 @@ public class AutoSerializableConfig {
 		setResourceLink(text);
 	}
 	
+	public static <T extends AutoSerializableConfig> T loadFrom(Class<? extends AutoSerializableConfig> classOfConfig, @ConcattedString Object... rlink)
+	{
+		T config = ReflectionUtils.newInstanceOf(classOfConfig);
+		
+		config.setResourceLink(rlink);
+		config.createIfNotFound();
+		config.init();
+		
+		return config;
+	}
+	
 	/** Загрузить конфиг из ссылки {@link #resourceLink} */
 	public <T extends AutoSerializableConfig> T load() 
 	{

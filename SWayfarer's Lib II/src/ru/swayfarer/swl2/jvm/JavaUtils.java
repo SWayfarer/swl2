@@ -23,4 +23,10 @@ public class JavaUtils {
 		return false;
 	}
 	
+	/** Получить путь до Java */
+	public static String getJavaPath()
+	{
+		return System.getProperty("java.home");
+	}
+	
 }

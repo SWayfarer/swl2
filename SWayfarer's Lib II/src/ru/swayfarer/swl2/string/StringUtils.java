@@ -52,6 +52,12 @@ public class StringUtils {
 		return concat(" ", text);
 	}
 	
+	/** Заменить первое совпадение в строке */
+	public static String replaceFirst(String target, String replacement, String newStr)
+	{
+		return target.replaceFirst(regex().text(replacement).build(), newStr);
+	}
+	
 	/**
 	 * Составить Camel Case строку из слов
 	 * @param lowerCaseToAll Сделать ли заглавные буквы только в начале слов?

@@ -122,16 +122,25 @@ public class StringReaderSWL extends Reader {
 		return (T) this;
 	}
 	
+	/** Пропустить строку  */
+	public boolean skipSome(String s)
+	{
+		if (isPending(s))
+		{
+			skip(s);
+			return true;
+		}
+		
+		return false;
+	}
+	
 	/** Пропустить одну из строк */
 	public boolean skipSome(IExtendedList<String> list)
 	{
 		for (String s : list)
 		{
-			if (isPending(s))
-			{
-				skip(s);
+			if (skipSome(s))
 				return true;
-			}
 		}
 		
 		return false;

@@ -60,6 +60,36 @@ public class FileSWL extends File {
 		return dis == null ? null : dis.readAllSafe();
 	}
 	
+	/** Лежит ли файл в указанной директории? */
+	public boolean isIn(FileSWL file)
+	{
+		if (!file.isDirectory())
+			return false;
+		
+		String targetDir = file.getAbsolutePath();
+		String fileDir = getAbsolutePath();
+		
+		targetDir = PathTransforms.fixSlashes(targetDir);
+		fileDir = PathTransforms.fixSlashes(fileDir);
+		
+		if (targetDir.endsWith("./"))
+			targetDir = targetDir.substring(0, targetDir.length() - 2);
+		
+		if (fileDir.endsWith("./"))
+			fileDir = targetDir.substring(0, fileDir.length() - 2);
+		
+		return getAbsolutePath().startsWith(targetDir);
+	}
+	
+	/** Получить подфайл */
+	public FileSWL subFile(@ConcattedString Object... filepath)
+	{
+		if (!isDirectory())
+			return null;
+		
+		return new FileSWL(this, StringUtils.concat(filepath));
+	}
+	
 	/** Получить файл со случайным доступом */
 	public RandomAccessFile toRandomAccess(String mode)
 	{
@@ -79,6 +109,12 @@ public class FileSWL extends File {
 	public ResourceLink toRlink()
 	{
 		return RLUtils.file(this);
+	}
+	
+	/** Получить расположение в формате {@link ResourceLink} */
+	public String toRlinkString()
+	{
+		return toRlink().toSingleString();
 	}
 	
 	/** Удалить (если папка, то включая подпапки и подфайлы) */
@@ -236,7 +272,13 @@ public class FileSWL extends File {
 	/** Получить путь до файла, по возможности относительно рабочей директории */
 	public String getLocalPath()
 	{
-		String workDir = PathTransforms.fixSlashes(new FileSWL().getAbsolutePath());
+		return getLocalPath(new FileSWL());
+	}
+	
+	/** Получить путь до файла, по возможности относительно указанной директории */
+	public String getLocalPath(FileSWL root)
+	{
+		String workDir = PathTransforms.fixSlashes(root.getAbsolutePath());
 		String currentDir = PathTransforms.fixSlashes(getAbsolutePath());
 		
 		if (workDir.endsWith("./"))
@@ -414,6 +456,35 @@ public class FileSWL extends File {
 	public DataOutputStreamSWL toOutputStream()
 	{
 		return DataOutputStreamSWL.of(toOutputFileStream(false));
+	}
+	
+	/**
+	 *  Переименовать в файл
+	 *  <h1> Доступные актеры: </h1>
+	 *  <br> %file% - имя файла с расширением
+	 *  <br> %fileabs% - абсолютный путь до файла
+	 *  <br> %filewext% - имя без расширения
+	 *  <br> %fileext% - расширение файла 
+	 */
+	public FileSWL renameTo(@ConcattedString Object... name)
+	{
+		String newName = StringUtils.concat(name);
+		
+		newName = newName
+				.replace("%file%", getName())
+				.replace("%fileabs%", getAbsolutePath())
+				.replace("%filewext%", getNameWithoutExtension())
+				.replace("%fileext%", getExtension());
+		
+		
+		if (!StringUtils.isEmpty(newName))
+		{
+			FileSWL file = new FileSWL(newName);
+			renameTo(file);
+			return file;
+		}
+		
+		return null;
 	}
 	
 	/** Получить поток исходящих данных */

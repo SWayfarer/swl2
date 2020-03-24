@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
+import java.io.RandomAccessFile;
 import java.util.Stack;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipInputStream;
@@ -477,6 +478,25 @@ public class DataInputStreamSWL extends DataInputStream {
 		return (T) this;
 	}
 
+	/** Статический метод-фабрика */
+	public static DataInputStreamSWL of(RandomAccessFile randomAccessFile)
+	{
+		if (randomAccessFile == null)
+			return null;
+		
+		return new DataInputStreamSWL(new RandomAccessFileInputStream(randomAccessFile));
+	}
+	
+	/** Статический метод-фабрика */
+	@SuppressWarnings("resource")
+	public static DataInputStreamSWL of(RandomAccessFile randomAccessFile, long start, long end)
+	{
+		if (randomAccessFile == null)
+			return null;
+		
+		return new DataInputStreamSWL(new RandomAccessFileInputStream(randomAccessFile).setStart(start).setEnd(end));
+	}
+	
 	/** Статический метод-фабрика */
 	public static DataInputStreamSWL of(InputStream stream)
 	{

@@ -20,6 +20,7 @@ import java.util.jar.Manifest;
 
 import ru.swayfarer.swl2.asm.IClassTransformer;
 import ru.swayfarer.swl2.asm.TransformedClassInfo;
+import ru.swayfarer.swl2.asm.classloader.source.AdaptiveWrapperClassSource;
 import ru.swayfarer.swl2.asm.classloader.source.URLClassSource;
 import ru.swayfarer.swl2.asm.transformer.dump.DumpClassTransformer;
 import ru.swayfarer.swl2.classes.ReflectionUtils;
@@ -274,6 +275,12 @@ public class ClassLoaderSWL extends URLClassLoader {
 	public Class<?> loadClass(Class<?> cl) throws ClassNotFoundException
 	{
 		return loadClass(cl.getCanonicalName());
+	}
+	
+	public <T extends ClassLoaderSWL> T useAdaptiveSource() 
+	{
+		this.classInfoSource = new AdaptiveWrapperClassSource();
+		return (T) this;
 	}
 
 	@Override

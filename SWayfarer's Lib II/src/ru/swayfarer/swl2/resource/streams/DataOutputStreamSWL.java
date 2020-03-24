@@ -4,6 +4,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.io.RandomAccessFile;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipOutputStream;
 
@@ -304,6 +305,14 @@ public class DataOutputStreamSWL extends DataOutputStream{
 		}
 		
 		return null;
+	}
+	
+	public static DataOutputStreamSWL of(RandomAccessFile randomAccessFile)
+	{
+		if (randomAccessFile == null)
+			return null;
+		
+		return new DataOutputStreamSWL(new RandomAccessFileOutputStream(randomAccessFile));
 	}
 	
 	public static DataOutputStreamSWL of(OutputStream stream)

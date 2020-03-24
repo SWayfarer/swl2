@@ -4,6 +4,7 @@ import java.util.Date;
 
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
+import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction0;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1;
 import ru.swayfarer.swl2.markers.ConcattedString;
 import ru.swayfarer.swl2.markers.InternalElement;
@@ -72,6 +73,32 @@ public class PathTransforms {
 			s = transformer.apply(s);
 		
 		return s;
+	}
+	
+	/** Зарегистрировать "актера" пути*/
+	public static void registerActor(String untransformed, IFunction0<String> transformedFun) 
+	{
+		registerActor(new IPathActor()
+		{
+			
+			@Override
+			public boolean isPackingSupported()
+			{
+				return false;
+			}
+			
+			@Override
+			public String getUnransformedString()
+			{
+				return untransformed;
+			}
+			
+			@Override
+			public String getTransformedString()
+			{
+				return transformedFun.apply();
+			}
+		});
 	}
 	
 	/** Зарегистрировать "актера" пути*/

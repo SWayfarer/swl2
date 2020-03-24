@@ -57,8 +57,6 @@ public class InternalControllerFactory implements Opcodes {
 	{
 		String rlink = fxmlRlink.toRlinkString();
 		
-		logger.info("rlist str", rlink);
-		
 		// Если класс для контроллера уже хотя бы раз создавался, то просто берем его из кэша 
 		Class<?> cl = generatedControllers.get(rlink);
 		
@@ -145,8 +143,6 @@ public class InternalControllerFactory implements Opcodes {
 			}
 			
 			Object obj = ReflectionUtils.newInstanceOf(controllerGeneratedClass);
-			
-			logger.info("Controller factory created controller", obj);
 			
 			return obj;
 		}

@@ -20,7 +20,7 @@ public class SimpleLoggerSWL implements ILogger, StandartLoggingLevels, Stacktra
 	public static String defaultDecoratorSeq = "=-";
 	public static String defaultFormat = "[%thread%] [%date[dd.MM.YYYY-HH:mm:ss]%] [%logger%] [%level%] -> %text%";
 	
-	public static IFunction2NoR<ILogger, LogInfo> defaultPrinter = (logger, info) -> System.err.println(info.getContent());
+	public static IFunction2NoR<ILogger, LogInfo> defaultPrinter = (logger, info) -> System.out.println(info.getContent());
 	
 	public static IFunction2NoR<ILogger, LogInfo> defaultFormatter = new TemplateLogFormatter()
 			.setFormat(defaultFormat);

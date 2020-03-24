@@ -116,30 +116,28 @@ public class StreamsUtils {
 	}
 
 	/** Копировать содержимое одного потока в другой с закрытием обоих */
-	public static boolean copyStreamSafe(InputStream istream, OutputStream ostream)
+	public static int copyStreamSafe(InputStream istream, OutputStream ostream)
 	{
 		return copyStreamSafe(istream, ostream, true, true);
 	}
 
 	/** Копировать содержимое одного потока в другой */
-	public static boolean copyStreamSafe(InputStream istream, OutputStream ostream, boolean isCloseIn, boolean isCloseOut)
+	public static int copyStreamSafe(InputStream istream, OutputStream ostream, boolean isCloseIn, boolean isCloseOut)
 	{
 		try
 		{
-			copyStream(istream, ostream, isCloseIn, isCloseOut);
-
-			return true;
+			return copyStream(istream, ostream, isCloseIn, isCloseOut);
 		}
 		catch (Throwable e)
 		{
 			logger.error(e, "Error while copyng stream", istream, "to", ostream);
 		}
 
-		return false;
+		return -1;
 	}
 
 	/** Копировать содержимое одного потока в другой */
-	public static void copyStream(InputStream istream, OutputStream ostream, boolean isCloseIn, boolean isCloseOut) throws IOException
+	public static int copyStream(InputStream istream, OutputStream ostream, boolean isCloseIn, boolean isCloseOut) throws IOException
 	{
 		ExceptionsUtils.IfNull(istream, IllegalArgumentException.class, "The Input stream can't be null!");
 		ExceptionsUtils.IfNull(ostream, IllegalArgumentException.class, "The Out stream can't be null!");
@@ -149,11 +147,14 @@ public class StreamsUtils {
 
 		byte[] buffer = new byte[BUFFER_SIZE];
 
+		int totalLen = 0;
+		
 		int len = in.read(buffer);
 
 		while (len != -1)
 		{
 			out.write(buffer, 0, len);
+			totalLen += len;
 			len = in.read(buffer);
 		}
 
@@ -162,6 +163,8 @@ public class StreamsUtils {
 
 		if (isCloseIn)
 			in.close();
+		
+		return totalLen;
 	}
 
 }

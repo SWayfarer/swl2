@@ -3,9 +3,12 @@ package ru.swayfarer.swl2.collections.streams;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
+import java.util.Enumeration;
 import java.util.LinkedHashSet;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentLinkedDeque;
+
+import javax.lang.model.element.Element;
 
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.ExtendedListWrapper;
@@ -345,6 +348,11 @@ public class DataStream<Element_Type> implements IDataStream<Element_Type>{
 	}
 	
 	public static <Element_Type> DataStream<Element_Type> of(Collection<Element_Type> elements)
+	{
+		return new DataStream<>(CollectionsSWL.createExtendedList(elements));
+	}
+	
+	public static <Element_Type> DataStream<Element_Type> of(Enumeration<? extends Element_Type> elements)
 	{
 		return new DataStream<>(CollectionsSWL.createExtendedList(elements));
 	}

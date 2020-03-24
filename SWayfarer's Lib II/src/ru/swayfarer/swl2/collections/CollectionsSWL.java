@@ -19,6 +19,8 @@ import ru.swayfarer.swl2.binary.buffers.DynamicByteBuffer;
 import ru.swayfarer.swl2.classes.ReflectionUtils;
 import ru.swayfarer.swl2.collections.extended.ExtendedListWrapper;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
+import ru.swayfarer.swl2.collections.observable.IObservableList;
+import ru.swayfarer.swl2.collections.observable.ObservableListWrapper;
 import ru.swayfarer.swl2.collections.weak.WeakList;
 import ru.swayfarer.swl2.exceptions.ExceptionsUtils;
 import ru.swayfarer.swl2.logger.ILogger;
@@ -165,6 +167,23 @@ public class CollectionsSWL {
 	}
 	
 	/** Создать раширенный лист с начальными элементами */
+	public static <T> IExtendedList<T> createExtendedList(Enumeration<? extends T> enumeration)
+	{
+		if (enumeration == null || !enumeration.hasMoreElements())
+			return createExtendedList();
+		
+		IExtendedList<T> ret = CollectionsSWL.createExtendedList();
+		
+		while (enumeration.hasMoreElements())
+		{
+			T elem = enumeration.nextElement();
+			ret.add(elem);
+		}
+		
+		return ret;
+	}
+	
+	/** Создать раширенный лист с начальными элементами */
 	public static <T> IExtendedList<T> createExtendedList(T... elements)
 	{
 		List<T> wrappedList = new ArrayList<>();
@@ -174,6 +193,18 @@ public class CollectionsSWL {
 				wrappedList.add(element);
 		
 		return new ExtendedListWrapper<>(wrappedList);
+	}
+	
+	/** Создать наблюдаемый лист */
+	public static <T> IObservableList<T> createObservableList()
+	{
+		return new ObservableListWrapper<>();
+	}
+	
+	/** Создать наблюдаемый лист */
+	public static <T> IObservableList<T> createObservableList(T... elements)
+	{
+		return new ObservableListWrapper<>(createExtendedList(elements));
 	}
 	
 	/** Создать раширенный лист с начальными элементами */
