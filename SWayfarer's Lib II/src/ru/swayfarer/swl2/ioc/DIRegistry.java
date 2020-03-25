@@ -35,6 +35,7 @@ public class DIRegistry {
 	/** Иньекция контекста в объект с указанием дефолтного контекста */
 	public static <T> T injectToObject(String defaultContext, Object object)
 	{	
+		logger.info("Injecting context", defaultContext, "to object", object);
 		ReflectionDIInjector.inject(AnnotationContextFunction.of(defaultContext), object);
 		return (T) object;
 	}

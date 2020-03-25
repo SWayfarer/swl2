@@ -28,14 +28,17 @@ public class StringUtils {
 	@InternalElement
 	public static ILogger logger = LoggingManager.getLogger();
 	
+	/** Пробельный символ */
+	public static final String SPACE = " ";
+	
 	/** Символ CR */
-	public final static String CR  = ""+(char) 0x0D;
+	public static final String CR  = ""+(char) 0x0D;
 	
 	/** Символ RF*/
-	public final static String LF  = ""+(char) 0x0A; 
+	public static final String LF  = ""+(char) 0x0A; 
 	
 	/** Символ CRLF*/
-	public final static String CRLF  = CR+LF;
+	public static final String CRLF  = CR+LF;
 	
 	/** Символ BOM*/
 	public static final String BOM = "\ufeff";

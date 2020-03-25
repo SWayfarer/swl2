@@ -17,6 +17,10 @@ import ru.swayfarer.swl2.string.StringUtils;
 @SuppressWarnings("unchecked")
 public class StringReaderSWL extends Reader {
 
+	/** Разделитель строк */
+	@InternalElement
+	public String lineSplitter = StringUtils.LF;
+	
 	/** Читаемая строка */
 	@InternalElement
 	public String str;
@@ -96,6 +100,22 @@ public class StringReaderSWL extends Reader {
 	{
 		return StringUtils.isEmpty(str);
 	}
+	
+	/** Читаем строку */
+	public String readLine()
+	{
+		if (!hasNextElement())
+			return null;
+		
+		StringBuilder builder = new StringBuilder();
+		
+		while (!skipSome(lineSplitter) && hasNextElement())
+		{
+			builder.append(next());
+		}
+		
+		return builder.toString();
+	}
 
 	public int read(char cbuf[], int off, int len) throws IOException {
 		synchronized (lock) {
@@ -112,6 +132,13 @@ public class StringReaderSWL extends Reader {
 			pos += n;
 			return n;
 		}
+	}
+	
+	/** Задать разделитель строк */
+	public <T extends StringReaderSWL> T setLineSplitter(@ConcattedString Object... text) 
+	{
+		this.lineSplitter = StringUtils.concat(text);
+		return (T) this;
 	}
 
 	/** Пропустить строку */

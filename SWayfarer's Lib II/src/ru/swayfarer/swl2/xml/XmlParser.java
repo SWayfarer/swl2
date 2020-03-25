@@ -169,7 +169,7 @@ public class XmlParser {
 	/** Прочитать значение атрибута */
 	public void readAttributeValue()
 	{
-		readingInfo.tag.attributes.put(readingInfo.attributeName, builder.toString());
+		readingInfo.tag.attributes.put(readingInfo.attributeName, new XmlAttribute(readingInfo.attributeName, builder.toString()));
 		readingInfo.attributeName = null;
 	}
 	

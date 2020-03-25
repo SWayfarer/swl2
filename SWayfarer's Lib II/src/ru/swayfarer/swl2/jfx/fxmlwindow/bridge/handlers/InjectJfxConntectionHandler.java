@@ -67,7 +67,7 @@ public class InjectJfxConntectionHandler implements IFunction2NoR<FxmlWindow, Ob
 								windowFieldNewValue = ReflectionUtils.newInstanceOf(windowFieldType, windowFieldNewValue);
 							}
 							
-							windowField.set(instance, windowFieldNewValue);
+							windowField.set(window, windowFieldNewValue);
 							
 						}, "Error while injecting controller's", controller, "field", controllerField, "to window's", window, "field", windowField);
 					}

@@ -4,6 +4,7 @@ import java.util.Map;
 
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
+import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1NoR;
 import ru.swayfarer.swl2.markers.ConcattedString;
 import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.string.StringUtils;
@@ -21,7 +22,7 @@ public class XmlTag {
 	
 	/** Атрибуты тага */
 	@InternalElement
-	public Map<String, String> attributes = CollectionsSWL.createHashMap();
+	public Map<String, XmlAttribute> attributes = CollectionsSWL.createHashMap();
 	
 	/** Имя тага */
 	@InternalElement
@@ -43,10 +44,39 @@ public class XmlTag {
 			parent.childrenTags.add(this);
 	}
 	
+	/** Есть ли атрибут с таким именем? */
+	public boolean hasAttribute(@ConcattedString Object... name)
+	{
+		String s = StringUtils.concat(name);
+		return attributes.containsKey(s);
+	}
+	
 	/** Есть ли дочерний элемент с таким именем? */
 	public boolean hasChild(@ConcattedString Object... text)
 	{
 		return firstChild(text) != null;
+	}
+	
+	/** Выполнить функцию для каждого тага внутри этого, включая сам таг */
+	public void forEachChild(IFunction1NoR<XmlTag> fun)
+	{
+		forEachChild(fun, true);
+	}
+	
+	/** Выполнить функцию для каждого тага внутри этого, включая сам таг */
+	public void forEachChild(IFunction1NoR<XmlTag> fun, boolean isRecurcive)
+	{
+		forEachChild(this, fun, isRecurcive);
+	}
+	
+	/** Выполнить функцию для каждого тага внутри этого, включая сам таг */
+	public static void forEachChild(XmlTag tag, IFunction1NoR<XmlTag> fun, boolean isRecurcive)
+	{
+		fun.apply(tag);
+		if (isRecurcive)
+			tag.childrenTags.each((e) -> forEachChild(e, fun, isRecurcive));
+		else
+			tag.childrenTags.each(fun::apply);
 	}
 	
 	/** Получить все дочерние элементы с таким именем */
@@ -71,6 +101,27 @@ public class XmlTag {
 		return builder.toString();
 	}
 	
+	/** Получить атрибут как double */
+	public Number getNumberAttribute(@ConcattedString Object... name)
+	{
+		XmlAttribute attr = getAttribute(name);
+		return attr == null ? null : attr.getNumberValue();
+	}
+	
+	/** Получить атрибут как строку */
+	public String getStringAttribute(@ConcattedString Object... name)
+	{
+		XmlAttribute attr = getAttribute(name);
+		return attr == null ? null : attr.getValue();
+	}
+	
+	/** Получить атрибут тага */
+	public XmlAttribute getAttribute(@ConcattedString Object... name)
+	{
+		String s = StringUtils.concat(name);
+		return attributes.get(s);
+	}
+	
 	/** Записать xml-строку в билдер */
 	@InternalElement
 	public void toXmlString(StringBuilder builder, int indient)
@@ -81,13 +132,13 @@ public class XmlTag {
 		builder.append("<");
 		builder.append(name);
 		
-		for (Map.Entry<String, String> attr : attributes.entrySet())
+		for (Map.Entry<String, XmlAttribute> attr : attributes.entrySet())
 		{
 			builder.append(" ");
 			
 			builder.append(attr.getKey());
 			builder.append(" = \"");
-			builder.append(attr.getValue());
+			builder.append(attr.getValue().value);
 			builder.append("\"");
 		}
 		
