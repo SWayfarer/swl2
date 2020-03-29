@@ -612,6 +612,17 @@ public class ReflectionUtils {
 	 * Метод, инстанс класса
 	 * <br> Каждая из функций выполняется в отдельном try-catch
 	 */
+	public static void forEachMethod(Object instance, IFunction2NoR<Method, Object> fun)
+	{
+		forEachMethod(instance.getClass(), instance, fun);
+	}
+	
+	/** 
+	 * Выполнить функцию для каждого метода указанного класса
+	 * <h1> Функция принимает: </h1>
+	 * Метод, инстанс класса
+	 * <br> Каждая из функций выполняется в отдельном try-catch
+	 */
 	public static void forEachMethod(Class<?> cl, Object instance, IFunction2NoR<Method, Object> fun)
 	{
 		Method[] methods = cl.getDeclaredMethods();

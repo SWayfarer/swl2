@@ -53,6 +53,12 @@ public class DataOutputStreamSWL extends DataOutputStream{
 		}
 	}
 	
+	/** Освободить поток безопасно */
+	public void flushSafe()
+	{
+		logger.safe(() -> flush(), "Error while flushing stream", this);
+	}
+	
 	/** Записать инт безопасно */
 	public boolean writeIntSafe(int i)
 	{

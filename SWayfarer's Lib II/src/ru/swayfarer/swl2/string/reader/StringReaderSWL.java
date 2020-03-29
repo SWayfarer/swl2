@@ -5,8 +5,10 @@ import java.io.Reader;
 import java.io.StringReader;
 
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
+import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction0;
 import ru.swayfarer.swl2.markers.ConcattedString;
 import ru.swayfarer.swl2.markers.InternalElement;
+import ru.swayfarer.swl2.string.DynamicString;
 import ru.swayfarer.swl2.string.StringUtils;
 
 /**
@@ -47,6 +49,28 @@ public class StringReaderSWL extends Reader {
 	public void ensureOpen() throws IOException {
 		if (str == null)
 			throw new IOException("Stream closed");
+	}
+	
+	/** Читать, пока выполняется условие */
+	public String readWhile(IFunction0<Boolean> condition)
+	{
+		DynamicString ret = new DynamicString();
+		while (hasNextElement() && condition.apply())
+			ret.append(next());
+		return ret.toString();
+	}
+	
+	/** Прочитать до конца */
+	public String readAll()
+	{
+		DynamicString str = new DynamicString();
+		
+		while (hasNextElement())
+		{
+			str.append(next());
+		}
+		
+		return str.toString();
 	}
 
 	/** Прочитать следующий символ. Вернет -1, если символа нет */

@@ -3,6 +3,7 @@ package ru.swayfarer.swl2.tasks;
 import java.util.Queue;
 
 import ru.swayfarer.swl2.exceptions.ExceptionsUtils;
+import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction0NoR;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1;
 
 /**
@@ -38,6 +39,11 @@ public class TaskManager {
 		
 		while ( (task = tasks.poll() ) != null)
 			while (!task.isCompleted()) {}
+	}
+	
+	public static ITask once(IFunction0NoR fun)
+	{
+		return new OnceRunTask(fun);
 	}
 	
 }

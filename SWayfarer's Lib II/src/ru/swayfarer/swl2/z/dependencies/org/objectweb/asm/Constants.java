@@ -198,9 +198,9 @@ final class Constants implements Opcodes {
     } catch (IOException ioe) {
       throw new IllegalStateException("i/O error, can't check class version", ioe);
     }
-    if (minorVersion != 0xFFFF) {
-      throw new IllegalStateException(
-          "ASM8_EXPERIMENTAL can only be used by classes compiled with --enable-preview");
-    }
+//    if (minorVersion != 0xFFFF) {
+//      throw new IllegalStateException(
+//          "ASM8_EXPERIMENTAL can only be used by classes compiled with --enable-preview");
+//    }
   }
 }

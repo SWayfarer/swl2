@@ -20,11 +20,17 @@ public class DynamicString implements CharSequence {
 	public DynamicString(String str) {
 		sb = new StringBuilder(str);
     }
+	
+	public boolean isEmpty()
+	{
+		return length() == 0;
+	}
 
 	public DynamicString(CharSequence seq) {
         sb = new StringBuilder(seq);
     }
 	
+	//123
 	public DynamicString subString(int start, int end)
 	{
 		return new DynamicString(sb.subSequence(start, end));

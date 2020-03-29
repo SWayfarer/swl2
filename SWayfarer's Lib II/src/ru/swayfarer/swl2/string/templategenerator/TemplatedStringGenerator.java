@@ -7,11 +7,13 @@ import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.equals.EqualsUtils;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
+import ru.swayfarer.swl2.markers.ConcattedString;
 import ru.swayfarer.swl2.string.DynamicString;
 import ru.swayfarer.swl2.string.StringUtils;
 import ru.swayfarer.swl2.string.property.StringProperty;
 import ru.swayfarer.swl2.string.reader.StringReaderSWL;
 
+@SuppressWarnings("unchecked")
 public class TemplatedStringGenerator {
 
 	public static ILogger logger = LoggingManager.getLogger();
@@ -26,12 +28,19 @@ public class TemplatedStringGenerator {
 	
 	public Map<String, StringProperty> properties = CollectionsSWL.createHashMap(); 
 	
+	public boolean isStarted = false;
+	
 	public TemplatedStringGenerator(String template)
 	{
 		reader = new StringReaderSWL(template);
 	}
 	
-	public boolean isStarted = false;
+	public <T extends TemplatedStringGenerator> T clear() 
+	{
+		properties.clear();
+		dynamicString.clear();
+		return (T) this;
+	}
 	
 	public String generate()
 	{
@@ -55,6 +64,12 @@ public class TemplatedStringGenerator {
 		return dynamicString.toString();
 	}
 	
+	public <T extends TemplatedStringGenerator> T setProperty(String key, @ConcattedString Object... value) 
+	{
+		this.properties.put(key, new StringProperty(value));
+		return (T) this;
+	}
+	
 	public boolean skipComment()
 	{
 		if (reader.skipSome(commentStarts))
@@ -70,7 +85,7 @@ public class TemplatedStringGenerator {
 	{
 		for (Map.Entry<String, StringProperty> property : properties.entrySet())
 		{
-			str = str.replace("$" + property.getKey(), property.getValue().getValue());
+			str = str.replace("${" + property.getKey() + "}", property.getValue().getValue());
 		}
 		
 		return str;
@@ -213,6 +228,7 @@ public class TemplatedStringGenerator {
 				{
 					String name = macro.substring(0, indexOfSpace);
 					macro = macro.substring(indexOfSpace + 1);
+					macro = applyProperties(macro);
 					String value = toValue(macro);
 					properties.put(name, new StringProperty(value));
 				}

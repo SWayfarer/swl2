@@ -48,6 +48,12 @@ public class RLUtils {
 		return resourceLink == null ? null : resourceLink.getSource();
 	}
 	
+	public static String toSingleString(@ConcattedString Object... path)
+	{
+		ResourceLink rlink = createLink(StringUtils.concat(path));
+		return rlink == null ? null : rlink.toSingleString();
+	}
+	
 	/** Создать ссылку */
 	public static ResourceLink file(File file)
 	{

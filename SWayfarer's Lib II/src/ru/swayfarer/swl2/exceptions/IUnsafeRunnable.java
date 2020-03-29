@@ -8,5 +8,8 @@ package ru.swayfarer.swl2.exceptions;
 public interface IUnsafeRunnable {
 
 	public void run() throws Throwable;
-	
+
+	public static interface IUnsafeRunnableWithReturn <T> {
+		T run() throws Throwable;
+	}
 }

@@ -3,6 +3,7 @@ package ru.swayfarer.swl2.logger;
 import java.util.Vector;
 
 import ru.swayfarer.swl2.exceptions.IUnsafeRunnable;
+import ru.swayfarer.swl2.exceptions.IUnsafeRunnable.IUnsafeRunnableWithReturn;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction2NoR;
 import ru.swayfarer.swl2.logger.ILogLevel.StandartLoggingLevels;
 import ru.swayfarer.swl2.logger.event.LogEvent;
@@ -259,6 +260,27 @@ public interface ILogger {
 		}
 		
 		return null;
+	}
+	
+	/** Безопасно выпонить и вернуть резуьтат */
+	public default <T> T safeReturn(IUnsafeRunnableWithReturn<T> fun, @ConcattedString Object... text)
+	{
+		return safeReturn(fun, null, text);
+	}
+	
+	/** Безопасно выпонить и вернуть резуьтат */
+	public default <T> T safeReturn(IUnsafeRunnableWithReturn<T> fun, T ifnull, @ConcattedString Object... text)
+	{
+		try
+		{
+			return fun.run();
+		}
+		catch (Throwable e)
+		{
+			error(e, text);
+		}
+		
+		return ifnull;
 	}
 	
 	/** Установить позднюю загрузку через {@link LoggingManager} */
