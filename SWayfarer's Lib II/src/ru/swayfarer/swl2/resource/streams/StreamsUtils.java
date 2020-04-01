@@ -151,7 +151,7 @@ public class StreamsUtils {
 		
 		int len = in.read(buffer);
 
-		while (in.hasNextByte() && len != -1)
+		while (len != -1)
 		{
 			out.write(buffer, 0, len);
 			totalLen += len;

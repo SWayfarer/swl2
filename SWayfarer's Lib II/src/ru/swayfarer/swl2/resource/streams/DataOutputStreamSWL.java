@@ -124,6 +124,20 @@ public class DataOutputStreamSWL extends DataOutputStream{
 		return writeStringWithEncoding(encoding, false, text);
 	}
 	
+	/** Записать строки. Каждый новый объект - отдельная строка */
+	public boolean writeLines(Object... lines)
+	{
+		boolean ret = true;
+		
+		for (Object obj : lines)
+		{
+			if (!writeLn(obj))
+				ret = false;
+		}
+		
+		return ret;
+	}
+	
 	/** Добавить текст и перейти на новую строку */
 	@Alias("writeStringLn")
 	public boolean writeLn(@ConcattedString Object... text)

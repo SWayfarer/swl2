@@ -1,0 +1,254 @@
+/-- Code
+
+#set classType ${functionName}${argsCount}<${funGenerics}, ${returnType}>
+#set classTypeNoR ${functionName}${argsCount}NoR<${funGenerics}>
+#set classTypeNoRExtends ${functionName}${argsCount}<${funGenerics}, Void>
+
+#if ($argsCount == 0)
+	#set classType ${functionName}${argsCount}<${returnType}>
+	#set classTypeNoR ${functionName}${argsCount}NoR
+	#set classTypeNoRExtends ${functionName}${argsCount}<Void>
+#endif
+
+#text
+
+@FunctionalInterface
+public static interface ${classType} {
+	
+	/**
+	 * Применить функцию
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default ${returnType} _(${declareArgs})
+	{
+		return apply(${invokeArgs});
+	}
+	
+	/**
+	 * Применить функцию
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default ${returnType} process(${declareArgs})
+	{
+		return apply(${invokeArgs});
+	}
+	
+	/**
+	 * Применить функцию
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public ${returnType} apply(${declareArgs});
+	
+	/**
+	 * Добавить 'post-функцию' функцию
+	 * 
+	 * @param nextFun
+	 *            Функция, которая будет выполнена после этой. Цепочка
+	 *            вернет результат последней функции
+	 * @return Новую функцию, свянанную цепочкой
+	 */
+	public default ${classType} andAfter(${classType} fun)
+	{
+		return (${invokeArgs}) -> {
+			apply(${invokeArgs});
+			return fun.apply(${invokeArgs});
+		};
+	}
+	
+	public default ${classType} andThan(${classType} fun)
+	{
+		return andAfter(fun);
+	}
+	
+	/**
+	 * Добавить 'pre-функцию' функцию
+	 * 
+	 * @param fun
+	 *            Функция, которая будет выполнена до этой. Цепочка вернет
+	 *            результат последней функции
+	 * @return Новую функцию, свянанную цепочкой
+	 */
+	public default ${classType} andBefore(${classType} fun)
+	{
+		return (${invokeArgs}) -> {
+			fun.apply(${invokeArgs});
+			return apply(${invokeArgs});
+		};
+	}
+	
+	/**
+	 * Получить функцию с кэшированным результатом
+	 * @return Функция с кэшированными результатами
+	 */
+	public default ${classType} cached(${declareArgs})
+	{
+		${returnType} ret = apply(${invokeArgs});
+		return (${invokeArgs2}) -> ret;
+	}
+	
+	/**
+	 * Получить функцию без возвращаемого типа
+	 * 
+	 * @return Новую фунцию
+	 */
+	public default ${classTypeNoR} asNoReturn()
+	{
+		return (${invokeArgs}) -> apply(${invokeArgs});
+	}
+	
+	/-- Если кол-во аргументов - 2, то можно представить функцию как компаратор 
+	#if ($argsCount == 2)
+	
+	/**
+	 * Получить стандартный Java-{@link Comparator}
+	 * 
+	 * @return Возвращает новую функцию
+	 */
+	public default Comparator asJavaComparator()
+	{
+
+		return new Comparator()
+		{
+			@Override
+			public int compare(Object arg1, Object arg2)
+			{
+				return (Integer) apply((Arg1) arg1, (Arg2) arg2);
+			}
+		};
+	}
+	
+	#endif
+	
+	#if ($argsCount == 1)
+	
+	/**
+	 * Получить старнадрный Java-{@link Predicate}
+	 * 
+	 * @return Возвращает новый Java-{@link Predicate}
+	 */
+	public default Predicate<Arg1> asJavaPredicate()
+	{
+		return new Predicate<Arg1>()
+		{
+			@Override
+			public boolean test(Arg1 t)
+			{
+				Object ret = apply(t);
+
+				if (ret == null)
+					throw new IllegalArgumentException("The method asJavaPredicate() is available only for functions that return a no-null value!");
+
+				if (ret == null || !(ret instanceof Boolean))
+					throw new IllegalArgumentException("The method asJavaPredicate() is available only for functions that return a boolean value!");
+
+				return (Boolean) ret;
+			}
+		};
+	}
+	
+	/**
+	 * Получить стандартную Java-{@link Function}
+	 * 
+	 * @return Возвращает новую {@link Function}
+	 */
+	public default Function<Arg1, Ret_Type> asJavaFunction()
+	{
+		return (arg1) -> apply(arg1);
+	}
+	
+	/**
+	 * Получить стандартный Java-{@link Consumer}
+	 * 
+	 * @return Возвращает новую функцию
+	 */
+	public default Consumer<Arg1> asJavaConsumer()
+	{
+		return (arg1) -> apply(arg1);
+	}
+	
+	#endif
+	
+	#if ($argsCount == 0)
+	
+	/** Получить стандартный Java-{@link Supplier}*/
+	public default Supplier<Ret_Type> asJavaSupplier()
+	{
+		return () -> apply();
+	}
+	
+	#endif
+}
+
+/**
+ * Версия функции ${functionName}${argsCount} без возвращаемого типа (NoR = No return)
+ * 
+ * @author swayfarer
+ */
+ @FunctionalInterface
+public static interface ${classTypeNoR} extends ${classTypeNoRExtends} {
+	
+	@Override
+	public default Void apply(${declareArgs})
+	{
+		applyNoR(${invokeArgs});
+		return null;
+	}
+	
+	public void applyNoR(${declareArgs});
+	
+	/**
+	 * Добавить 'post-функцию' функцию
+	 * 
+	 * @param nextFun
+	 *            Функция, которая будет выполнена после этой. Цепочка
+	 *            вернет результат последней функции
+	 * @return Новую функцию, свянанную цепочкой
+	 */
+	public default ${classTypeNoR} andAfter(${classTypeNoR} fun)
+	{
+		return (${invokeArgs}) -> {
+			apply(${invokeArgs});
+			fun.apply(${invokeArgs});
+		};
+	}
+	
+	public default ${classTypeNoR} andThan(${classTypeNoR} fun)
+	{
+		return andAfter(fun);
+	}
+	
+	/**
+	 * Добавить 'pre-функцию' функцию
+	 * 
+	 * @param fun
+	 *            Функция, которая будет выполнена до этой. Цепочка вернет
+	 *            результат последней функции
+	 * @return Новую функцию, свянанную цепочкой
+	 */
+	public default ${classTypeNoR} andBefore(${classTypeNoR} fun)
+	{
+		return (${invokeArgs}) -> {
+			fun.apply(${invokeArgs});
+			apply(${invokeArgs});
+		};
+	}
+	
+	#if ($argsCount == 0)
+		
+	/**
+	 * Получить старндартный Java-{@link Runnable}
+	 * 
+	 * @return Новый {@link Runnable}
+	 */
+	public default Runnable asJavaRunnable()
+	{
+		return () -> apply();
+	}
+		
+	#endif
+}
+
+#endText

@@ -48,16 +48,18 @@ public class TemplatedStringGenerator {
 		
 		while (reader.hasNextElement())
 		{
-			if (skipComment()) 
+			if (!skipComment() && !processMacro())
 			{
-				// Nope!
-			}
-			else if (!processMacro())
-			{
-				if (isInFalseCondition())
-					reader.next();
+				if (isNeedsToWrite())
+				{
+					String str = applyProperties(reader.readLine()); 
+					dynamicString.append(str, reader.lineSplitter);
+				}
 				else
-					dynamicString.append(applyProperties(reader.readLine()), reader.lineSplitter);
+				{
+					// Пропускаем строку 
+					reader.skipLine();
+				}
 			}
 		}
 		
@@ -83,16 +85,20 @@ public class TemplatedStringGenerator {
 	
 	public String applyProperties(String str)
 	{
+		DynamicString dyn = new DynamicString(str);
+		
 		for (Map.Entry<String, StringProperty> property : properties.entrySet())
 		{
-			str = str.replace("${" + property.getKey() + "}", property.getValue().getValue());
+			String replace = "${" + property.getKey() + "}";
+			dyn.replace(replace, property.getValue().getValue());
 		}
 		
-		return str;
+		return dyn.toString();
 	}
 	
 	public boolean processCondition(String condition)
 	{
+		System.out.println("Processing condition " + condition);
 		condition = toValue(condition);
 		
 		if (condition.contains("||"))
@@ -183,6 +189,11 @@ public class TemplatedStringGenerator {
 			return str;
 	}
 	
+	public boolean isNeedsToWrite()
+	{
+		return !isInFalseCondition() && isStarted;
+	}
+	
 	public boolean isInFalseCondition()
 	{
 		return conditions.contains(Boolean.FALSE);
@@ -190,11 +201,11 @@ public class TemplatedStringGenerator {
 	
 	public void processMacroCommand(String macro)
 	{
-		if (macro.equals("#text"))
+		if (macro.equals("text"))
 		{
 			isStarted = true;
 		}
-		else if (macro.equals("#endText"))
+		else if (macro.equals("endText"))
 		{
 			isStarted = false;
 		}
@@ -251,7 +262,12 @@ public class TemplatedStringGenerator {
 		int currentPos = reader.pos;
 		skipSpacesAtStart();
 		
-		if (reader.skipSome(macroStart))
+		if (skipComment())
+		{
+			// Nope!
+			return true;
+		}
+		else if (reader.skipSome(macroStart))
 		{
 			processMacroCommand(reader.readLine());
 			return true;

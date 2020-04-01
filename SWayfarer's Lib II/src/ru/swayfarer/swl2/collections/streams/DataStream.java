@@ -8,8 +8,6 @@ import java.util.LinkedHashSet;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
-import javax.lang.model.element.Element;
-
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.ExtendedListWrapper;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;

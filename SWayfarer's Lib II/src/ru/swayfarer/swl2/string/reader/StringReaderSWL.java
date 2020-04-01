@@ -125,6 +125,19 @@ public class StringReaderSWL extends Reader {
 		return StringUtils.isEmpty(str);
 	}
 	
+	public <T extends StringReaderSWL> T skipLine() 
+	{
+		if (!hasNextElement())
+			return null;
+		
+		while (!skipSome(lineSplitter) && hasNextElement())
+		{
+			pos ++;
+		}
+		
+		return (T) this;
+	}
+	
 	/** Читаем строку */
 	public String readLine()
 	{

@@ -255,7 +255,7 @@ public class ReflectionUtils {
 		try
 		{
 			ExceptionsUtils.IfNull(cl, IllegalArgumentException.class, "Class for creating instance can't be null!");
-			return (T) cl.newInstance();
+			return (T) cl.getConstructor().newInstance();
 		}
 		catch (Throwable e)
 		{

@@ -1,0 +1,15 @@
+package ru.swayfarer.swl2.functions;
+
+import java.util.Comparator;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.function.Function;
+import java.util.function.Supplier;
+
+/**
+ * Функции для удобства использования функционального подхода 
+ * <h1> Автоматически сгенерировано с помощью ru.swayfarer.swl2.functions.generator.FunctionsGenerator </h1>
+ * @author swayfarer
+ * */
+@SuppressWarnings({ "unchecked", "rawtypes" })
+public class GeneratedFunctions {
