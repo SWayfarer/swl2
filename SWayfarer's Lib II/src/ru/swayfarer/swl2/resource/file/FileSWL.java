@@ -114,7 +114,7 @@ public class FileSWL extends File {
 	/** Получить расположение в формате {@link ResourceLink} */
 	public String toRlinkString()
 	{
-		return toRlink().toSingleString();
+		return toRlink().toRlinkString();
 	}
 	
 	/** Удалить (если папка, то включая подпапки и подфайлы) */

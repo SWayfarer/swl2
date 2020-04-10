@@ -74,6 +74,38 @@ public class ReflectionUtils {
 		return getFieldValue(cl, null, names);
 	}
 	
+	public static Field findField(Class<?> cl, Object instance, String... names)
+	{
+		Map<String, Field> fields = getAccessibleFields(cl);
+		
+		for (Object obj : names)
+		{
+			String name = String.valueOf(obj);
+			
+			if (StringUtils.isEmpty(name))
+				continue;
+			
+			Field field = fields.get(name);
+			
+			try
+			{
+				if (field != null)
+				{
+					if (instance == null && !Modifier.isStatic(field.getModifiers()))
+						continue;
+					
+					return field;
+				}
+			}
+			catch (Throwable e)
+			{
+				logger.error(e, "Error while getting field value");
+			}
+		}
+		
+		return null;
+	}
+	
 	/** Получить значение поля объекта */
 	public static <T> T getFieldValue(Object instance, Object... names)
 	{
@@ -230,6 +262,8 @@ public class ReflectionUtils {
 			{
 				logger.warning("Can't find constructor for args", args);
 			}
+			
+			return (T) constructor.newInstance(args);
 			
 		}
 		catch (Throwable e)
@@ -615,6 +649,36 @@ public class ReflectionUtils {
 	public static void forEachMethod(Object instance, IFunction2NoR<Method, Object> fun)
 	{
 		forEachMethod(instance.getClass(), instance, fun);
+	}
+	
+	/** Задать значение статического поля */
+	public static void setFieldValue(Class<?> cl, Object value, String... names)
+	{
+		setFieldValue(cl, null, value, names);
+	}
+	
+	/** Задать значение поля */
+	public static void setFieldValue(Object obj, Object value, String... names)
+	{
+		setFieldValue(obj.getClass(), obj, value, names);
+	}
+	
+	/** Задать значение поля */
+	public static void setFieldValue(Class<?> cl, Object obj, Object value, String... names)
+	{
+		Field field = findField(cl, obj, names);
+		
+		if (field != null)
+			setFieldValue(obj, field, value);
+	}
+	
+	/** Задать значение поля безопасно */
+	public static void setFieldValue(Object obj, Field field, Object value)
+	{
+		logger.safe(() -> {
+			field.setAccessible(true);
+			field.set(obj, value);
+		}, "Error while setting field", field, "of object", obj, "to value", value);
 	}
 	
 	/** 

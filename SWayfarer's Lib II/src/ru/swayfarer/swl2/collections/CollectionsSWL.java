@@ -19,9 +19,11 @@ import ru.swayfarer.swl2.binary.buffers.DynamicByteBuffer;
 import ru.swayfarer.swl2.classes.ReflectionUtils;
 import ru.swayfarer.swl2.collections.extended.ExtendedListWrapper;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
+import ru.swayfarer.swl2.collections.extended.IExtendedMap;
 import ru.swayfarer.swl2.collections.observable.IObservableList;
 import ru.swayfarer.swl2.collections.observable.ObservableListWrapper;
 import ru.swayfarer.swl2.collections.weak.WeakList;
+import ru.swayfarer.swl2.collections.wrapper.MapWrapper;
 import ru.swayfarer.swl2.exceptions.ExceptionsUtils;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.SimpleLoggerSWL;
@@ -55,6 +57,18 @@ public class CollectionsSWL {
 	/*
 	 * Создание карт
 	 */
+	
+	/** Создать расширенную карту */
+	public static <K, V> IExtendedMap<K, V> createExtendedMap()
+	{
+		return new MapWrapper<>(createHashMap());
+	}
+	
+	/** Создать расширенную карту с указанием контента */
+	public static <K, V> IExtendedMap<K, V> createExtendedMap(Object... content)
+	{
+		return new MapWrapper<>(createHashMap(content));
+	}
 	
 	/** Создать {@link HashMap} */
 	public static <K, V> Map<K, V> createHashMap()

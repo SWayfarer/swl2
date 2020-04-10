@@ -7,6 +7,8 @@ import lombok.SneakyThrows;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.collections.streams.DataStream;
+import ru.swayfarer.swl2.exceptions.IUnsafeRunnable.IUnsafeRunnableWithReturn;
+import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.markers.Alias;
 import ru.swayfarer.swl2.markers.ConcattedString;
 import ru.swayfarer.swl2.markers.InternalElement;
@@ -170,6 +172,29 @@ public class ExceptionsUtils {
 		String name = getStacktraceClassAt(classIndex + 1);
 		name = getClassSimpleName(name);
 		return name;
+	}
+	
+	/**
+	 * <h1> Внимание: </h1>
+	 * Для безопасного выполнения с логированием ошибки используй {@link ILogger#safeReturn(IUnsafeRunnableWithReturn, Object, Object...)}
+	 * <br> <br>
+	 * Безопасно вернуть значение
+	 * @param run Выполнявемая функция
+	 * @param ifException Вернется, если случился {@link Throwable}
+	 * @return Результат выполнения {@link IUnsafeRunnable} или значение по-умолчанию
+	 */
+	public static <T> T safeReturn(IUnsafeRunnableWithReturn<T> run, T ifException)
+	{
+		try
+		{
+			return run.run();
+		}
+		catch (Throwable e)
+		{
+			// Nope!
+		}
+		
+		return ifException;
 	}
 	
 	/**

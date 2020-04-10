@@ -40,8 +40,12 @@ public class MethodInfo {
 	
 	/** Типы параметров метода в дескрипторах */
 	protected IExtendedList<String> paramsTypes;
-	
+
+	/** Параметры метода */
 	public IExtendedList<VariableInfo> parameters = CollectionsSWL.createExtendedList();
+	
+	/** Карта, переводящая id переменной в ее имя */
+	public Map<Integer, String> localIdToName = CollectionsSWL.createHashMap();
 	
 	/** Локальные переменные метода */
 	public IExtendedList<VariableInfo> localVars = CollectionsSWL.createExtendedList();

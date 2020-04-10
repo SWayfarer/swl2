@@ -1,5 +1,6 @@
 package ru.swayfarer.swl2.resource.rlink;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.net.URL;
 import java.util.HashMap;
@@ -124,6 +125,14 @@ public class RLUtils {
 		return ResourceLink.of(path, resourceType);
 	}
 	
+	/** Получить {@link BufferedImage} по пути */
+	public static BufferedImage createImage(@ConcattedString Object... path)
+	{
+		ResourceLink rlink = createLink(StringUtils.concat(path));
+		
+		return rlink == null ? null : rlink.toImage();
+	}
+	
 	public static FileSWL getSourceFile(String searchedResource)
 	{
 		try
@@ -215,7 +224,17 @@ public class RLUtils {
 		
 		int index = path.indexOf(":");
 		
-		return index > 0 ? path.substring(0, index + 1) : null;
+		if (index > 0)
+		{
+			String s = path.substring(0, index + 1);
+			
+			if (!s.equals("pkg:"))
+			{
+				return s;
+			}
+		}
+		
+		return null;
 	}
 	
 	/** Зарегистрировать источник ресурсов */

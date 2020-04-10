@@ -1,13 +1,18 @@
 package ru.swayfarer.swl2.resource.rlink;
 
+import java.awt.image.BufferedImage;
 import java.io.InputStream;
 import java.net.URL;
+
+import javax.imageio.ImageIO;
 
 import ru.swayfarer.swl2.binary.buffers.DynamicByteBuffer;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.exceptions.ExceptionsUtils;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1;
+import ru.swayfarer.swl2.logger.ILogger;
+import ru.swayfarer.swl2.logger.LoggingManager;
 import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.resource.file.FileSWL;
 import ru.swayfarer.swl2.resource.streams.DataInputStreamSWL;
@@ -22,6 +27,10 @@ import ru.swayfarer.swl2.string.StringUtils;
  */
 public class ResourceLink {
  
+	/** Логгер */
+	@InternalElement
+	public static ILogger logger = LoggingManager.getLogger();
+	
 	/** Тип ресурса */
 	@InternalElement
 	public ResourceType type;
@@ -38,7 +47,44 @@ public class ResourceLink {
 		ExceptionsUtils.IfEmpty(content, IllegalArgumentException.class, "The resource type can't be null!");
 		
 		this.type = type;
-		this.content = content;
+		this.content = unwrapPkg(content);
+	}
+	
+	public String unwrapPkg(String str)
+	{
+		if (str.startsWith("pkg:"))
+		{
+			IExtendedList<StackTraceElement> st = ExceptionsUtils.getThreadStacktrace(1);
+			
+			StackTraceElement element = st.getFirstElement();
+			
+			String pkg = getClass().getPackageName();
+			
+			for (StackTraceElement elem : st)
+			{
+				if (!elem.getClassName().startsWith(pkg))
+				{
+					element = elem;
+					break;
+				}
+			}
+			
+			ExceptionsUtils.IfNull(element, IllegalStateException.class, "Caller class must not be in", pkg);
+			
+			String elemName = "/" + ExceptionsUtils.getClassPackage(element.getClassName()).replace(".", "/");
+			
+			return elemName + "/" + str.substring(4);
+		}
+		
+		return str;
+	}
+	
+	/** Получить {@link BufferedImage} */
+	public BufferedImage toImage()
+	{
+		return logger.safeReturn(() -> {
+			return ImageIO.read(toStream());
+		}, null, "Error while getting image from", this);
 	}
 	
 	public <T> T getSource()

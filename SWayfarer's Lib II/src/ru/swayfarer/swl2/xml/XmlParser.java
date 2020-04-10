@@ -26,11 +26,13 @@ public class XmlParser {
 	
 	/** Начала исключений */
 	@InternalElement
-	public IExtendedList<String> exclusionStarts = CollectionsSWL.createExtendedList("<--");
+	public IExtendedList<String> exclusionStarts = CollectionsSWL.createExtendedList("<--", "<?");
 	
 	/** Концы исключений */
 	@InternalElement
-	public IExtendedList<String> exclusionEnds = CollectionsSWL.createExtendedList("-->");
+	public IExtendedList<String> exclusionEnds = CollectionsSWL.createExtendedList("-->", "?>");
+	
+	public IExtendedList<String> literals = CollectionsSWL.createExtendedList("\"");
 	
 	/** Читалка строк */
 	@InternalElement
@@ -104,7 +106,11 @@ public class XmlParser {
 				{
 					startNewTag();
 				}
-				else if (isInAttributes() && reader.skipSome(spaces) || isEqual())
+				else if (reader.skipSome("\""))
+				{
+					readingInfo.inAttributeValue = !readingInfo.inAttributeValue;
+				}
+				else if (!readingInfo.inAttributeValue && (isInAttributes() && reader.skipSome(spaces) || isEqual()))
 				{
 					if (builder.length() > 0)
 					{
@@ -123,10 +129,6 @@ public class XmlParser {
 						
 						clearBuilder();
 					}
-				}
-				else if (reader.skipSome("\""))
-				{
-					readingInfo.inAttributeValue = !readingInfo.inAttributeValue;
 				}
 				else
 				{

@@ -1,6 +1,7 @@
 package ru.swayfarer.swl2.observable.property;
 
 import lombok.AllArgsConstructor;
+import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction0NoR;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1NoR;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction2;
 import ru.swayfarer.swl2.markers.Alias;
@@ -59,6 +60,37 @@ public class ObservableProperty<Element_Type> extends PropertyContainer {
 		return (T) this;
 	}
 	
+	/** Выполнить действие, если значение null */
+	public <T extends ObservableProperty<Element_Type>> T IfNull(IFunction0NoR fun) 
+	{
+		if (get() == null)
+			fun.apply();
+		
+		return (T) this;
+	}
+	
+	/** Выполнить действие, если значение не null */
+	public <T extends ObservableProperty<Element_Type>> T IfNotNull(IFunction0NoR fun) 
+	{
+		Element_Type value = get();
+		
+		if (value != null)
+			fun.apply();
+		
+		return (T) this;	
+	}
+	
+	/** Выполнить действие, если значение не null */
+	public <T extends ObservableProperty<Element_Type>> T IfNotNull(IFunction1NoR<Element_Type> fun) 
+	{
+		Element_Type value = get();
+		
+		if (value != null)
+			fun.apply(value);
+		
+		return (T) this;
+	}
+	
 	/** Отключить биндинги */
 	public <T extends ObservableProperty<Element_Type>> T unbind()
 	{
@@ -99,6 +131,13 @@ public class ObservableProperty<Element_Type> extends PropertyContainer {
 	public Element_Type get()
 	{
 		return (Element_Type) super.get();
+	}
+	
+	/** Вернуть к начальному значению */
+	public <T extends ObservableProperty<Element_Type>> T reset() 
+	{
+		setValue(null);
+		return (T) this;
 	}
 	
 	/** Задать значение */

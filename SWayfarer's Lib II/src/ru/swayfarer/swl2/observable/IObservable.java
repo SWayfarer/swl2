@@ -1,6 +1,7 @@
 package ru.swayfarer.swl2.observable;
 
 import ru.swayfarer.swl2.exceptions.ExceptionsUtils;
+import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction0NoR;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1NoR;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction2NoR;
 import ru.swayfarer.swl2.markers.Alias;
@@ -22,6 +23,12 @@ public interface IObservable<Event_Type> {
 	public default <T extends ISubscription<Event_Type>> T subscribe(IFunction2NoR<ISubscription<Event_Type>, Event_Type> fun)
 	{
 		return subscribe(0, fun);
+	}
+
+	/** Подписаться на события объекта */
+	public default <T extends ISubscription<Event_Type>> T subscribe(IFunction0NoR fun)
+	{
+		return subscribe(0, (sub, e) -> fun.apply());
 	}
 	
 	/** Подписаться на события объекта */

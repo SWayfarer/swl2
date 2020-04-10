@@ -30,6 +30,16 @@ public static interface ${classType} {
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
+	public default ${returnType} $(${declareArgs})
+	{
+		return apply(${invokeArgs});
+	}
+	
+	/**
+	 * Применить функцию
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
 	public default ${returnType} process(${declareArgs})
 	{
 		return apply(${invokeArgs});

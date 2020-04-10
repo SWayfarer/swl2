@@ -11,6 +11,7 @@ import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.ToString;
+import lombok.val;
 import ru.swayfarer.swl2.asm.transformer.ditransformer.regetter.visitor.DynamicDI;
 import ru.swayfarer.swl2.classes.ReflectionUtils;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
@@ -65,33 +66,18 @@ public class DIManager {
 		if (obj == null)
 			return null;
 		
-		String contextName = "default";
-		
-		Class<?> cl = obj.getClass();
-		
-		DISwL annotation = cl.getAnnotation(DISwL.class);
-		
-		if (annotation != null)
-		{
-			if (!StringUtils.isEmpty(annotation.context()))
-			{
-				contextName = annotation.context();
-			}
-		}
-		
-		return DIRegistry.injectToObject(contextName, obj);
-	}
-	
-	/** Иньекция контекста в объект с указанием дефолтного контекста */
-	public static <T> T injectContextElements(String contextName, T obj)
-	{
-		return DIRegistry.injectToObject(contextName, obj);
+		return DIRegistry.injectToObject(obj);
 	}
 	
 	/** Получить элемент указанного типа с указанным именем из контекста */
 	public static <T> T getContextElement(String contextName, String elementName, String elementType)
 	{
 		return DIRegistry.getContextElement(contextName, elementName, elementType);
+	}
+	
+	public static void printContext(String name)
+	{
+		
 	}
 	
 	/**
@@ -281,7 +267,12 @@ public class DIManager {
 					
 					if (element != null)
 					{
-						field.set(obj, element.getValue());
+						Object value = element.getValue();
+						
+						if (DIRegistry.isLoggingFields)
+							logger.info("Injecting... ", field, "=", value);
+						
+						field.set(obj, value);
 					}
 				}
 			}, "Error while injecting context to", obj);
@@ -302,7 +293,7 @@ public class DIManager {
 		 * Иньекция контекста 
 		 * @param contextFun Генератор контекста, объекты которого будут иньектиться
 		 * @param objects Объекты, в которые будут проводиться иньекции
-		 */
+		 */	
 		public static void inject(IFunction2<Field, DISwL, DIContext> contextFun, Object... objects)
 		{
 			if (objects != null)
@@ -574,7 +565,7 @@ public class DIManager {
 	 * @author swayfarer
 	 *
 	 */
-	@Builder
+	@Builder @ToString
 	public static class DIContextElementFromMethod implements IDIContextElement {
 
 		/** Класс, с которым ассоциируется элемент */

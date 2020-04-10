@@ -43,6 +43,8 @@ public class VarsScanner extends MethodVisitor{
 	{
 		VariableInfo info = new VariableInfo(index, name, descriptor, signature);
 		
+		this.info.localIdToName.put(index, name);
+		
 		if (isThisVar())
 		{
 			nextParamIndex ++;

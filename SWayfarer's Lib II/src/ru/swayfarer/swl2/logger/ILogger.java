@@ -4,6 +4,7 @@ import java.util.Vector;
 
 import ru.swayfarer.swl2.exceptions.IUnsafeRunnable;
 import ru.swayfarer.swl2.exceptions.IUnsafeRunnable.IUnsafeRunnableWithReturn;
+import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction0NoR;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction2NoR;
 import ru.swayfarer.swl2.logger.ILogLevel.StandartLoggingLevels;
 import ru.swayfarer.swl2.logger.event.LogEvent;
@@ -108,6 +109,28 @@ public interface ILogger {
 	
 	/** Получить дочерний логгер */
 	public <T extends ILogger> T child(String name);
+	
+	/** Отлогировать время выполнения операции */
+	public default <T extends ILogger> T operation(IFunction0NoR fun, @ConcattedString Object... text)
+	{
+		return operation(fun, (str, time) -> info(str + (time > 0 ? ". Tooks " + time + " milisis." : "...")), text);
+	}
+	
+	/** Отлогировать время выполнения операции с функцией логирования */
+	public default <T extends ILogger> T operation(IFunction0NoR fun, IFunction2NoR<String, Long> logFun, @ConcattedString Object... text)
+	{
+		String s = StringUtils.concatWithSpaces(text);
+		
+		logFun.$(s, -1l);
+		
+		long start = System.currentTimeMillis();
+		fun.$();
+		long end = System.currentTimeMillis();
+		
+		logFun.$(s, end - start);
+		
+		return (T) this;
+	}
 	
 	/*
 	 * Форматирование

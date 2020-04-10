@@ -44,7 +44,7 @@ public class AutoSerializableConfig {
 	
 	/** Логгер */
 	@InternalElement @IgnoreSwconf
-	public ILogger logger = LoggingManager.getLogger(getClass());
+	public ILogger logger = LoggingManager.getLogger(getClass().getSimpleName());
 	
 	/** Конструктор без указания ссылки на конфиг. Она всегда может быть задана через {@link #setResourceLink(ResourceLink)} */
 	public AutoSerializableConfig() { }

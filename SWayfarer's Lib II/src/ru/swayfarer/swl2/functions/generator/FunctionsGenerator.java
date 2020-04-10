@@ -33,7 +33,7 @@ public class FunctionsGenerator {
 	
 	/** Максимальное кол-во аргументов */
 	@InternalElement
-	public int maxArgsCount = 16;
+	public int maxArgsCount = 32;
 	
 	/** Сгенерировать функции */
 	public void generate()

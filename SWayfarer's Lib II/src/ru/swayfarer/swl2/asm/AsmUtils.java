@@ -39,6 +39,12 @@ public class AsmUtils implements Opcodes{
 		return (access & ACC_PRIVATE) != 0;
 	}
 	
+	/** Это опкод загрузки объекта? */
+	public static boolean isObjectLoadOpcode(int opcode)
+	{
+		return EqualsUtils.objectEqualsSome(opcode, ALOAD, AALOAD, IALOAD, DALOAD, FALOAD, LALOAD);
+	}
+	
 	/** Открыть доступ. Сделать public и убрать final */
 	public static int openAccess(int access) {
 		
