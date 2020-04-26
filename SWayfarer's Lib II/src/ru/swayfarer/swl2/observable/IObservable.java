@@ -75,4 +75,7 @@ public interface IObservable<Event_Type> {
 	{
 		return subscribe(fun);
 	}
+	
+	/** Отписать всех подписчиков */
+	public <T extends IObservable<Event_Type>> T clear();
 }

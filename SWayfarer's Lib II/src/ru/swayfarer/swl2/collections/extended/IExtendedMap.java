@@ -1,9 +1,11 @@
 package ru.swayfarer.swl2.collections.extended;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import ru.swayfarer.swl2.collections.streams.DataStream;
 import ru.swayfarer.swl2.collections.streams.IDataStream;
+import ru.swayfarer.swl2.collections.wrapper.MapWrapper;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1NoR;
 
 @SuppressWarnings("unchecked")
@@ -27,5 +29,12 @@ public interface IExtendedMap<K, V> extends Map<K, V> {
 	public default IDataStream<Map.Entry<K, V>> parrallelDataStream()
 	{
 		return DataStream.of(entrySet()).setParrallel(true);
+	}
+	
+	public default IExtendedMap<K, V> copy()
+	{
+		IExtendedMap<K, V> map = new MapWrapper<>(new HashMap<>());
+		map.putAll(this);
+		return map;
 	}
 }

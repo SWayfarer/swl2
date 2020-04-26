@@ -24,9 +24,9 @@ public class SimpleObservable<Event_Type> implements IObservable<Event_Type> {
 	
 	/** Передать слушателям следующую партию данных */
 	@Override
-	public <T extends IObservable<Event_Type>> T next(Event_Type event)
+	public synchronized <T extends IObservable<Event_Type>> T next(Event_Type event)
 	{
-		Iterator<ISubscription<Event_Type>> $i = subscriptions.iterator();
+		Iterator<ISubscription<Event_Type>> $i = new ArrayList<>(subscriptions).iterator();
 		
 		while ($i.hasNext())
 		{
@@ -45,7 +45,7 @@ public class SimpleObservable<Event_Type> implements IObservable<Event_Type> {
 
 	/** Подписаться на события объекта */
 	@Override
-	public <T extends ISubscription<Event_Type>> T subscribe(int priority, IFunction2NoR<ISubscription<Event_Type>, Event_Type> fun)
+	public synchronized <T extends ISubscription<Event_Type>> T subscribe(int priority, IFunction2NoR<ISubscription<Event_Type>, Event_Type> fun)
 	{
 		ISubscription<Event_Type> sub = new Subscription<>(fun).setPriority(priority);
 		subscriptions.add(sub);
@@ -55,7 +55,7 @@ public class SimpleObservable<Event_Type> implements IObservable<Event_Type> {
  
 	/** Подписаться "слабой" подпиской, см {@link WeakSubscription} */
 	@Override
-	public <T extends ISubscription<Event_Type>> T subscribeWeak(IFunction2NoR<ISubscription<Event_Type>, Event_Type> fun)
+	public synchronized <T extends ISubscription<Event_Type>> T subscribeWeak(IFunction2NoR<ISubscription<Event_Type>, Event_Type> fun)
 	{
 		ISubscription<Event_Type> sub = new WeakSubscription<>(fun);
 		subscriptions.add(sub);
@@ -63,9 +63,20 @@ public class SimpleObservable<Event_Type> implements IObservable<Event_Type> {
 	}
 
 	@Override
-	public boolean isEmpty()
+	public synchronized boolean isEmpty()
 	{
 		return subscriptions.isEmpty();
+	}
+
+	@Override
+	public synchronized <T extends IObservable<Event_Type>> T clear()
+	{
+		for (ISubscription<Event_Type> sub : subscriptions)
+			sub.dispose();
+		
+		subscriptions.clear();
+		
+		return (T) this;
 	}
 
 }

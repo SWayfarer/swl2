@@ -15,6 +15,8 @@ import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
 import ru.swayfarer.swl2.markers.ConcattedString;
 import ru.swayfarer.swl2.markers.InternalElement;
+import ru.swayfarer.swl2.math.MathUtils;
+import ru.swayfarer.swl2.string.reader.StringReaderSWL;
 import ru.swayfarer.swl2.string.regex.RegexBuilder;
 
 /**
@@ -93,6 +95,130 @@ public class StringUtils {
 		}
 		
 		return sb.toString();
+	}
+	
+	/**
+	 * Заменить символы в формте \040 на соответсвующие им {@link Character}'ы 
+	 * @param str Строка, в которой производится замена
+	 * @return Строка после всех преобразований 
+	 */
+	public static String replaceASCIIFlags(String str)
+	{
+		return replaceCharactersFlags(str, "\\", 3, 8);
+	}
+	
+	/**
+	 * Заменить символы в формте \u0040 на соответсвующие им {@link Character}'ы 
+	 * @param str Строка, в которой производится замена
+	 * @return Строка после всех преобразований 
+	 */
+	public static String replaceUnicodeFlags(String str)
+	{
+		return replaceCharactersFlags(str, "\\u", 4, 16);
+	}
+	
+	/**
+	 * Заменить символы на коды в формате \u0040
+	 * @param str Строка, в которой производится замена
+	 * @return Строка после всех преобразований 
+	 */
+	public static String replaceCharsToUnicodeFlags(String str)
+	{
+		return replaceCharsToFlags(str, "\\u", 4, -1, 16);
+	}
+	
+	/**
+	 * Заменить символы на коды в формте \040
+	 * @param str Строка, в которой производится замена
+	 * @return Строка после всех преобразований 
+	 */
+	public static String replaceCharsToASCIIFlags(String str)
+	{
+		return replaceCharsToFlags(str, "\\", 3, 255, 8);
+	}
+	
+	/**
+	 * Заменить символы на коды в формте префикс + число, например, \u0040
+	 * @param str Строка, в которой производится замена
+	 * @param prefix Префикс, который будет поставляться перед каждым id 
+	 * @param maxId Максимальный id, который может быть закодирован. Если встретится больший, то вернется null
+	 * @param codeBase Основание системы счисления, в которой будут записаны коды символов
+	 * @param idLenght Длина id (у 0040 - 4)
+	 * @return Строка после всех преобразований 
+	 */
+	public static String replaceCharsToFlags(String str, String prefix, int idLenght, int maxId, int codeBase)
+	{
+		DynamicString ret = new DynamicString();
+		
+		for (char ch : str.toCharArray())
+		{
+			int charCode = (int) ch;
+			
+			if (maxId > 0 && charCode > maxId)
+			{
+				logger.warning("Character", ch, "is not in 0 -", maxId, "bounds!");
+				return null;
+			}
+			
+			ret.append(prefix);
+			ret.append(MathUtils.standartizeNumToLenght(idLenght, MathUtils.toBase(charCode, 16)));
+		}
+		
+		return ret.toString();
+	}
+	
+	/**
+	 * Заменить все символы в формате префикс + число, например, \u0040, на соответствующие им {@link Character}'ы
+	 * @param str Строка, в которой происходит замена 
+	 * @param prefix Префикс, который подставляется перед каждым id
+	 * @param idLenght Длина id (у 0040 - 4)
+	 * @param codeBase Основание системы счисления
+	 * @return Строка после всех преобразований 
+	 */
+	public static String replaceCharactersFlags(String str, String prefix, int idLenght, int codeBase)
+	{
+		StringReaderSWL reader = new StringReaderSWL(str);
+		DynamicString ret = new DynamicString();
+		boolean isReplaced = false;
+		
+		while (reader.hasNextElement())
+		{
+			if (reader.skipSome(prefix))
+			{
+				if (reader.hasNextChars(idLenght))
+				{
+					String id = reader.getPending(idLenght);
+					
+					if (!StringUtils.isEmpty(id) && id.length() == idLenght)
+					{
+						System.out.println(id);
+						if (StringUtils.isInteger(id))
+						{
+							id = MathUtils.toBase(id, codeBase, 10);
+							int intId =  Double.valueOf(id).intValue();
+							
+							ret.append((char) intId);
+							reader.skipSafe(idLenght);
+							isReplaced = true;
+						}
+					}
+				}
+				
+				if (!isReplaced)
+				{
+					reader.pos -= prefix.length();
+					ret.append(reader.next());
+				}
+			}
+			else
+			{
+				ret.append(reader.next().charValue());
+			}
+		}
+		
+		reader.close();
+		
+		return ret.toString();
 	}
 	
 	/** Вывести в консоль все поддерживаемые кодировки */
@@ -347,6 +473,17 @@ public class StringUtils {
 	public static boolean isStringStartsWith(String line, Object... starts)
 	{
 		return DataStream.of(starts).someMatches((s) -> line.startsWith(s+""));
+	}
+
+	/**
+	 * Заканчивается ли строка с одного из вариантов (игнорируя пробелы перед началом)?
+	 * @param line Проверяемая строка
+	 * @param ends Варианты окончания строки
+	 * @return True, если заканчивается
+	 */
+	public static boolean isStringEndsWith(String line, Object... ends)
+	{
+		return DataStream.of(ends).someMatches((s) -> line.endsWith(s+""));
 	}
 	
 	public static String subString(int fromStart, int fromEnd, @ConcattedString Object... text)

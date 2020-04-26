@@ -6,6 +6,8 @@ import java.io.StringReader;
 
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction0;
+import ru.swayfarer.swl2.logger.ILogger;
+import ru.swayfarer.swl2.logger.LoggingManager;
 import ru.swayfarer.swl2.markers.ConcattedString;
 import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.string.DynamicString;
@@ -19,6 +21,10 @@ import ru.swayfarer.swl2.string.StringUtils;
 @SuppressWarnings("unchecked")
 public class StringReaderSWL extends Reader {
 
+	/** Логгер */
+	@InternalElement
+	public static ILogger logger = LoggingManager.getLogger();
+	
 	/** Разделитель строк */
 	@InternalElement
 	public String lineSplitter = StringUtils.LF;
@@ -224,12 +230,23 @@ public class StringReaderSWL extends Reader {
 		}
 	}
 	
+	/** Пропустить несколько симполов безопасно*/
+	public long skipSafe(long ns)
+	{
+		return logger.safeReturn(() -> skip(ns), -1l, "Error while skipping", ns, "chars", "from", this);
+	}
+	
 	/** Ожидается ли эта строка? */
 	public boolean isPending(@ConcattedString Object... text)
 	{
 		String s = StringUtils.concat(text);
 		String pendingString = getPending(s.length());
 		return pendingString.equals(s);
+	}
+	
+	public boolean hasNextChars(int count)
+	{
+		return length - pos >= count;
 	}
 	
 	/** Получить идущую строку, не читая ее */
@@ -240,6 +257,12 @@ public class StringReaderSWL extends Reader {
 		end = Math.min(this.length, end);
 		
 		return str.substring(pos, end);
+	}
+	
+	public String next(int lenght)
+	{
+		pos = Math.min(pos + lenght, lenght);
+		return str.substring(pos, pos + lenght);
 	}
 
 	/** Доступно ли для чтения? */

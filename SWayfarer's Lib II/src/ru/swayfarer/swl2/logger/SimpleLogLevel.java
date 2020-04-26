@@ -15,25 +15,41 @@ import ru.swayfarer.swl2.markers.InternalElement;
 @Data
 public class SimpleLogLevel implements ILogLevel {
 
-	/** Текст уровня {@link StandartLoggingLevels#LEVEL_INFO}*/
+	/** Название уровня {@link StandartLoggingLevels#LEVEL_INFO}*/
 	@InternalElement
-	public static String INFO_PREFIX_TEXT = "&{gr, 1}Info&{}";
+	public static String INFO_PREFIX_TEXT = "&{gr}Info&{h:1}";
 	
-	/** Текст уровня {@link StandartLoggingLevels#LEVEL_WARNING}*/
+	/** Название уровня {@link StandartLoggingLevels#LEVEL_WARNING}*/
 	@InternalElement
-	public static String WARNING_PREFIX_TEXT = "&{yl, 1}Warning&{}";
+	public static String WARNING_PREFIX_TEXT = "&{yl}Warning&{h:1}";
 	
-	/** Текст уровня {@link StandartLoggingLevels#LEVEL_ERROR}*/
+	/** Название уровня {@link StandartLoggingLevels#LEVEL_ERROR}*/
 	@InternalElement
-	public static String ERROR_PREFIX_TEXT = "&{rd, 1}Error&{}";
+	public static String ERROR_PREFIX_TEXT = "&{203}Error&{h:1}";
 	
-	/** Текст уровня {@link StandartLoggingLevels#LEVEL_FATAL}*/
+	/** Название уровня {@link StandartLoggingLevels#LEVEL_FATAL}*/
 	@InternalElement
-	public static String FATAL_PREFIX_TEXT = "&{yl, 1}Fatal&{}";
+	public static String FATAL_PREFIX_TEXT = "&{9}Fatal&{h:1}";
+	
+	/** Цветовой префикс уровня {@link StandartLoggingLevels#LEVEL_FATAL}*/
+	@InternalElement
+	public static String INFO_LOG_COLOR_PREFIX = "&{85}";
+	
+	/** Цветовой префикс уровня {@link StandartLoggingLevels#LEVEL_FATAL}*/
+	@InternalElement
+	public static String ERROR_LOG_COLOR_PREFIX = "&{208}";
+	
+	/** Цветовой префикс уровня {@link StandartLoggingLevels#LEVEL_FATAL}*/
+	@InternalElement
+	public static String WARNING_LOG_COLOR_PREFIX = "&{229}";
+	
+	/** Цветовой префикс уровня {@link StandartLoggingLevels#LEVEL_FATAL}*/
+	@InternalElement
+	public static String FATAL_LOG_COLOR_PREFIX = "&{203}";
 	
 	/** Функция, возвращающая префикс уровня */
 	@InternalElement
-	public IFunction0<String> prefixFun;
+	public IFunction0<String> prefixFun, logPrefixFun;
 	
 	/** Уровень Java-логирования, соответствующий этому уровню  */
 	@InternalElement
@@ -44,17 +60,19 @@ public class SimpleLogLevel implements ILogLevel {
 	public int weight;
 	
 	/** Получить уровень по заданным параметрам */
-	public static SimpleLogLevel of(String prefix, Level javaLevel, int weight)
+	public static SimpleLogLevel of(String prefix, String logPrefix, Level javaLevel, int weight)
 	{
 		String formattedPrefix = AnsiFormatter.instance.format(prefix);
-		return of(() -> formattedPrefix, javaLevel, weight);
+		String formattedLogPrefix = AnsiFormatter.instance.format(logPrefix);
+		return of(() -> formattedPrefix, () -> formattedLogPrefix, javaLevel, weight);
 	}
 	
 	/** Получить уровень по заданным параметрам */
-	public static SimpleLogLevel of(IFunction0<String> prefixFun, Level javaLevel, int weight)
+	public static SimpleLogLevel of(IFunction0<String> prefixFun, IFunction0<String> logPrefixFun, Level javaLevel, int weight)
 	{
 		SimpleLogLevel level = new SimpleLogLevel();
 		level.prefixFun = prefixFun;
+		level.logPrefixFun = logPrefixFun;
 		level.javaLevel = javaLevel;
 		level.weight = weight;
 		
@@ -65,5 +83,11 @@ public class SimpleLogLevel implements ILogLevel {
 	@Override
 	public String getPrefix() {
 		return prefixFun.apply();
+	}
+
+	@Override
+	public String getLogPrefix()
+	{
+		return logPrefixFun.apply();
 	}
 }

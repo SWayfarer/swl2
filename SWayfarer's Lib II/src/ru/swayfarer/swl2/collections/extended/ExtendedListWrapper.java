@@ -224,5 +224,17 @@ public class ExtendedListWrapper<Element_Type> extends ListWrapper<Element_Type>
 		
 		return list;
 	}
+	
+	@Override
+	public boolean equals(Object obj)
+	{
+		return wrappedList.equals(obj);
+	}
+	
+	@Override
+	public int hashCode()
+	{
+		return wrappedList.hashCode();
+	}
 
 }

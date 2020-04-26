@@ -1,4 +1,4 @@
-package ru.swayfarer.swl2.jfx.controls.validation;
+package ru.swayfarer.swl2.jfx.scene.controls.validation;
 
 import javafx.beans.property.StringProperty;
 import javafx.scene.control.TextField;

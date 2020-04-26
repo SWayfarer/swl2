@@ -21,7 +21,7 @@ public static interface IFunction0<Ret_Type> {
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default Ret_Type _()
+	public default Ret_Type __()
 	{
 		return apply();
 	}
@@ -197,7 +197,7 @@ public static interface IFunction1<Arg1, Ret_Type> {
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default Ret_Type _(Arg1 arg1)
+	public default Ret_Type __(Arg1 arg1)
 	{
 		return apply(arg1);
 	}
@@ -401,7 +401,7 @@ public static interface IFunction2<Arg1, Arg2, Ret_Type> {
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default Ret_Type _(Arg1 arg1, Arg2 arg2)
+	public default Ret_Type __(Arg1 arg1, Arg2 arg2)
 	{
 		return apply(arg1, arg2);
 	}
@@ -578,7 +578,7 @@ public static interface IFunction3<Arg1, Arg2, Arg3, Ret_Type> {
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default Ret_Type _(Arg1 arg1, Arg2 arg2, Arg3 arg3)
+	public default Ret_Type __(Arg1 arg1, Arg2 arg2, Arg3 arg3)
 	{
 		return apply(arg1, arg2, arg3);
 	}
@@ -736,7 +736,7 @@ public static interface IFunction4<Arg1, Arg2, Arg3, Arg4, Ret_Type> {
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default Ret_Type _(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4)
+	public default Ret_Type __(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4)
 	{
 		return apply(arg1, arg2, arg3, arg4);
 	}
@@ -894,7 +894,7 @@ public static interface IFunction5<Arg1, Arg2, Arg3, Arg4, Arg5, Ret_Type> {
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default Ret_Type _(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5)
+	public default Ret_Type __(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5)
 	{
 		return apply(arg1, arg2, arg3, arg4, arg5);
 	}
@@ -1052,7 +1052,7 @@ public static interface IFunction6<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Ret_Type>
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default Ret_Type _(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6)
+	public default Ret_Type __(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6)
 	{
 		return apply(arg1, arg2, arg3, arg4, arg5, arg6);
 	}
@@ -1210,7 +1210,7 @@ public static interface IFunction7<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ret
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default Ret_Type _(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7)
+	public default Ret_Type __(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7)
 	{
 		return apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7);
 	}
@@ -1368,7 +1368,7 @@ public static interface IFunction8<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default Ret_Type _(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8)
+	public default Ret_Type __(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8)
 	{
 		return apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
 	}
@@ -1526,7 +1526,7 @@ public static interface IFunction9<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default Ret_Type _(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9)
+	public default Ret_Type __(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9)
 	{
 		return apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9);
 	}
@@ -1684,7 +1684,7 @@ public static interface IFunction10<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default Ret_Type _(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10)
+	public default Ret_Type __(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10)
 	{
 		return apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
 	}
@@ -1842,7 +1842,7 @@ public static interface IFunction11<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default Ret_Type _(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11)
+	public default Ret_Type __(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11)
 	{
 		return apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11);
 	}
@@ -2000,7 +2000,7 @@ public static interface IFunction12<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default Ret_Type _(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12)
+	public default Ret_Type __(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12)
 	{
 		return apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12);
 	}
@@ -2158,7 +2158,7 @@ public static interface IFunction13<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default Ret_Type _(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13)
+	public default Ret_Type __(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13)
 	{
 		return apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13);
 	}
@@ -2316,7 +2316,7 @@ public static interface IFunction14<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default Ret_Type _(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14)
+	public default Ret_Type __(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14)
 	{
 		return apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14);
 	}
@@ -2474,7 +2474,7 @@ public static interface IFunction15<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default Ret_Type _(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15)
+	public default Ret_Type __(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15)
 	{
 		return apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15);
 	}
@@ -2632,7 +2632,7 @@ public static interface IFunction16<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default Ret_Type _(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16)
+	public default Ret_Type __(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16)
 	{
 		return apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16);
 	}
@@ -2790,7 +2790,7 @@ public static interface IFunction17<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default Ret_Type _(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17)
+	public default Ret_Type __(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17)
 	{
 		return apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17);
 	}
@@ -2948,7 +2948,7 @@ public static interface IFunction18<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default Ret_Type _(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18)
+	public default Ret_Type __(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18)
 	{
 		return apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18);
 	}
@@ -3106,7 +3106,7 @@ public static interface IFunction19<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default Ret_Type _(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19)
+	public default Ret_Type __(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19)
 	{
 		return apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19);
 	}
@@ -3264,7 +3264,7 @@ public static interface IFunction20<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default Ret_Type _(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20)
+	public default Ret_Type __(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20)
 	{
 		return apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20);
 	}
@@ -3422,7 +3422,7 @@ public static interface IFunction21<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default Ret_Type _(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21)
+	public default Ret_Type __(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21)
 	{
 		return apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21);
 	}
@@ -3580,7 +3580,7 @@ public static interface IFunction22<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default Ret_Type _(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22)
+	public default Ret_Type __(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22)
 	{
 		return apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22);
 	}
@@ -3738,7 +3738,7 @@ public static interface IFunction23<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default Ret_Type _(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23)
+	public default Ret_Type __(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23)
 	{
 		return apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23);
 	}
@@ -3896,7 +3896,7 @@ public static interface IFunction24<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default Ret_Type _(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24)
+	public default Ret_Type __(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24)
 	{
 		return apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24);
 	}
@@ -4054,7 +4054,7 @@ public static interface IFunction25<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default Ret_Type _(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24, Arg25 arg25)
+	public default Ret_Type __(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24, Arg25 arg25)
 	{
 		return apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24, arg25);
 	}
@@ -4212,7 +4212,7 @@ public static interface IFunction26<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default Ret_Type _(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24, Arg25 arg25, Arg26 arg26)
+	public default Ret_Type __(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24, Arg25 arg25, Arg26 arg26)
 	{
 		return apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24, arg25, arg26);
 	}
@@ -4370,7 +4370,7 @@ public static interface IFunction27<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default Ret_Type _(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24, Arg25 arg25, Arg26 arg26, Arg27 arg27)
+	public default Ret_Type __(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24, Arg25 arg25, Arg26 arg26, Arg27 arg27)
 	{
 		return apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24, arg25, arg26, arg27);
 	}
@@ -4528,7 +4528,7 @@ public static interface IFunction28<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default Ret_Type _(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24, Arg25 arg25, Arg26 arg26, Arg27 arg27, Arg28 arg28)
+	public default Ret_Type __(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24, Arg25 arg25, Arg26 arg26, Arg27 arg27, Arg28 arg28)
 	{
 		return apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24, arg25, arg26, arg27, arg28);
 	}
@@ -4686,7 +4686,7 @@ public static interface IFunction29<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default Ret_Type _(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24, Arg25 arg25, Arg26 arg26, Arg27 arg27, Arg28 arg28, Arg29 arg29)
+	public default Ret_Type __(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24, Arg25 arg25, Arg26 arg26, Arg27 arg27, Arg28 arg28, Arg29 arg29)
 	{
 		return apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24, arg25, arg26, arg27, arg28, arg29);
 	}
@@ -4844,7 +4844,7 @@ public static interface IFunction30<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default Ret_Type _(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24, Arg25 arg25, Arg26 arg26, Arg27 arg27, Arg28 arg28, Arg29 arg29, Arg30 arg30)
+	public default Ret_Type __(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24, Arg25 arg25, Arg26 arg26, Arg27 arg27, Arg28 arg28, Arg29 arg29, Arg30 arg30)
 	{
 		return apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24, arg25, arg26, arg27, arg28, arg29, arg30);
 	}
@@ -5002,7 +5002,7 @@ public static interface IFunction31<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default Ret_Type _(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24, Arg25 arg25, Arg26 arg26, Arg27 arg27, Arg28 arg28, Arg29 arg29, Arg30 arg30, Arg31 arg31)
+	public default Ret_Type __(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24, Arg25 arg25, Arg26 arg26, Arg27 arg27, Arg28 arg28, Arg29 arg29, Arg30 arg30, Arg31 arg31)
 	{
 		return apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24, arg25, arg26, arg27, arg28, arg29, arg30, arg31);
 	}
@@ -5160,7 +5160,7 @@ public static interface IFunction32<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default Ret_Type _(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24, Arg25 arg25, Arg26 arg26, Arg27 arg27, Arg28 arg28, Arg29 arg29, Arg30 arg30, Arg31 arg31, Arg32 arg32)
+	public default Ret_Type __(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24, Arg25 arg25, Arg26 arg26, Arg27 arg27, Arg28 arg28, Arg29 arg29, Arg30 arg30, Arg31 arg31, Arg32 arg32)
 	{
 		return apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24, arg25, arg26, arg27, arg28, arg29, arg30, arg31, arg32);
 	}

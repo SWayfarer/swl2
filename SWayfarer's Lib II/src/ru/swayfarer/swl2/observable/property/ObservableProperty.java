@@ -2,8 +2,8 @@ package ru.swayfarer.swl2.observable.property;
 
 import lombok.AllArgsConstructor;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction0NoR;
+import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1NoR;
-import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction2;
 import ru.swayfarer.swl2.markers.Alias;
 import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.observable.IObservable;
@@ -11,6 +11,7 @@ import ru.swayfarer.swl2.observable.SimpleObservable;
 import ru.swayfarer.swl2.observable.events.AbstractCancelableEvent;
 import ru.swayfarer.swl2.observable.subscription.ISubscription;
 import ru.swayfarer.swl2.reference.IReference;
+import ru.swayfarer.swl2.tasks.RecursiveSafeTask;
 
 /**
  * Наблюдаемая проперти
@@ -19,9 +20,17 @@ import ru.swayfarer.swl2.reference.IReference;
 @SuppressWarnings("unchecked")
 public class ObservableProperty<Element_Type> extends PropertyContainer {
 
+	/** Подписываемся ли на уже совершенное событие по-умолчанию? */
+	@InternalElement
+	public boolean isPostByDefault = false;
+	
 	/** Событие изменения проперти */
 	@InternalElement
 	public IObservable<ChangeEvent> eventChange = new SimpleObservable<>();
+	
+	/** Событие изменения проперти */
+	@InternalElement
+	public IObservable<ChangeEvent> eventPostChange = new SimpleObservable<>();
 	
 	public ISubscription<ChangeEvent> bindingEventSubscribe;
 	
@@ -32,6 +41,13 @@ public class ObservableProperty<Element_Type> extends PropertyContainer {
 		this.setValue(initialValue);
 	}
 	
+	/** Задать {@link #isPostByDefault} */
+	public <T extends ObservableProperty<Element_Type>> T setPost(boolean isPost) 
+	{
+		this.isPostByDefault = isPost;
+		return (T) this;
+	}
+	
 	/**
 	 * Подписаться на изменения проперти. Когда цель подписки будет меняться, эначение этой будет задано на аналогичное 
 	 * @param target Цель подписки
@@ -39,7 +55,52 @@ public class ObservableProperty<Element_Type> extends PropertyContainer {
 	 */
 	public <T extends ObservableProperty<Element_Type>> T bind(ObservableProperty<? extends Element_Type> target)
 	{
-		return bind((property, event) -> event.getNewValue(), target);
+		return bind((event) -> event.getNewValue(), target);
+	}
+	
+	/**
+	 * Подписать каждую проперти на вторую см ({@link #bind(ObservableProperty)}))
+	 */
+	public <T extends ObservableProperty<Element_Type>> T bindTwin(ObservableProperty<Element_Type> target) 
+	{
+		RecursiveSafeTask taskExec = new RecursiveSafeTask();
+		
+		target.subscribe((event) -> {
+			taskExec.start(() -> {
+				this.setValue(event.getNewValue());
+			});
+		});
+		
+		this.subscribe((event) -> {
+			taskExec.start(() -> {
+				target.setValue(event.getNewValue());
+			});
+		});
+		
+		return (T) this;
+	}
+	
+	/**
+	 * Подписать каждую проперти на вторую см ({@link #bind(ObservableProperty)}))
+	 * <h1> Эта подписка не проверяет совместимость значение пропертей. Делайте это сами! </h1> 
+	 */
+	public <T extends ObservableProperty<Element_Type>> T bindTwinAutocast(ObservableProperty<? extends Object> target) 
+	{
+		RecursiveSafeTask taskExec = new RecursiveSafeTask();
+		
+		target.subscribe((event) -> {
+			taskExec.start(() -> {
+				this.setValue(event.getNewValue());
+			});
+		});
+		
+		this.subscribe((event) -> {
+			taskExec.start(() -> {
+				target.setValue(event.getNewValue());
+			});
+		});
+		
+		return (T) this;
 	}
 	
 	/**
@@ -48,14 +109,14 @@ public class ObservableProperty<Element_Type> extends PropertyContainer {
 	 * @param valueFun Функция, конвертирующая значение цели подсписки в значение, которое будет задано этой проперти 
 	 * @return Оригинальную(эту) проперти
 	 */
-	public <T extends ObservableProperty<Element_Type>> T bind(IFunction2<ObservableProperty<? extends Element_Type>, ChangeEvent, ? extends Element_Type> valueFun, ObservableProperty<? extends Element_Type> target)
+	public <E, T extends ObservableProperty<Element_Type>> T bind(IFunction1<ChangeEvent, ? extends Element_Type> valueFun, ObservableProperty<? extends E> target)
 	{
 		if (target == this)
 			return (T) this;
 		
 		unbind();
 		
-		bindingEventSubscribe = target.eventChange.subscribe(999, (sub, e) -> this.setValue(valueFun.apply(target, e)));
+		bindingEventSubscribe = target.eventChange.subscribe(999, (sub, e) -> this.setValue(valueFun.apply(e)));
 		
 		return (T) this;
 	}
@@ -116,7 +177,10 @@ public class ObservableProperty<Element_Type> extends PropertyContainer {
 	/** Подписаться на изменения проперти */
 	public <T extends ObservableProperty<Element_Type>> T addChangeHandler(IFunction1NoR<ChangeEvent> handlerFun)
 	{
-		eventChange.subscribe(handlerFun);
+		IObservable<ChangeEvent> observable = isPostByDefault ? eventPostChange : eventChange;
+		
+		observable.subscribe(handlerFun);
+		
 		return (T) this;
 	}
 	
@@ -148,6 +212,8 @@ public class ObservableProperty<Element_Type> extends PropertyContainer {
 		
 		if (!event.isCanceled())
 			this.value = event.newValue;
+		
+		eventPostChange.next(event);
 		
 		return (T) this;
 	}

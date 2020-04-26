@@ -290,6 +290,15 @@ public class DynamicString implements CharSequence {
 		return replaceByRegex(StringUtils.regex().text(oldString).toString(), newString, 1);
 	}
 	
+	public DynamicString setText(@ConcattedString Object... text)
+	{
+		String str = StringUtils.concat(text);
+		
+		sb.replace(0, sb.length(), str);
+		
+		return this;
+	}
+	
 	public DynamicString replaceAll(String oldStringRegex, String newString)
 	{
 		return replaceByRegex(oldStringRegex, newString, -1);

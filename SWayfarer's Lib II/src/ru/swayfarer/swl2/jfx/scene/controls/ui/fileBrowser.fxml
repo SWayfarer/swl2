@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import ru.swayfarer.swl2.jfx.scene.controls.JfxButton?>
+<?import ru.swayfarer.swl2.jfx.scene.controls.JfxLabel?>
+<?import ru.swayfarer.swl2.jfx.scene.controls.JfxTextField?>
+
+<AnchorPane maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="54.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.999-ea" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <VBox layoutX="40.0" layoutY="14.0" prefHeight="54.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <JfxLabel fx:id="lblComment" text="Select a file...">
+               <VBox.margin>
+                  <Insets left="14.0" top="5.0" />
+               </VBox.margin>
+            </JfxLabel>
+            <HBox>
+               <children>
+                  <JfxTextField fx:id="txtFilePath" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
+                  <JfxButton fx:id="btnBrowseFile" text="...">
+                     <HBox.margin>
+                        <Insets left="5.0" />
+                     </HBox.margin>
+                  </JfxButton>
+               </children>
+               <VBox.margin>
+                  <Insets top="5.0" />
+               </VBox.margin>
+            </HBox>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>

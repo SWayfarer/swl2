@@ -94,7 +94,7 @@ public class CssManager {
 		cssLinks.dataStream()
 			.noNull()
 			.filter(ResourceLink::isExists)
-			.each((e) -> stylesheets.add(e.toStream().readAllAsString())
+			.each((e) -> stylesheets.add(e.toURL().toExternalForm())
 		);
 		
 		ICssUpdateListener listener = getCssUpdateListener(scene);
@@ -120,6 +120,11 @@ public class CssManager {
 	{
 		IExtendedList<String> stylesheetsToAdd = CollectionsSWL.createExtendedList();
 		
+		for (ResourceLink rlink : cssLinks)
+		{
+			stylesheetsToAdd.add(rlink.toURL().toExternalForm());
+		}
+		
 		cssScenes.dataStream()
 			.noNull()
 			.each((e) -> {
@@ -131,7 +136,7 @@ public class CssManager {
 				
 				if (listener != null)
 					listener.onCssUpdated();
-				}
+			}
 		);
 	}
 }

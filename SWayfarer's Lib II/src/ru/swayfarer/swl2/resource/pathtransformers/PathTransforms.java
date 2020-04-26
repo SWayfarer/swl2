@@ -141,6 +141,7 @@ public class PathTransforms {
 	{
 		registrerTransformer(new DatePathTransformer("date"));
 		registrerTransformer(new DatePathTransformer(new Date(), "startDate"));
+		registrerTransformer(new KeyCodesTransformer());
 	}
 	
 	/** Инициализация утилиты */

@@ -11,6 +11,7 @@ import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.streams.DataStream;
 import ru.swayfarer.swl2.collections.streams.IDataStream;
 import ru.swayfarer.swl2.exceptions.ExceptionsUtils;
+import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1NoR;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction2;
 import ru.swayfarer.swl2.logger.ILogLevel.StandartLoggingLevels;
@@ -156,6 +157,18 @@ public interface IExtendedList<Element_Type> extends List<Element_Type>{
 		return (T) this;
 	}
 
+	/** Есть ли хотя бы один объект, подходящий под фильтр? */
+	public default boolean contains(IFunction1<Element_Type, Boolean> validator)
+	{
+		for (Element_Type elem : this)
+		{
+			if (validator.apply(elem))
+				return true;
+		}
+		
+		return false;
+	}
+	
 	/** Добавить все элементы */
 	public default boolean containsAll(Element_Type... elements)
 	{

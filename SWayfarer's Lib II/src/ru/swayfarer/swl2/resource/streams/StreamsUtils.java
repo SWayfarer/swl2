@@ -10,6 +10,7 @@ import ru.swayfarer.swl2.exceptions.ExceptionsUtils;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
 import ru.swayfarer.swl2.markers.InternalElement;
+import ru.swayfarer.swl2.observable.property.ObservableProperty;
 
 /**
  * Утилиты для работы с потоками данных 
@@ -139,6 +140,12 @@ public class StreamsUtils {
 	/** Копировать содержимое одного потока в другой */
 	public static int copyStream(InputStream istream, OutputStream ostream, boolean isCloseIn, boolean isCloseOut) throws IOException
 	{
+		return copyStream(istream, ostream, null, isCloseIn, isCloseOut);
+	}
+	
+	/** Копировать содержимое одного потока в другой */
+	public static int copyStream(InputStream istream, OutputStream ostream, ObservableProperty<Integer> progressListener, boolean isCloseIn, boolean isCloseOut) throws IOException
+	{
 		ExceptionsUtils.IfNull(istream, IllegalArgumentException.class, "The Input stream can't be null!");
 		ExceptionsUtils.IfNull(ostream, IllegalArgumentException.class, "The Out stream can't be null!");
 		
@@ -155,6 +162,11 @@ public class StreamsUtils {
 		{
 			out.write(buffer, 0, len);
 			totalLen += len;
+			
+			if (progressListener != null) {
+				progressListener.setValue(totalLen);
+			}
+			
 			len = in.read(buffer);
 		}
 

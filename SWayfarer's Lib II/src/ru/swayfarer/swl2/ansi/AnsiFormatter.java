@@ -69,13 +69,29 @@ public class AnsiFormatter {
 		
 		if (!CollectionsSWL.isNullOrEmpty(coloredPrefixes))
 		{
+			IExtendedList<String> colors = CollectionsSWL.createExtendedList();
+			
 			for (String colorPrefix : coloredPrefixes)
 			{
 				String colorPrefixWithoutSpaces = colorPrefix.replace(" ", "");
 				
 				StringBuilder totalColor = new StringBuilder();
 				
-				if (colorPrefixWithoutSpaces.length() > 3)
+				if (colorPrefixWithoutSpaces.startsWith("&{h:"))
+				{
+					String id = StringUtils.subString(4, -1, colorPrefixWithoutSpaces);
+					
+					if (StringUtils.isInteger(id))
+					{
+						int i = Integer.valueOf(id);
+						
+						if (i > 0 && i < colors.size())
+						{
+							totalColor.append(colors.get(i));
+						}
+					}
+				}
+				else if (colorPrefixWithoutSpaces.length() > 3)
 				{
 					String[] codes = StringUtils.subString(2, -1, colorPrefixWithoutSpaces).split(",");
 					String color = null;
@@ -95,6 +111,8 @@ public class AnsiFormatter {
 				
 				if (totalColor.length() != 0)
 				{
+					colors.add(0, totalColor.toString());
+				
 					text = text.replace(colorPrefix, totalColor);
 				}
 			}
@@ -113,7 +131,7 @@ public class AnsiFormatter {
 	public String getColor(String code, String defaultColor)
 	{
 		if (StringUtils.isInteger(code))
-			return "\u001B[" + code + "m";
+			return "\033[38;5;" + code + "m";
 		
 		String ret = colorCodes.get(code);
 		return ret == null ? defaultColor : ret;

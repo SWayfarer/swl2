@@ -12,6 +12,7 @@ import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
 import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.math.hash.MessageDigestHashFun;
+import ru.swayfarer.swl2.string.DynamicString;
 
 /**
  * Математические утилиты 
@@ -44,25 +45,27 @@ public class MathUtils {
 	public static Random rand = new Random();
 	
 	/** Привести число к 1 к виду 000001, где lenght = размеру числа*/
-	public static String standartizeNumToLenght(int lenght, int num)
+	public static String standartizeNumToLenght(int lenght, Object n)
 	{
-		lenght -= getNumCount(num);
+		String num = n + "";
+		
+		lenght -= num.length();
 		
 		if (lenght < 0)
 		{
 			throw new IllegalArgumentException("Can't standartize num's length '"+num+"', because it lenght bigger then standart lenght");
 		}
 		
-		String ret = "";
+		DynamicString ret = new DynamicString();
 		
 		for (int i1 = 0; i1 < lenght; i1 ++)
 		{
-			ret += 0;
+			ret.insert(0, 0);
 		}
 		
-		ret += num;
+		ret.append(num);
 		
-		return ret;
+		return ret.toString();
 	}
 	
 	/** Получить Jenkins Hash из строки */

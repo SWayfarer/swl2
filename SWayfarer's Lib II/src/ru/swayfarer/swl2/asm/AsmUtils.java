@@ -1,11 +1,17 @@
 package ru.swayfarer.swl2.asm;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import ru.swayfarer.swl2.asm.informated.ClassInfo;
 import ru.swayfarer.swl2.asm.informated.FieldInfo;
 import ru.swayfarer.swl2.asm.informated.MethodInfo;
 import ru.swayfarer.swl2.asm.informated.VariableInfo;
+import ru.swayfarer.swl2.collections.CollectionsSWL;
+import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.equals.EqualsUtils;
+import ru.swayfarer.swl2.string.DynamicString;
 import ru.swayfarer.swl2.string.StringUtils;
+import ru.swayfarer.swl2.string.reader.StringReaderSWL;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.MethodVisitor;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.Opcodes;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.Type;
@@ -331,6 +337,58 @@ public class AsmUtils implements Opcodes{
 		invokeLoad(mv, variable.getType(), variable.getId());
 	}
 	
+	/** Получить все типы, упомянутые в дескрипторе. Для методов включая возращаемый тип в конце */
+	public static IExtendedList<DescriptorTypeInfo> getDescriptiorTypes(String descStr)
+	{
+		IExtendedList<DescriptorTypeInfo> ret = CollectionsSWL.createExtendedList();
+		
+		StringReaderSWL readerSWL = new StringReaderSWL(descStr);
+		DynamicString currentType = new DynamicString();
+		boolean isReadingType = false;
+		int arrCount = 0;
+		
+		while (readerSWL.hasNextElement())
+		{
+			if (readerSWL.skipSome("(") || readerSWL.skipSome(")"))
+			{
+				continue;
+			}
+			
+			Character current = readerSWL.next();
+			
+			if (current.equals('['))
+			{
+				arrCount ++;
+			}
+			else 
+			{
+				if (!isReadingType && current.equals('L'))
+					isReadingType = true;
+				else if (current.equals(';'))
+					isReadingType = false;
+				else 
+				{
+					if (current.equals('['))
+					{
+						new Throwable().printStackTrace();
+					}
+					currentType.append(current);
+				}
+				
+				if (!isReadingType)
+				{
+					ret.add(DescriptorTypeInfo.of(currentType.toString(), arrCount));
+					currentType.clear();
+					arrCount = 0;
+				}
+			}
+		}
+		
+		readerSWL.close();
+		
+		return ret;
+	}
+	
 	/** Вызов филда, исользуя его {@link FieldInfo} */
 	public static void getField(MethodVisitor mv, FieldInfo fieldInfo)
 	{
@@ -396,5 +454,16 @@ public class AsmUtils implements Opcodes{
 	public static void invokeStatic(MethodVisitor mv, String className, String methodName, String methodDesc)
 	{
 		mv.visitMethodInsn(INVOKESTATIC, className, methodName, methodDesc, false);
+	}
+	
+	/**
+	 * Информация об элементе дескриптора 
+	 * @author swayfarer
+	 *
+	 */
+	@Data @AllArgsConstructor(staticName = "of")
+	public static class DescriptorTypeInfo {
+		public String internalName;
+		public int arrCount;
 	}
 }

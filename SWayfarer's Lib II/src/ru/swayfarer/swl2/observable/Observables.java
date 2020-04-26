@@ -14,4 +14,9 @@ public class Observables {
 		return new ObservableProperty<T>(obj);
 	}
 	
+	public static <T> SimpleObservable<T> createObservable()
+	{
+		return new SimpleObservable<T>();
+	}
+	
 }

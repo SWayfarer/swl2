@@ -17,7 +17,6 @@ import java.util.zip.ZipFile;
 
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
-import ru.swayfarer.swl2.collections.streams.DataStream;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
@@ -37,7 +36,7 @@ import ru.swayfarer.swl2.string.StringUtils;
  * @author swayfarer
  */
 @SuppressWarnings("serial")
-public class FileSWL extends File {
+public class FileSWL extends File implements IHasSubfiles {
 
 	/** Локи по файлам ({@link FileSWL} можно залочить, чтоьы не случилось параллельной записи)*/
 	public static ConcurrentHashMap<String, Lock> filesLocks = new ConcurrentHashMap<>();
@@ -349,18 +348,27 @@ public class FileSWL extends File {
 	/** Получить список подфайлов, если это директория */
 	public IExtendedList<FileSWL> getSubfiles()
 	{
-		return getSubFiles((f) -> true);
+		String[] fileNames = list();
+		
+		if (CollectionsSWL.isNullOrEmpty(fileNames))
+			return CollectionsSWL.createExtendedList();
+		
+		IExtendedList<FileSWL> ret = CollectionsSWL.createExtendedList(fileNames.length);
+		
+		for (String name : fileNames)
+		{
+			ret.add(new FileSWL(this, name));
+		}
+		
+		return ret;
 	}
 	
 	/** Получить список подфайлов, удовлетворяющих фильтру, если это директория */
 	public IExtendedList<FileSWL> getSubFiles(IFunction1<FileSWL, Boolean> filter)
 	{
-		IExtendedList<FileSWL> ret = DataStream.of(listFiles())
-				.mapped((f) -> FileSWL.of(f)) 
-				.filtered(filter)
+		return getSubfiles().dataStream()
+			.filtered(filter)
 		.toList();
-		
-		return ret;
 	}
 	
 	/** Скопировать в (Если копируется директория, то будут скопированы все ее файлы) */

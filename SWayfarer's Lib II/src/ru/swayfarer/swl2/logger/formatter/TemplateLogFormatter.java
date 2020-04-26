@@ -56,7 +56,7 @@ public class TemplateLogFormatter implements IFunction2NoR<ILogger, LogInfo>{
 				.replace("%fromFull%", callSource.toString())
 			;
 				
-			logInfo.content = text;
+			logInfo.content = logInfo.getLevel().getLogPrefix() + text;
 		});
 		
 		formatRules.add(new DateFormatRule());

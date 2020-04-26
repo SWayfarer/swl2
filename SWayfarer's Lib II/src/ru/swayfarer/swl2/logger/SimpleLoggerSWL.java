@@ -18,7 +18,7 @@ import ru.swayfarer.swl2.string.StringUtils;;
 public class SimpleLoggerSWL implements ILogger, StandartLoggingLevels, StacktraceOffsets{
 
 	public static String defaultDecoratorSeq = "=-";
-	public static String defaultFormat = "(%from%) [%thread%] [%logger%] [%level%] -> %text%";
+	public static String defaultFormat = "[%thread%/%level%] (%from%) [%logger%] -> %text%";
 	
 	public static IFunction2NoR<ILogger, LogInfo> defaultPrinter = (logger, info) -> System.out.println(info.getContent());
 	

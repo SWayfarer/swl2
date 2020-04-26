@@ -33,7 +33,7 @@ public class DecoratorFormatter implements IFunction2NoR<ILogger, LogInfo> {
 			
 			String decorator = StringUtils.createSeq(decoratorSeq, size);
 			
-			logInfo.content = StringUtils.concat("\n", decorator, logInfo.getContent(), decorator, "\n");
+			logInfo.content = logInfo.getLevel().getLogPrefix() + StringUtils.concat("\n", decorator, logInfo.getContent(), decorator, "\n");
 		}
 	}
 
