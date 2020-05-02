@@ -18,6 +18,10 @@ import ru.swayfarer.swl2.swconf.serialization.writer.SwconfWriter;
 @SuppressWarnings("unchecked")
 public class SwconfFormat {
 
+	public String onStart = "", onEnd = "";
+	public boolean isCommentsEnabled = true;
+	public String name = "Standart";
+	
 	/** Функция, возвращающая {@link ISwconfWriter} для этого формата */
 	public IFunction0<ISwconfWriter> writerFun = () -> new SwconfWriter().setFormat(this);
 	
@@ -46,7 +50,7 @@ public class SwconfFormat {
 	public IExtendedList<String> elementSplitters = CollectionsSWL.createExtendedList(",");
 	
 	/** Границы литералов */
-	public IExtendedList<String> literalBounds = CollectionsSWL.createExtendedList("'");
+	public IExtendedList<String> literalBounds = CollectionsSWL.createExtendedList("\"");
 	
 	/** Символ равенства */
 	public IExtendedList<String> equals = CollectionsSWL.createExtendedList("=");
@@ -84,4 +88,14 @@ public class SwconfFormat {
 	{
 		return (T) readerFun.apply();
 	}
+
+	@Override
+	public String toString()
+	{
+		return "SwconfFormat [name=" + name + ", writerFun=" + writerFun + ", readerFun=" + readerFun + ", propertyNameUnwrapper=" + propertyNameUnwrapper + ", propertyNameWrapper=" + propertyNameWrapper + ", arrayStarts=" + arrayStarts
+				+ ", arrayEnds=" + arrayEnds + ", blockStarts=" + blockStarts + ", blockEnds=" + blockEnds + ", elementSplitters=" + elementSplitters + ", literalBounds=" + literalBounds + ", equals=" + equals + ", ignore=" + ignore
+				+ ", exclusionStarts=" + exclusionStarts + ", exclusionEnds=" + exclusionEnds + "]";
+	}
+	
+	
 }

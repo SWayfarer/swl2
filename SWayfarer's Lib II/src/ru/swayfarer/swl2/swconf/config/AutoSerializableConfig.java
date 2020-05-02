@@ -1,10 +1,12 @@
 package ru.swayfarer.swl2.swconf.config;
 
 import java.lang.reflect.Field;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import ru.swayfarer.swl2.classes.ReflectionUtils;
+import ru.swayfarer.swl2.collections.observable.IObservableList;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
 import ru.swayfarer.swl2.markers.ConcattedString;
@@ -47,18 +49,20 @@ public class AutoSerializableConfig {
 	public ILogger logger = LoggingManager.getLogger(getClass().getSimpleName());
 	
 	/** Конструктор без указания ссылки на конфиг. Она всегда может быть задана через {@link #setResourceLink(ResourceLink)} */
-	public AutoSerializableConfig() { }
+	public AutoSerializableConfig() { registerDefaultPostProcessors(); }
 	
 	/** Конструктор с указанием ссылки на конфиг */
 	public AutoSerializableConfig(ResourceLink resourceLink)
 	{
 		setResourceLink(resourceLink);
+		registerDefaultPostProcessors();
 	}
 	
 	/** Конструктор с указан */
 	public AutoSerializableConfig(@ConcattedString Object... text)
 	{
 		setResourceLink(text);
+		registerDefaultPostProcessors();
 	}
 	
 	public static <T extends AutoSerializableConfig> T loadFrom(Class<? extends AutoSerializableConfig> classOfConfig, @ConcattedString Object... rlink)
@@ -80,7 +84,7 @@ public class AutoSerializableConfig {
 		
 		if (dis == null)
 		{
-			logger.error("Can't read resource", configInfo.resourceLink, "by config", this);
+			logger.warning("Can't read resource", configInfo.resourceLink, "by config", this);
 			return (T) this;
 		}
 		
@@ -150,25 +154,32 @@ public class AutoSerializableConfig {
 	/** Сохранить конфиг в ссылку {@link #resourceLink} */
 	public synchronized <T extends AutoSerializableConfig> T save() 
 	{
-		if (!configInfo.resourceLink.isWritable())
+		synchronized (configInfo.isNeedsToSave)
 		{
-			logger.error("Can't save configuration", this, "to link", configInfo.resourceLink, "because writing is not available to it's link!");
-			return (T) this;
+			if (!configInfo.resourceLink.isWritable())
+			{
+				logger.error("Can't save configuration", this, "to link", configInfo.resourceLink, "because writing is not available to it's link!");
+				return (T) this;
+			}
+			
+			SwconfSerialization serialization = getSwconfSerialization();
+			ISwconfWriter writer = configInfo.configurationFormat.getWriter(true);
+			SwconfObject object = serialization.serialize(this);
+			
+			writer.startWriting();
+			writer.write(object);
+			writer.endWriting();
+			
+			DataOutputStreamSWL dos = configInfo.resourceLink.toOutStream();
+			
+			configureOut(dos);
+			
+			dos.writeString(writer.toSwconfString());
+			
+			logger.info("Configuration saved to", configInfo.resourceLink.toRlinkString());
+			
+			configInfo.setIsNeedsToSave(false);
 		}
-		
-		SwconfSerialization serialization = getSwconfSerialization();
-		ISwconfWriter writer = configInfo.configurationFormat.getWriter(true);
-		SwconfObject object = serialization.serialize(this);
-		
-		writer.startWriting();
-		writer.write(object);
-		writer.endWriting();
-		
-		DataOutputStreamSWL dos = configInfo.resourceLink.toOutStream();
-		
-		configureOut(dos);
-		
-		dos.writeString(writer.toSwconfString());
 		
 		return (T) this;
 	}
@@ -258,7 +269,23 @@ public class AutoSerializableConfig {
 				ObservableProperty property = (ObservableProperty) obj;
 				
 				property.eventChange.subscribe((event) -> {
-					configInfo.isNeedsToSave = true;
+					configInfo.setIsNeedsToSave(true);
+				});
+			}
+		});
+		
+		eventPostProcessing.subscribe((e) -> {
+			
+			Object obj = e.value;
+			
+			
+			if (obj instanceof IObservableList)
+			{
+				
+				IObservableList list = (IObservableList) obj;
+				
+				list.evtPostUpdate().subscribe((event) -> {
+					configInfo.setIsNeedsToSave(true);
 				});
 			}
 		});
@@ -290,11 +317,24 @@ public class AutoSerializableConfig {
 		
 		/** Необходимо ли сохранить конфиг? */
 		@InternalElement @IgnoreSwconf
-		public boolean isNeedsToSave = false;
+		public AtomicBoolean isNeedsToSave = new AtomicBoolean();
 		
 		/** Время, раз в которое конфиг будет сохраняться, если это необходимо */
 		@InternalElement
 		public long saveDelayInMilisis = DEFAULT_SAVE_DELAY;
+		
+		public boolean isNeedsToSave()
+		{
+			return isNeedsToSave.get();
+		}
+		
+		public void setIsNeedsToSave(boolean isNeedsToSave)
+		{
+			synchronized (this.isNeedsToSave)
+			{
+				this.isNeedsToSave.set(isNeedsToSave);
+			}
+		}
 	}
 	
 	/**

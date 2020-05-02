@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.net.URI;
+import java.net.URL;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -51,12 +52,35 @@ public class FileSWL extends File implements IHasSubfiles {
 		this("%appDir%");
 	}
 	
+	public URL toURL()
+	{
+		return toRlink().toURL();
+	}
+	
+	public boolean hasSubFile(String name)
+	{
+		FileSWL subFile = subFile(name);
+		return subFile == null ? false : subFile.isExistingFile();
+	}
+	
+	public boolean hasSubDir(String name)
+	{
+		FileSWL subFile = subFile(name);
+		return subFile == null ? false : subFile.isExistingDir();
+	}
+	
 	/** Получить все байты файла */
 	public byte[] getData()
 	{
 		DataInputStreamSWL dis = toInputStream();
 		
 		return dis == null ? null : dis.readAllSafe();
+	}
+	
+	public FileSWL withPostfix(@ConcattedString Object... text)
+	{
+		String postfix = StringUtils.concat(text);
+		return new FileSWL(getAbsolutePath() + text);
 	}
 	
 	/** Лежит ли файл в указанной директории? */
@@ -78,6 +102,35 @@ public class FileSWL extends File implements IHasSubfiles {
 			fileDir = targetDir.substring(0, fileDir.length() - 2);
 		
 		return getAbsolutePath().startsWith(targetDir);
+	}
+	
+	public IExtendedList<FileSWL> getAllSubfiles()
+	{
+		return getAllSubfiles((f) -> true);
+	}
+	
+	public IExtendedList<FileSWL> getAllSubfiles(IFunction1<FileSWL, Boolean> filter)
+	{
+		return getSubfilesTo(filter, null);
+	}
+	
+	public IExtendedList<FileSWL> getSubfilesTo(IFunction1<FileSWL, Boolean> filter, IExtendedList<FileSWL> target)
+	{
+		if (target == null)
+			target = CollectionsSWL.createExtendedList();
+		
+		if (filter.apply(this))
+			target.add(this);
+		
+		if (isDirectory())
+		{
+			for (FileSWL subFile : getSubfiles())
+			{
+				subFile.getSubfilesTo(filter, target);
+			}
+		}
+		
+		return target.dataStream().filter(filter).toList();
 	}
 	
 	/** Получить подфайл */
@@ -213,6 +266,16 @@ public class FileSWL extends File implements IHasSubfiles {
 		super(uri);
 	}
 	
+	public static FileSWL ofURL(URL url)
+	{
+		if (url == null)
+			return null;
+		
+		return logger.safeReturn(() -> {
+			return new FileSWL(url.toURI().getPath());
+		}, null, "Error while getting file from", url);
+	}
+	
 	/** Получить имя без расширения */
 	public String getNameWithoutExtension()
 	{
@@ -255,6 +318,13 @@ public class FileSWL extends File implements IHasSubfiles {
 	public FileSWL getParentFile()
 	{
 		return FileSWL.of(super.getParentFile());
+	}
+	
+	public FileSWL canonize()
+	{
+		return logger.safeReturn(() -> {
+			return new FileSWL(getCanonicalPath());
+		}, this, "Error while canonizing file", this);
 	}
 	
 	/** Получить путь до родителя, по возможности относительно рабочей директории */
@@ -455,6 +525,19 @@ public class FileSWL extends File implements IHasSubfiles {
 		getLock().unlock();
 	}
 	
+	/**
+	 *  Получить файл, переименнованный из этого
+	 *  <h1> Доступные актеры: </h1>
+	 *  <br> %file% - имя файла с расширением
+	 *  <br> %fileabs% - абсолютный путь до файла
+	 *  <br> %filewext% - имя без расширения
+	 *  <br> %fileext% - расширение файла 
+	 */
+	public FileSWL renamed(@ConcattedString Object... text)
+	{
+		return new FileSWL(getNameByThis(StringUtils.concat(text)));
+	}
+	
 	public DataOutputStreamSWL toAppendStream()
 	{
 		return new DataOutputStreamSWL(toOutputFileStream(true));
@@ -478,12 +561,7 @@ public class FileSWL extends File implements IHasSubfiles {
 	{
 		String newName = StringUtils.concat(name);
 		
-		newName = newName
-				.replace("%file%", getName())
-				.replace("%fileabs%", getAbsolutePath())
-				.replace("%filewext%", getNameWithoutExtension())
-				.replace("%fileext%", getExtension());
-		
+		newName = getNameByThis(newName);
 		
 		if (!StringUtils.isEmpty(newName))
 		{
@@ -493,6 +571,15 @@ public class FileSWL extends File implements IHasSubfiles {
 		}
 		
 		return null;
+	}
+	
+	public String getNameByThis(String name)
+	{
+		return name
+				.replace("%file%", getName())
+				.replace("%fileabs%", getAbsolutePath())
+				.replace("%filewext%", getNameWithoutExtension())
+				.replace("%fileext%", getExtension());
 	}
 	
 	/** Получить поток исходящих данных */

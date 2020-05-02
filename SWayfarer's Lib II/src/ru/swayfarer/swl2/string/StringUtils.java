@@ -191,7 +191,6 @@ public class StringUtils {
 					
 					if (!StringUtils.isEmpty(id) && id.length() == idLenght)
 					{
-						System.out.println(id);
 						if (StringUtils.isInteger(id))
 						{
 							id = MathUtils.toBase(id, codeBase, 10);
@@ -419,6 +418,25 @@ public class StringUtils {
 	}
 	
 	/**
+	 * Является ли строка {@link Long}'ом?
+	 * @param s Проверяемая строка
+	 * @return True, если является
+	 */
+	public static boolean isLong(String s)
+	{
+		try
+		{
+			Long.valueOf(s);
+			
+			return true;
+		}
+		catch (Throwable e)
+		{
+			return false;
+		}
+	}
+	
+	/**
 	 * Является ли строка {@link Boolean}'ом?
 	 * @param s Проверяемая строка
 	 * @return True, если является
@@ -451,11 +469,18 @@ public class StringUtils {
 		return ret;
 	}
 	
-	public static String subString(String indexOfString, @ConcattedString Object... text)
+	public static String subStringByFirst(String indexOfString, @ConcattedString Object... text)
 	{
 		String s = concat(text);
 		
 		return s.substring(s.indexOf(indexOfString) + indexOfString.length());
+	}
+	
+	public static String subStringByLast(String indexOfString, @ConcattedString Object... text)
+	{
+		String s = concat(text);
+		
+		return s.substring(0, s.lastIndexOf(indexOfString));
 	}
 	
 	/** Соединить все объекты в строку */

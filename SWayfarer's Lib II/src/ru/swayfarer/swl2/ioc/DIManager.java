@@ -10,17 +10,22 @@ import java.util.Map;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.Synchronized;
 import lombok.ToString;
-import lombok.val;
+import lombok.experimental.Accessors;
 import ru.swayfarer.swl2.asm.transformer.ditransformer.regetter.visitor.DynamicDI;
 import ru.swayfarer.swl2.classes.ReflectionUtils;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
+import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction0;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction2;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
 import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.string.StringUtils;
+import ru.swayfarer.swl2.threads.ThreadsUtils;
+import ru.swayfarer.swl2.threads.lock.SynchronizeLock;
 
 /**
  * Контейнер для Dependency Injection
@@ -40,7 +45,46 @@ public class DIManager {
 	public DIManager()
 	{
 		context = new DIContext();
-		DIRegistry.registerDefultIfNotFound(this);
+	}
+	
+	public static DIManager createIfNotFound(String name)
+	{
+		DIManager ret = DIRegistry.getRegisteredManager(name);
+		
+		if (ret == null)
+		{
+			ret = DIRegistry.registerManager(new DIManager(), name);
+		}
+		
+		return ret;
+	}
+	
+	public static void lockInjections(String contextName)
+	{
+		DIContext context = DIRegistry.getRegisteredContext(contextName);
+		
+		if (context != null)
+		{
+			context.lockOn(Thread.currentThread());
+		}
+		else
+		{
+			logger.warning("Can't lock context", contextName, "because it not found!\n", DIRegistry.registeredManagers);
+		}
+	}
+	
+	public static void unlockInjections(String contextName)
+	{
+		DIContext context = DIRegistry.getRegisteredContext(contextName);
+		
+		if (context != null)
+		{
+			context.unlock();
+		}
+		else
+		{
+			logger.warning("Can't unlock context", contextName, "because it not found!");
+		}
 	}
 	
 	/** Зарегистировать источник контекста */
@@ -86,76 +130,79 @@ public class DIManager {
 	 */
 	public void addContextSource(Object obj)
 	{
-		if (obj == null)
-			return;
-		
-		logger.safe(() -> {
+		synchronized (context.contextElements)
+		{
+			if (obj == null)
+				return;
 			
-			for (Method method : obj.getClass().getDeclaredMethods())
-			{
-				DISwL annotation = method.getDeclaredAnnotation(DISwL.class);
+			logger.safe(() -> {
 				
-				if (annotation != null)
+				for (Method method : obj.getClass().getDeclaredMethods())
 				{
-					String name = annotation.name();
+					DISwL annotation = method.getDeclaredAnnotation(DISwL.class);
 					
-					if (StringUtils.isEmpty(name))
-						name = method.getName();
-					
-					IDIContextElement contextElement = null;
-					
-					if (name.startsWith("get"))
+					if (annotation != null)
 					{
-						name = name.substring(3);
+						String name = annotation.name();
 						
 						if (StringUtils.isEmpty(name))
-							continue;
+							name = method.getName();
 						
-						if (name.length() == 1)
+						IDIContextElement contextElement = null;
+						
+						if (name.startsWith("get"))
 						{
-							name = name.toLowerCase();
-						}
-						else
-						{
-							name = (name.charAt(0)+"").toLowerCase() + name.substring(1);
-						}
-					}
-					
-					switch(annotation.type())
-					{
-						case Singleton:
-						{
-							contextElement = DIContextElementSingleton.builder()
-								.associatedClass(method.getReturnType())
-								.value(method.invoke(obj))
-								.name(name)
-								.build();
+							name = name.substring(3);
 							
-							break;
+							if (StringUtils.isEmpty(name))
+								continue;
+							
+							if (name.length() == 1)
+							{
+								name = name.toLowerCase();
+							}
+							else
+							{
+								name = (name.charAt(0)+"").toLowerCase() + name.substring(1);
+							}
 						}
 						
-						default:
+						switch(annotation.type())
 						{
-							DIContextElementFromMethod element;
-							
-							contextElement = element = DIContextElementFromMethod.builder()
+							case Singleton:
+							{
+								contextElement = DIContextElementSingleton.builder()
 									.associatedClass(method.getReturnType())
-									.method(method)
-									.sourceInstance(obj)
+									.value(method.invoke(obj))
 									.name(name)
 									.build();
+								
+								break;
+							}
 							
-							if (annotation.type() == ContextElementType.ThreadLocalPrototype)
-								element.methodInvokationFun = new ThreadLocalMethodInvokationFun();
-							
-							break;
+							default:
+							{
+								DIContextElementFromMethod element;
+								
+								contextElement = element = DIContextElementFromMethod.builder()
+										.associatedClass(method.getReturnType())
+										.method(method)
+										.sourceInstance(obj)
+										.name(name)
+										.build();
+								
+								if (annotation.type() == ContextElementType.ThreadLocalPrototype)
+									element.methodInvokationFun = new ThreadLocalMethodInvokationFun();
+								
+								break;
+							}
 						}
+						
+						context.setContextElement(name, method.getReturnType(), contextElement);
 					}
-					
-					context.setContextElement(name, method.getReturnType(), contextElement);
 				}
-			}
-		}, "Error while loading sources from", obj);
+			}, "Error while loading sources from", obj);
+		}
 	}
 	
 	/**
@@ -390,8 +437,54 @@ public class DIManager {
 	 */
 	public static class DIContext {
 		
+		public volatile Thread lockedThread;
+		public volatile SynchronizeLock lock = new SynchronizeLock();
+		
 		/** Элементы контекста. Имя -> Класс -> Элемент */
+		@InternalElement
 		public Map<String, Map<Class<?>, IDIContextElement> > contextElements = new HashMap<>();
+		
+		public void passLock()
+		{
+			if (isInjectionsLocked())
+			{
+				if (!ThreadsUtils.isThis(lockedThread))
+				{
+					lock.waitFor();
+				}
+			}
+		}
+		
+		public <T extends DIContext> T unlock()
+		{
+			if (isInjectionsLocked())
+			{
+				lock.notifyLockAll();
+				lockedThread = null;
+			}
+			
+			return (T) this;
+		}
+		
+		public <T extends DIContext> T lockOn(Thread thread) 
+		{
+			if (thread == null)
+				return (T) this;
+			
+			if (isInjectionsLocked())
+			{
+				logger.warning("Trying to lock context", this, "on thread", thread.getName(), "while it's already locked on", lockedThread.getName());
+			}
+			
+			lockedThread = thread;
+			
+			return (T) this;
+		}
+		
+		public boolean isInjectionsLocked()
+		{
+			return lockedThread != null;
+		}
 		
 		/**
 		 * Задать элемент контекста 
@@ -399,6 +492,7 @@ public class DIManager {
 		 * @param value Значение элемента
 		 * @return Оригинальный {@link DIContext} (this)
 		 */
+		@Synchronized("contextElements")
 		public <T extends DIContext> T setContextElement(String name, Object value)
 		{
 			return setContextElement(name, value.getClass(), value);
@@ -411,6 +505,7 @@ public class DIManager {
 		 * @param value Значение элемента
 		 * @return Оригинальный {@link DIContext} (this)
 		 */
+		@Synchronized("contextElements")
 		public <T extends DIContext> T setContextElement(String name, Class<?> associatedClass, IDIContextElement value)
 		{
 			Map<Class<?>, IDIContextElement> contextElements = getElementsForName(name, true);
@@ -425,6 +520,7 @@ public class DIManager {
 		 * @param value Значение элемента
 		 * @return Оригинальный {@link DIContext} (this)
 		 */
+		@Synchronized("contextElements")
 		public <T extends DIContext> T setContextElement(String name, Class<?> associatedClass, Object value)
 		{
 			return setContextElement(name, associatedClass, DIContextElementSingleton.builder()
@@ -441,8 +537,10 @@ public class DIManager {
 		 * @param associatedClass Класс, с которым ассоциируется элемент 
 		 * @return Есть ли элемент?
 		 */
+		@Synchronized("contextElements")
 		public boolean hasContextElement(String name, Class<?> associatedClass)
 		{
+			passLock();
 			return getContextElement(name, associatedClass) != null;
 		}
 		
@@ -452,8 +550,12 @@ public class DIManager {
 		 * @param className Имя класа. Не каноничное, но и не Internal. То, что {@link Class#getName()}
 		 * @return Элемент. Nyll, если не найден.
 		 */
+		@Synchronized("contextElements")
 		public IDIContextElement getContextElement(String name, String className)
 		{
+			
+			passLock();
+			
 			try
 			{
 				return getContextElement(name, Class.forName(className));
@@ -472,8 +574,11 @@ public class DIManager {
 		 * @param associatedClass Класс, с которым ассоциируется элемент
 		 * @return Элемент. Nyll, если не найден.
 		 */
+		@Synchronized("contextElements")
 		public IDIContextElement getContextElement(String name, Class<?> associatedClass)
 		{
+			passLock();
+			
 			Map<Class<?>, IDIContextElement> elementsForName = getElementsForName(name, false);
 			
 			Class<?> cl;
@@ -503,8 +608,11 @@ public class DIManager {
 		 * @param name Имя элементов
 		 * @param forceCreate Создать ли, если не найдено?
 		 */
+		@Synchronized("contextElements")
 		public Map<Class<?>, IDIContextElement> getElementsForName(String name, boolean forceCreate)
 		{
+			passLock();
+			
 			Map<Class<?>, IDIContextElement> ret = contextElements.get(name);
 			
 			if (ret == null && forceCreate)
@@ -557,6 +665,20 @@ public class DIManager {
 			}
 			
 			return threadLocal.get();
+		}
+	}
+	
+	@Accessors(chain = true) @Getter @AllArgsConstructor(staticName = "of")
+	public static class DIContextElementFromFun implements IDIContextElement {
+
+		public Class<?> associatedClass;
+		public String name;
+		public IFunction0<Object> objectCreationFun;
+		
+		@Override
+		public Object getValue()
+		{
+			return objectCreationFun.apply();
 		}
 	}
 	

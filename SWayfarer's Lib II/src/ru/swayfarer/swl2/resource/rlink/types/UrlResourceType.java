@@ -140,7 +140,9 @@ public class UrlResourceType extends ResourceType{
 		URL url = rlinkToURL(rlink);
 		
 		if (url == null)
+		{
 			return null;
+		}
 		
 		IExtendedList<ResourceLink> ret = CollectionsSWL.createExtendedList();
 		

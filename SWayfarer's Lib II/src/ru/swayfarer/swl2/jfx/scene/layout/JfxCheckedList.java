@@ -1,8 +1,11 @@
 package ru.swayfarer.swl2.jfx.scene.layout;
 
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.ContentDisplay;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,25 +17,33 @@ import ru.swayfarer.swl2.markers.ConcattedString;
 import ru.swayfarer.swl2.observable.IObservable;
 import ru.swayfarer.swl2.observable.Observables;
 import ru.swayfarer.swl2.observable.property.ObservableProperty;
+import ru.swayfarer.swl2.observable.property.ObservableProperty.PropertyChangeEvent;
 import ru.swayfarer.swl2.string.StringUtils;
 
 @SuppressWarnings("unchecked")
 public class JfxCheckedList extends JfxStackedPane {
 	
+	public boolean isShowSelection = true;
+	
+	public Color selectionColor = Color.CADETBLUE;
+	
+	public ObservableProperty<CheckedListElement> selectedElement = Observables.createProperty();
 	public IObservable<CheckEvent> eventCheck = Observables.createObservable();
 	public ObservableProperty<Float> fontSize = Observables.createProperty(13f);
 	
-	public <T extends JfxCheckedList> T setListItems(IFunction1<Object, String> nameFun, IFunction1<Object, Boolean> isCheckedFun, Object... content) 
+	public <T extends JfxCheckedList, E> T setListItems(IFunction1<E, String> nameFun, IFunction1<E, Boolean> isCheckedFun, E... content) 
 	{
 		clear();
 		addListItems(nameFun, isCheckedFun, content);
 		
+		selectedElement.subscribe(this::onSelectedItemChanged);
+		
 		return (T) this;
 	}
 	
-	public <T extends JfxCheckedList> T addListItems(IFunction1<Object, String> nameFun, IFunction1<Object, Boolean> isCheckedFun, Object... content) 
+	public <T extends JfxCheckedList, E> T addListItems(IFunction1<E, String> nameFun, IFunction1<E, Boolean> isCheckedFun, E... content) 
 	{
-		for (Object obj : content)
+		for (E obj : content)
 		{
 			addListItem(obj, nameFun.$(obj), isCheckedFun.$(obj));
 		}
@@ -40,9 +51,45 @@ public class JfxCheckedList extends JfxStackedPane {
 		return (T) this;
 	}
 	
+	public void onSelectedItemChanged(PropertyChangeEvent event)
+	{
+		CheckedListElement oldItem = event.getOldValue();
+		CheckedListElement newItem = event.getNewValue();
+	
+		if (oldItem != null)
+		{
+			oldItem.setBackgroundColor(Color.TRANSPARENT);
+		}
+		
+		if (isShowSelection)
+		{	
+			if (newItem != null)
+			{
+				newItem.setBackgroundColor(selectionColor);
+			}
+		}
+	}
+	
+	public <T extends JfxCheckedList> T setShowSelection(boolean isShowSelection) 
+	{
+		this.isShowSelection = isShowSelection;
+		return (T) this;
+	}
+	
 	public <T extends JfxCheckedList> T addListItem(Object obj, String text, boolean isChecked) 
 	{
 		CheckedListElement elem = new CheckedListElement(obj, fontSize, text);
+
+		elem.eventsMouse.clicked.subscribe((event) -> {
+			selectedElement.setValue(elem);
+		});
+		
+		if (isChecked)
+			elem.checkBox.setSelected(true);
+		
+		elem.eventsMouse.clicked.subscribe(() -> {
+			selectedElement.setValue(elem);
+		});
 		
 		elem.checkBox.selectedProperty().addListener((property, oldValue, newValue) -> {
 			eventCheck.next(CheckEvent.of(elem.content, elem, newValue));
@@ -53,6 +100,7 @@ public class JfxCheckedList extends JfxStackedPane {
 //		});
 		
 		elem.prefWidthProperty().bind(widthProperty());
+		
 		
 		add(elem);
 		
@@ -78,7 +126,7 @@ public class JfxCheckedList extends JfxStackedPane {
 			this.lblComment.setContentDisplay(ContentDisplay.CENTER);
 			this.lblComment.setTextAlignment(TextAlignment.CENTER);
 			this.lblComment.setText(StringUtils.concat(text));
-			this.setHorizontalSizePolicy(Priority.ALWAYS);
+			this.setHorizontalSizePolicy(Priority.ALWAYS); 
 			this.checkBox.setHorizontalSizePolicy(Priority.NEVER);
 			this.lblComment.setFontScale(fontSize.getFloatValue());
 			
@@ -86,9 +134,7 @@ public class JfxCheckedList extends JfxStackedPane {
 			
 			this.lblComment.setAlignment(Pos.CENTER);
 			
-			this.setOnMouseClicked((evt) -> {
-				System.out.println("Clicked by " + content);
-			});
+			HBox.setMargin(checkBox, new Insets(0, 10, 0, 0));
 			
 			this.prefWidthProperty().addListener((p, oldValue, newValue) -> {
 				this.lblComment.setPrefWidth(newValue.doubleValue() - checkBox.getPrefWidth());
@@ -98,6 +144,11 @@ public class JfxCheckedList extends JfxStackedPane {
 			
 //			setAlignment(Pos.TOP_RIGHT);
 		}
+		
+		public <T> T getContent()
+		{
+			return (T) content;
+		}
 	}
 	
 	@Data @AllArgsConstructor(staticName = "of")
@@ -105,6 +156,11 @@ public class JfxCheckedList extends JfxStackedPane {
 		public Object item;
 		public CheckedListElement element;
 		public boolean isChecked;
+		
+		public <T> T getItem()
+		{
+			return (T) item;
+		}
 	}
 	
 }

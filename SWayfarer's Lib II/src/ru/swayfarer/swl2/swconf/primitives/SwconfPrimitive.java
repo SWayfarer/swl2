@@ -106,4 +106,14 @@ public class SwconfPrimitive {
 	{
 		return getClass().getSimpleName() + " [name=" + name + ", rawValue=" + rawValue + ", comment=" + comment + "]";
 	}
+	
+	public <T extends SwconfPrimitive> T copy() 
+	{
+		SwconfPrimitive ret = new SwconfPrimitive();
+		ret.comment = comment;
+		ret.rawValue = rawValue;
+		ret.name = name;
+		
+		return (T) ret;
+	}
 }

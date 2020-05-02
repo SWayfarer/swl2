@@ -6,6 +6,7 @@ import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.exceptions.ExceptionsUtils;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction0;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction0NoR;
+import ru.swayfarer.swl2.string.StringUtils;
 
 /**
  * Утилиты для работы с потоками 
@@ -24,10 +25,21 @@ public class ThreadsUtils {
 		ExceptionsUtils.safe(() -> Thread.sleep(milisis));
 	}
 	
+	public static boolean isThis(Thread thread)
+	{
+		return Thread.currentThread() == thread;
+	}
+	
 	/** Запустить в новом потоке */
 	public static Thread newThread(IFunction0NoR run, boolean isDaemon)
 	{
-		Thread thread = new Thread(run.asJavaRunnable());
+		return newThread(null, run, isDaemon);
+	}
+	
+	/** Запустить в новом потоке */
+	public static Thread newThread(String name, IFunction0NoR run, boolean isDaemon)
+	{
+		Thread thread = StringUtils.isEmpty(name) ? new Thread(run.asJavaRunnable()) : new Thread(run.asJavaRunnable(), name);
 		thread.setDaemon(isDaemon);
 		thread.start();
 		return thread;

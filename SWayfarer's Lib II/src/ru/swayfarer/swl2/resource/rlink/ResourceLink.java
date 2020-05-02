@@ -43,6 +43,7 @@ public class ResourceLink {
 	public ResourceLink(ResourceType type, String content)
 	{
 		super();
+		
 		ExceptionsUtils.IfNull(type, IllegalArgumentException.class, "The resource type can't be null!");
 		ExceptionsUtils.IfEmpty(content, IllegalArgumentException.class, "The resource type can't be null!");
 		
@@ -58,7 +59,7 @@ public class ResourceLink {
 			
 			StackTraceElement element = st.getFirstElement();
 			
-			String pkg = getClass().getPackageName();
+			String pkg = getClass().getPackage().getName();
 			
 			for (StackTraceElement elem : st)
 			{
@@ -77,6 +78,150 @@ public class ResourceLink {
 		}
 		
 		return str;
+	}
+	
+	public String getSimpleNameWithoutExtension()
+	{
+		String name = getSimpleName();
+		String extension = getExtension();
+		
+		if (extension.isEmpty())
+			return name;
+		
+		return name.substring(0, name.length() - extension.length() - 1);
+	}
+	
+	public static String getResourceParentPath(String resourceName)
+	{
+		String link = resourceName;
+		int indexOfSlash = link.lastIndexOf("/");
+		
+		if (link.length() - 1 == indexOfSlash)
+		{
+			String tmp = StringUtils.subString(0, -1, link);
+			
+			indexOfSlash = tmp.lastIndexOf("/");
+		}
+		
+		if (indexOfSlash > 0)
+		{
+			return link.substring(0, indexOfSlash);
+		}
+		
+		return link;
+	}
+	
+	public static String getExtension(String resourceName)
+	{
+		String name = getSimpleName(resourceName);
+		
+		String ret = "";
+		
+		char[] chars = name.toCharArray();
+		
+		for (char ch : chars)
+		{
+			if (ch == '.')
+			{
+				ret = "";
+			}
+			else
+			{
+				ret += ch;
+			}
+		}
+		
+		if (ret.equalsIgnoreCase(name))
+			return "";
+		
+		return ret;
+	}
+	
+	public static String getSimpleName(String resourceName)
+	{
+		String link = resourceName;
+		int indexOfSlash = link.lastIndexOf("/");
+		
+		if (link.length() - 1 == indexOfSlash)
+		{
+			String tmp = StringUtils.subString(0, -1, link);
+			
+			indexOfSlash = tmp.lastIndexOf("/");
+		}
+		
+		if (indexOfSlash > 0)
+		{
+			return StringUtils.subString(indexOfSlash + 1, 0, link);
+		}
+		
+		return link;
+	}
+	
+	/** Получить расширение файла */
+	public String getExtension()
+	{
+		String name = getSimpleName();
+		
+		String ret = "";
+		
+		char[] chars = name.toCharArray();
+		
+		for (char ch : chars)
+		{
+			if (ch == '.')
+			{
+				ret = "";
+			}
+			else
+			{
+				ret += ch;
+			}
+		}
+		
+		if (ret.equalsIgnoreCase(name))
+			return "";
+		
+		return ret;
+	}
+	
+	public String getSimpleName()
+	{
+		String link = content;
+		int indexOfSlash = content.lastIndexOf("/");
+		
+		if (link.length() - 1 == indexOfSlash)
+		{
+			String tmp = StringUtils.subString(0, -1, link);
+			
+			indexOfSlash = tmp.lastIndexOf("/");
+		}
+		
+		if (indexOfSlash > 0)
+		{
+			return StringUtils.subString(indexOfSlash + 1, 0, link);
+		}
+		
+		return link;
+	}
+	
+	public String getParentName()
+	{
+		String link = content;
+		int indexOfSlash = content.lastIndexOf("/");
+		
+		if (link.length() - 1 == indexOfSlash)
+		{
+			String tmp = StringUtils.subString(0, -1, link);
+			
+			indexOfSlash = tmp.lastIndexOf("/");
+		}
+		
+		if (indexOfSlash > 0)
+		{
+			return link.substring(0, indexOfSlash);
+		}
+		
+		return link;
 	}
 	
 	/** Получить {@link BufferedImage} */
@@ -140,7 +285,7 @@ public class ResourceLink {
 		if (StringUtils.isEmpty(last))
 			return content;
 		
-		return last + ":" + content;
+		return last + content;
 	}
 	
 	/** Получить {@link URL} из ресурса */

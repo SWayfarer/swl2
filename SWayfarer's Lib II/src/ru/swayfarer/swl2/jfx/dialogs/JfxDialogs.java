@@ -23,6 +23,9 @@ import ru.swayfarer.swl2.exceptions.ExceptionsUtils;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction2;
 import ru.swayfarer.swl2.jfx.config.JfxLocale;
 import ru.swayfarer.swl2.jfx.css.CssManager;
+import ru.swayfarer.swl2.jfx.scene.controls.JfxFileChooser;
+import ru.swayfarer.swl2.jfx.scene.controls.JfxFileChooser.JfxFileChooserWindow;
+import ru.swayfarer.swl2.jfx.scene.controls.JfxFileFilter;
 import ru.swayfarer.swl2.jfx.scene.controls.validation.TextPropertyValidators;
 import ru.swayfarer.swl2.jfx.utils.JfxUtils;
 import ru.swayfarer.swl2.markers.InternalElement;
@@ -136,7 +139,7 @@ public class JfxDialogs {
 	/** Получить файл для сохранения */
 	public static FileSWL getSaveFile(Stage stage, String filterName, String initialDir, String... extensions)
 	{
-		return getFile(false, stage, filterName, initialDir, extensions);
+		return getFile(false, false, true, stage, filterName, initialDir, extensions);
 	}
 	
 	/** Получить файл для открытия */
@@ -148,34 +151,37 @@ public class JfxDialogs {
 	/** Получить файл для открытия */
 	public static FileSWL getOpenFile(Stage stage, String filterName, String initialDir, String... extensions)
 	{
-		return getFile(true, stage, filterName, initialDir, extensions);
+		return getFile(true, false, true, stage, filterName, initialDir, extensions);
 	}
 	
 	/** Получить папку для открытия */
 	public static FileSWL getDirectory(Stage stage)
 	{
-		DirectoryChooser chooser = new DirectoryChooser();
-		
-		chooser.setTitle("Выберите папку");
-		
-		return FileSWL.of(chooser.showDialog(stage));
+		return getFile(false, true, false, stage, null, null, (String[]) null);
 	}
 	
 	/** Получить файл для открытия */
 	@InternalElement
-	public static FileSWL getFile(boolean isOpen, Stage stage, String filterName, String initialDir, String... extensions)
+	public static FileSWL getFile(boolean isOpen, boolean isAcceptsDirs, boolean isAcceptsFiles, Stage stage, String filterName, String initialDir, String... extensions)
 	{
-		FileChooser chooser = new FileChooser();
+		JfxFileChooser chooser = new JfxFileChooser();
+		chooser.setFilters(new JfxFileFilter.ExtensionsFilter(filterName, "", extensions));
+		chooser.fileChoosingOptions.isAcceptsNonExisting = !isOpen;
 		
-		ExceptionsUtils.safe(() -> {
-			if (!StringUtils.isEmpty(initialDir))
-				chooser.setInitialDirectory(new FileSWL(initialDir));
-		});
+		JfxFileChooserWindow window = new JfxFileChooserWindow(chooser, "Select a file...");
 		
-		if (!(extensions == null || extensions.length == 0 || StringUtils.isEmpty(filterName)))
-			chooser.setSelectedExtensionFilter(new ExtensionFilter(filterName, extensions));
+		if (stage != null)
+		{
+			window.setModality(stage);
+		}
 		
-		return FileSWL.of(isOpen ? chooser.showOpenDialog(stage) : chooser.showSaveDialog(stage));
+		return window.getResult();
+	}
+	
+	/** Подтверждено ли действие из диалога? */
+	public static boolean isConfirmed(String context, Stage stage)
+	{
+		return isConfirmed("Confirmation", context, stage, null);
 	}
 	
 	/** Подтверждено ли действие из диалога? */

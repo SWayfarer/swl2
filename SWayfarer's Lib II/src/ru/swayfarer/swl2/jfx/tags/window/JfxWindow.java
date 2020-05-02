@@ -1,20 +1,33 @@
 package ru.swayfarer.swl2.jfx.tags.window;
 
+import javafx.application.Platform;
+import javafx.collections.ObservableList;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import ru.swayfarer.swl2.jfx.css.CssManager;
 import ru.swayfarer.swl2.jfx.helpers.ScaleEventsHelper;
 import ru.swayfarer.swl2.jfx.helpers.ScaleEventsHelper.ResizeEvent;
+import ru.swayfarer.swl2.jfx.scene.controls.IJavafxWidget;
 import ru.swayfarer.swl2.jfx.scene.layout.JfxVBox;
 import ru.swayfarer.swl2.jfx.utils.FXResizeHelper;
+import ru.swayfarer.swl2.jfx.utils.JfxUtils;
+import ru.swayfarer.swl2.logger.ILogger;
+import ru.swayfarer.swl2.logger.LoggingManager;
 import ru.swayfarer.swl2.markers.ConcattedString;
 import ru.swayfarer.swl2.observable.IObservable;
 import ru.swayfarer.swl2.observable.Observables;
 import ru.swayfarer.swl2.observable.property.ObservableProperty;
-import ru.swayfarer.swl2.observable.property.ObservableProperty.ChangeEvent;
+import ru.swayfarer.swl2.observable.property.ObservableProperty.PropertyChangeEvent;
+import ru.swayfarer.swl2.resource.rlink.RLUtils;
+import ru.swayfarer.swl2.resource.rlink.ResourceLink;
+import ru.swayfarer.swl2.string.StringUtils;
 import ru.swayfarer.swl2.tasks.RecursiveSafeTask;
 
 @SuppressWarnings("unchecked")
@@ -32,8 +45,12 @@ public class JfxWindow {
 	public ObservableProperty<Stage> stage = Observables.createProperty();
 	public ObservableProperty<Scene> scene = Observables.createProperty();
 	public ObservableProperty<Parent> rootElement = Observables.createProperty();
+	
+	public ObservableProperty<Image> windowIcon = Observables.createProperty();
 
 	public FXResizeHelper fxResizeHelper;
+	
+	public ILogger logger = LoggingManager.getLogger(getClass().getSimpleName());
 	
 	public JfxWindow(Parent parent)
 	{
@@ -48,7 +65,55 @@ public class JfxWindow {
 		this.rootElement.setValue(parent);
 	}
 	
-	public void onSceneChanged(ChangeEvent event)
+	public <T extends JfxWindow> T setSizeFromRoot() 
+	{
+		Parent root = rootElement.get();
+		Stage stage = this.stage.get();
+		
+		if (root instanceof Region)
+		{
+			Region parentRg = (Region) root;
+			stage.setWidth(parentRg.getPrefWidth());
+			stage.setHeight(parentRg.getPrefHeight());
+		}
+		
+		return (T) this;
+	}
+	
+	public <T extends JfxWindow> T setIcon(@ConcattedString Object... rlinkPath) 
+	{
+		return setIcon(RLUtils.createLink(StringUtils.concat(rlinkPath)));
+	}
+	
+	public <T extends JfxWindow> T setIcon(ResourceLink rlink) 
+	{
+		return logger.safeReturn(() -> {
+			Image image = new Image(rlink.toStream());
+			return setIcon(image);
+		}, (T) this, "Error while setting icon for", this, "from rlink", rlink);
+	}
+	
+	public <T extends JfxWindow> T setIcon(Image image) 
+	{
+		Stage stage = this.stage.get();
+		
+		ObservableList<Image> stageIcons = stage.getIcons();
+		
+		if (image != null)
+			stageIcons.setAll(image);
+		else
+			stageIcons.clear();
+		
+		return (T) this;
+	}
+	
+	public <T extends JfxWindow> T setTitle(@ConcattedString Object... text) 
+	{
+		this.stage.get().setTitle(StringUtils.concat(text));
+		return (T) this;
+	}
+	
+	public void onSceneChanged(PropertyChangeEvent event)
 	{
 		if (stage.isNull())
 			stage.setValue(new Stage());
@@ -56,10 +121,11 @@ public class JfxWindow {
 		Scene newScene = event.getNewValue();
 		newScene.setRoot(rootElement.get());
 		CssManager.instance.addScene(newScene);
+		CssManager.instance.apply(newScene);
 		stage.get().setScene(newScene);
 	}
 	
-	public void onStageChanged(ChangeEvent event)
+	public void onStageChanged(PropertyChangeEvent event)
 	{
 		Stage newStage = event.getNewValue();
 		newStage.setScene(scene.get());
@@ -74,23 +140,52 @@ public class JfxWindow {
 		JfxTitleDecorator titleDecorator = new JfxTitleDecorator(this, text);
 		vBox.addItems(titleDecorator, rootElement.get());
 		
-		rootElement.setValue(vBox);
-		
 		vBox.eventsScale.resize.subscribe((event) -> {
 			titleDecorator.setWidth(event.width);
 		});
 		
-		fxResizeHelper = new FXResizeHelper(stage.get(), 10, 10);
+		if (rootElement.get() instanceof Region)
+		{
+			Region rg = (Region) rootElement.get();
+			rg.setMaxHeight(Double.POSITIVE_INFINITY);
+			rg.setMaxWidth(Double.POSITIVE_INFINITY);
+		}
+		
+		if (rootElement.get() instanceof IJavafxWidget)
+		{
+			((IJavafxWidget)rootElement.get()).setVerticalSizePolicy(Priority.ALWAYS);
+		}
+		
+		rootElement.setValue(vBox);
+		
+		ScaleEventsHelper helper = new ScaleEventsHelper().init(stage.get());
+		
+		helper.resize.subscribe((event) -> {
+			vBox.setMaxWidth(event.width);
+			vBox.setMaxHeight(event.height);
+		});
+		
+		fxResizeHelper = new FXResizeHelper(stage.get(), 10, 5);
 		
 		return (T) titleDecorator;
 	}
 	
-	public void onRootElementChanged(ChangeEvent event)
+	public <T extends JfxWindow> T centered() 
+	{
+		Platform.runLater(() -> {
+			Rectangle2D screen = JfxUtils.getScreenResolution();
+			Stage stage = this.stage.get();
+			
+			stage.setX((screen.getWidth() - stage.getWidth()) / 2);
+			stage.setY((screen.getHeight() - stage.getHeight()) / 2);
+		});
+		
+		return (T) this;
+	}
+	
+	public void onRootElementChanged(PropertyChangeEvent event)
 	{
 		Parent newNode = event.getNewValue();
-		
-		System.out.println("Changing root to" + newNode);
-		
 		
 		if (scene.isNull())
 			scene.setValue(new Scene(newNode));

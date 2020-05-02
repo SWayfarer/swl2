@@ -288,6 +288,12 @@ public class CollectionsSWL {
 		return collection == null || collection.isEmpty();
 	}
 	
+	/** Карта пуста или равна null*/
+	public static boolean isNullOrEmpty(Map<?, ?> map)
+	{
+		return map == null || map.isEmpty();
+	}
+	
 	/** Перемешать все элементы */
 	@Alias("shuffle")
 	public static <T> List<T> randomize(List list, long seed)

@@ -5,10 +5,12 @@ import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
@@ -44,7 +46,16 @@ public interface IJavafxWidget {
 	
 	public default void setBackgroundColor(Color color)
 	{
-		JfxUtils.setBackgroundColor(self(), color);
+		Object obj = self();
+		
+		if (obj instanceof Region)
+		{
+			Region rg = self();
+			
+			rg.setBackground(new Background(new BackgroundFill(color, CornerRadii.EMPTY, Insets.EMPTY)));
+		}
+		else
+			JfxUtils.setBackgroundColor(self(), color);
 	}
 	
 	public default void setBackgroundColor(int r, int g, int b)

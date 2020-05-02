@@ -80,7 +80,13 @@ public class SwconfWriter implements ISwconfWriter {
 	{
 		writeComment(num);
 		writePrefix(num);
-		parent.writeRaw(num.getDouble());
+		double d = num.getDouble();
+		String str = String.valueOf(d);
+		
+		if (str.endsWith(".0"))
+			str = StringUtils.subString(0, -2, str);
+		
+		parent.writeRaw(str);
 	}
 	
 	@Override
@@ -101,7 +107,13 @@ public class SwconfWriter implements ISwconfWriter {
 				parent.writeSplitter();
 			}
 			
+			if (primitive.isObject())
+				parent.writeBlockStart();
+			
 			parent.write(primitive);
+			
+			if (primitive.isObject())
+				parent.writeBlockEnd();
 			
 			isFirst = false;
 		}
@@ -149,12 +161,14 @@ public class SwconfWriter implements ISwconfWriter {
 	@Override
 	public <T extends ISwconfWriter> T startWriting() 
 	{
+		parent.writeRaw(swconfFormat.onStart);
 		return (T) this;
 	}
 	
 	@Override
 	public <T extends ISwconfWriter> T endWriting() 
 	{
+		parent.writeRaw(swconfFormat.onEnd);
 		return (T) this;
 	}
 	
@@ -237,13 +251,15 @@ public class SwconfWriter implements ISwconfWriter {
 	@Override
 	public void writeExclusionStart()
 	{
-		parent.writeRaw(swconfFormat.exclusionStarts.getFirstElement());
+		if (swconfFormat.isCommentsEnabled)
+			parent.writeRaw(swconfFormat.exclusionStarts.getFirstElement());
 	}
 	
 	@Override
 	public void writeExclusionEnd()
 	{
-		parent.writeRaw(swconfFormat.exclusionEnds.getFirstElement());
+		if (swconfFormat.isCommentsEnabled)
+			parent.writeRaw(swconfFormat.exclusionEnds.getFirstElement());
 	}
 
 	@Override
@@ -267,11 +283,14 @@ public class SwconfWriter implements ISwconfWriter {
 	@Override
 	public void writeExclusion(String comment)
 	{
-		if (!StringUtils.isEmpty(comment))
+		if (swconfFormat.isCommentsEnabled)
 		{
-			parent.writeExclusionStart();
-			parent.writeRaw(comment);
-			parent.writeExclusionEnd();
+			if (!StringUtils.isEmpty(comment))
+			{
+				parent.writeExclusionStart();
+				parent.writeRaw(comment);
+				parent.writeExclusionEnd();
+			}
 		}
 	}
 

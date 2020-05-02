@@ -4,6 +4,7 @@ import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.ToString;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.handlers.LogLevelFilteringHandler;
@@ -13,6 +14,7 @@ import ru.swayfarer.swl2.logger.handlers.LogLevelFilteringHandler;
  * @author swayfarer
  *
  */
+@ToString
 @AllArgsConstructor(staticName = "of") @Data
 public class FilteringInfo {
 	

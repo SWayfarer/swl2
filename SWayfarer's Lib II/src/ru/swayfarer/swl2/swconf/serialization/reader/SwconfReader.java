@@ -3,6 +3,8 @@ package ru.swayfarer.swl2.swconf.serialization.reader;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.equals.EqualsUtils;
+import ru.swayfarer.swl2.logger.ILogger;
+import ru.swayfarer.swl2.logger.LoggingManager;
 import ru.swayfarer.swl2.markers.ConcattedString;
 import ru.swayfarer.swl2.string.StringUtils;
 import ru.swayfarer.swl2.string.reader.StringReaderSWL;
@@ -16,6 +18,10 @@ import ru.swayfarer.swl2.swconf.primitives.SwconfString;
 
 @SuppressWarnings("unchecked")
 public class SwconfReader {
+	
+	public String lineSplitter = StringUtils.LF;
+	
+	public static ILogger logger = LoggingManager.getLogger();
 	
 	public StringReaderSWL reader;
 	
@@ -47,6 +53,7 @@ public class SwconfReader {
 	public <T extends SwconfReader> T setString(@ConcattedString Object... text) 
 	{
 		this.reader = new StringReaderSWL(StringUtils.concat(text));
+		this.reader.lineSplitter = lineSplitter;
 		return (T) this;
 	}
 	
@@ -278,6 +285,15 @@ public class SwconfReader {
 		prevReadingInfo = readingInfos.getFirstElement();
 		readingInfos.removeFirstElement();
 		currentReadingInfo = getReadingInfo();
+		
+		if (currentReadingInfo != null)
+		{
+			if (currentReadingInfo.isInArray())
+			{
+				currentReadingInfo.array.addChild(prevReadingInfo.root);
+			}
+		}
+		
 		return currentReadingInfo;
 	}
 	

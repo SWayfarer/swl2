@@ -49,8 +49,11 @@ public class ConfigurationSaveThread extends Thread {
 		if (cfg != null && cfg.configInfo != null)
 		{
 			logger.safe(() -> {
-				if (cfg.configInfo.isNeedsToSave)
+				if (cfg.configInfo.isNeedsToSave())
+				{
 					cfg.save();
+					cfg.configInfo.setIsNeedsToSave(false);
+				}
 				
 				Thread.sleep(cfg.configInfo.saveDelayInMilisis);
 				

@@ -2,8 +2,11 @@ package ru.swayfarer.swl2.logger;
 
 import java.util.Vector;
 
+import ru.swayfarer.swl2.collections.CollectionsSWL;
+import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.exceptions.ExceptionsUtils;
 import ru.swayfarer.swl2.exceptions.ExceptionsUtils.StacktraceOffsets;
+import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction2NoR;
 import ru.swayfarer.swl2.logger.ILogLevel.StandartLoggingLevels;
 import ru.swayfarer.swl2.logger.event.LogEvent;
@@ -17,8 +20,11 @@ import ru.swayfarer.swl2.string.StringUtils;;
 @SuppressWarnings("unchecked")
 public class SimpleLoggerSWL implements ILogger, StandartLoggingLevels, StacktraceOffsets{
 
+	public IFunction1<Throwable, IExtendedList<StackTraceElement>> stacktraceDecorator = (e) -> CollectionsSWL.createExtendedList(e.getStackTrace());
 	public static String defaultDecoratorSeq = "=-";
-	public static String defaultFormat = "[%thread%/%level%] (%from%) [%logger%] -> %text%";
+	public static String defaultFormat = "[%thread%/%level%]&{153} (%from%) &{h:1}[%logger%] -> %text%";
+	
+	public IFunction1<StackTraceElement, String> stacktraceToStringFun = String::valueOf;
 	
 	public static IFunction2NoR<ILogger, LogInfo> defaultPrinter = (logger, info) -> System.out.println(info.getContent());
 	
@@ -164,6 +170,11 @@ public class SimpleLoggerSWL implements ILogger, StandartLoggingLevels, Stacktra
 		return printer;
 	}
 	
+	public IExtendedList<StackTraceElement> getStacktrace(Throwable e)
+	{
+		return stacktraceDecorator == null ? CollectionsSWL.createExtendedList(e.getStackTrace()) : stacktraceDecorator.apply(e);
+	}
+	
 	@InternalElement
 	public String getStringFromThrowable(Throwable e, @ConcattedString Object... text)
 	{
@@ -183,13 +194,13 @@ public class SimpleLoggerSWL implements ILogger, StandartLoggingLevels, Stacktra
 			
 			boolean needsNewLine = false;
 			
-			for (StackTraceElement stackTraceElement : e.getStackTrace())
+			for (StackTraceElement stackTraceElement : getStacktrace(e))
 			{
 				if (needsNewLine)
 					builder.append('\n');
 					
 				builder.append("	at ");
-				builder.append(stackTraceElement);
+				builder.append(stacktraceToStringFun.apply(stackTraceElement));
 				
 				needsNewLine = true;
 			}
@@ -242,4 +253,30 @@ public class SimpleLoggerSWL implements ILogger, StandartLoggingLevels, Stacktra
 		return (T) this;
 	}
 
+	@Override
+	public <T extends ILogger> T setStacktraceDecorator(IFunction1<Throwable, IExtendedList<StackTraceElement>> fun)
+	{
+		this.stacktraceDecorator = fun;
+		return (T) this;
+	}
+
+	@Override
+	public IFunction1<Throwable, IExtendedList<StackTraceElement>> getStacktraceDecorator()
+	{
+		return stacktraceDecorator;
+	}
+
+	@Override
+	public IFunction1<StackTraceElement, String> getStacktraceToStringFun()
+	{
+		return stacktraceToStringFun;
+	}
+
+	@Override
+	public <T extends ILogger> T setStacktraceToStringFun(IFunction1<StackTraceElement, String> fun)
+	{
+		stacktraceToStringFun = fun;
+		return (T) this;
+	}
 }
+

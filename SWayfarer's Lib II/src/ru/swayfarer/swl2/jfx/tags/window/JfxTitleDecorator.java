@@ -19,7 +19,7 @@ import ru.swayfarer.swl2.jfx.utils.JfxUtils;
 import ru.swayfarer.swl2.markers.ConcattedString;
 import ru.swayfarer.swl2.observable.Observables;
 import ru.swayfarer.swl2.observable.property.ObservableProperty;
-import ru.swayfarer.swl2.observable.property.ObservableProperty.ChangeEvent;
+import ru.swayfarer.swl2.observable.property.ObservableProperty.PropertyChangeEvent;
 import ru.swayfarer.swl2.string.StringUtils;
 
 @SuppressWarnings("unchecked")
@@ -168,7 +168,7 @@ public class JfxTitleDecorator extends JfxAnchorPane {
 		return (T) this;
 	}
 	
-	public void onFillColorChaged(ChangeEvent event)
+	public void onFillColorChaged(PropertyChangeEvent event)
 	{
 		Color newColor = event.getNewValue();
 		rectBg.setFill(newColor);

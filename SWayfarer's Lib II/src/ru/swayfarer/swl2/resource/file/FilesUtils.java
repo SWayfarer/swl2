@@ -6,6 +6,8 @@ import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import ru.swayfarer.swl2.collections.extended.IExtendedList;
+import ru.swayfarer.swl2.collections.streams.IDataStream;
 import ru.swayfarer.swl2.exceptions.ExceptionsUtils;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1NoR;
@@ -40,19 +42,16 @@ public class FilesUtils {
 		ExceptionsUtils.IfNull(fun, IllegalArgumentException.class, "Files fun can't be null!");
 		ExceptionsUtils.IfNull(initialFile, IllegalArgumentException.class, "Initial file can't be null!");
 
-		if (!initialFile.exists())
-			return;
-
-		final IFunction1<FileSWL, Boolean> finallyFilter = filter;
-
-		if (initialFile.isFile() && filter.apply(initialFile))
-			fun.apply(initialFile);
-		else if (initialFile.isDirectory())
-			initialFile.getSubFiles((f) -> f.isDirectory() || finallyFilter.apply(f))
-				.parrallelDataStream()
-				.each((file) -> {
-					forEachFile(finallyFilter, fun, file, isParrallel);
-				});
+		IExtendedList<FileSWL> subfiles = initialFile.getAllSubfiles(filter);
+		
+		IDataStream<FileSWL> stream = null;
+		
+		if (isParrallel)
+			stream = subfiles.parrallelDataStream();
+		else
+			stream = subfiles.dataStream();
+		
+		stream.each(fun);
 	}
 	
 	/** Получить хэш файла */

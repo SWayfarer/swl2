@@ -251,6 +251,21 @@ public interface IExtendedList<Element_Type> extends List<Element_Type>{
 	{
 		return isEmpty() ? null : (T) get(0);
 	}
+	
+	public default <T extends IExtendedList<Element_Type>> T filter(IFunction1<Element_Type, Boolean> filter)
+	{
+		IExtendedList<Element_Type> toRemove = CollectionsSWL.createExtendedList();
+		
+		for (Element_Type elem : this)
+		{
+			if (!filter.apply(elem))
+				toRemove.add(elem);
+		}
+		
+		removeAll(toRemove);
+		
+		return (T) this;
+	}
 
 	/** Вывести лист через логгер */
 	public default <T extends IExtendedList<Element_Type>> T printList(ILogger logger, Object... text)

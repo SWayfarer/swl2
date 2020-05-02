@@ -3,6 +3,7 @@ package ru.swayfarer.swl2.swconf.primitives;
 import java.util.Map;
 
 import ru.swayfarer.swl2.collections.CollectionsSWL;
+import ru.swayfarer.swl2.markers.ConcattedString;
 import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.string.StringUtils;
 
@@ -28,6 +29,24 @@ public class SwconfObject extends SwconfPrimitive {
 	public <T extends SwconfObject> T addChild(SwconfPrimitive primitive) 
 	{
 		children.put(primitive.name, primitive);
+		return (T) this;
+	}
+	
+	public <T extends SwconfObject> T setNum(String name, double value) 
+	{
+		addChild(new SwconfNum().setValue(value).setName(name));
+		return (T) this;
+	}
+	
+	public <T extends SwconfObject> T setBoolean(String name, boolean value) 
+	{
+		addChild(new SwconfBoolean().setValue(value).setName(name));
+		return (T) this;
+	}
+	
+	public <T extends SwconfObject> T setString(String name, @ConcattedString Object... text) 
+	{
+		addChild(new SwconfString().setValue(text).setName(name));
 		return (T) this;
 	}
 	
@@ -57,6 +76,21 @@ public class SwconfObject extends SwconfPrimitive {
 		builder.append("}");
 		
 		return builder.toString();
+	}
+	
+	@Override
+	public <T extends SwconfPrimitive> T copy()
+	{
+		SwconfObject ret = new SwconfObject();
+		ret.name = name;
+		ret.comment = comment;
+		
+		for (Map.Entry<String, SwconfPrimitive> entry : children.entrySet())
+		{
+			ret.children.put(entry.getKey(), entry.getValue().copy());
+		}
+		
+		return (T) ret;
 	}
 	
 }

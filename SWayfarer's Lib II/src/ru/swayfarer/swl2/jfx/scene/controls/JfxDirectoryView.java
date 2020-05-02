@@ -10,8 +10,6 @@ import javafx.scene.shape.Rectangle;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1;
-import ru.swayfarer.swl2.jfx.scene.controls.JfxImageView;
-import ru.swayfarer.swl2.jfx.scene.controls.JfxText;
 import ru.swayfarer.swl2.jfx.scene.layout.JfxAnchorPane;
 import ru.swayfarer.swl2.jfx.scene.layout.JfxHBox;
 import ru.swayfarer.swl2.jfx.scene.layout.JfxStackedPane;
@@ -20,7 +18,7 @@ import ru.swayfarer.swl2.jfx.utils.JfxUtils;
 import ru.swayfarer.swl2.observable.IObservable;
 import ru.swayfarer.swl2.observable.Observables;
 import ru.swayfarer.swl2.observable.property.ObservableProperty;
-import ru.swayfarer.swl2.observable.property.ObservableProperty.ChangeEvent;
+import ru.swayfarer.swl2.observable.property.ObservableProperty.PropertyChangeEvent;
 import ru.swayfarer.swl2.observable.subscription.ISubscription;
 import ru.swayfarer.swl2.resource.file.FileSWL;
 
@@ -51,7 +49,7 @@ public class JfxDirectoryView extends JfxStackedPane {
 		currentDir.subscribe(this::onCurrentDirectoryChanged);
 		currentFilter.subscribe(this::onFilterChanged);
 		
-		currentDir.setValue(new FileSWL(""));
+		currentDir.setValue(new FileSWL("."));
 		
 		selectedItem.subscribe(this::onSelectedItemChanged);
 		
@@ -76,7 +74,7 @@ public class JfxDirectoryView extends JfxStackedPane {
 		}
 	}
 	
-	public void onSelectedItemChanged(ChangeEvent event)
+	public void onSelectedItemChanged(PropertyChangeEvent event)
 	{
 		JfxDirectoryView.Item oldItem = event.getOldValue();
 		JfxDirectoryView.Item newItem = event.getNewValue();
@@ -131,12 +129,12 @@ public class JfxDirectoryView extends JfxStackedPane {
 		}
 	}
 	
-	public void onFilterChanged(ChangeEvent changeEvent)
+	public void onFilterChanged(PropertyChangeEvent changeEvent)
 	{
 		updateContent(currentDir.get(), changeEvent.getNewValue());
 	}
 	
-	public void onCurrentDirectoryChanged(ChangeEvent changeEvent)
+	public void onCurrentDirectoryChanged(PropertyChangeEvent changeEvent)
 	{
 		updateContent(changeEvent.getNewValue(), currentFilter.get());
 	}
@@ -167,6 +165,7 @@ public class JfxDirectoryView extends JfxStackedPane {
 			
 			hBox.addItems(imageView, text);
 			selectionRectangle.setOpacity(0);
+			text.setFill(Color.GRAY);
 			addItems(selectionRectangle, hBox);
 			
 			this.file = file;

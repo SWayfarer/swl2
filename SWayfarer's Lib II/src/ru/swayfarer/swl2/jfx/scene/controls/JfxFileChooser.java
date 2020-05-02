@@ -9,22 +9,22 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Priority;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import lombok.Data;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.collections.observable.IObservableList;
-import ru.swayfarer.swl2.jfx.scene.controls.JfxButton;
-import ru.swayfarer.swl2.jfx.scene.controls.JfxComboBox;
-import ru.swayfarer.swl2.jfx.scene.controls.JfxText;
-import ru.swayfarer.swl2.jfx.scene.controls.JfxTextField;
 import ru.swayfarer.swl2.jfx.scene.layout.JfxHBox;
 import ru.swayfarer.swl2.jfx.scene.layout.JfxSplitPane;
 import ru.swayfarer.swl2.jfx.scene.layout.JfxStackedPane;
 import ru.swayfarer.swl2.jfx.scene.layout.JfxVBox;
+import ru.swayfarer.swl2.jfx.tags.window.JfxTitleDecorator;
+import ru.swayfarer.swl2.jfx.tags.window.JfxWindow;
 import ru.swayfarer.swl2.jfx.utils.JfxIconManager;
+import ru.swayfarer.swl2.markers.ConcattedString;
 import ru.swayfarer.swl2.observable.IObservable;
 import ru.swayfarer.swl2.observable.Observables;
 import ru.swayfarer.swl2.observable.property.ObservableProperty;
-import ru.swayfarer.swl2.observable.property.ObservableProperty.ChangeEvent;
+import ru.swayfarer.swl2.observable.property.ObservableProperty.PropertyChangeEvent;
 import ru.swayfarer.swl2.resource.file.FileSWL;
 import ru.swayfarer.swl2.string.StringUtils;
 import ru.swayfarer.swl2.system.SystemUtils;
@@ -32,9 +32,7 @@ import ru.swayfarer.swl2.tasks.RecursiveSafeTask;
 
 public class JfxFileChooser extends JfxVBox {
 	
-	public boolean isAcceptsFiles = true;
-	public boolean isAcceptsDirs;
-	public boolean isAcceptsNonExisting;
+	public JfxFileChoosingOptions fileChoosingOptions = new JfxFileChoosingOptions();
 	
 	public IObservableList<String> directoriesHistory = CollectionsSWL.createObservableList();
 	
@@ -69,8 +67,6 @@ public class JfxFileChooser extends JfxVBox {
 	
 	public JfxFileChooser()
 	{
-		result.subscribe((e) -> System.out.println(e.newValue));
-		
 		addItems(topButtonsBox, pnFiles, buttonsBox);
 		
 		pnFiles.setDividerPosition(0.25f, true);
@@ -111,8 +107,6 @@ public class JfxFileChooser extends JfxVBox {
 		filesView.eventItemCreation.subscribe(this::onItemCreated);
 		filesView.selectedItem.subscribe(this::onSelectedItemChanged);
 		filesView.currentDir.subscribe(this::onCurrentDirChanged);
-		
-		pnFiles.setVerticalSizePolicy(Priority.ALWAYS);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -180,7 +174,7 @@ public class JfxFileChooser extends JfxVBox {
 		}
 	}
 	
-	public void onCurrentDirChanged(ChangeEvent changeEvent)
+	public void onCurrentDirChanged(PropertyChangeEvent changeEvent)
 	{
 		FileSWL newDir = changeEvent.getNewValue();
 		
@@ -191,7 +185,7 @@ public class JfxFileChooser extends JfxVBox {
 		this.txtCurrentDir.setText(newDir.getAbsolutePath());
 	}
 	
-	public void onSelectedItemChanged(ChangeEvent changeEvent)
+	public void onSelectedItemChanged(PropertyChangeEvent changeEvent)
 	{
 		JfxDirectoryView.Item newItem = changeEvent.getNewValue();
 		
@@ -258,6 +252,11 @@ public class JfxFileChooser extends JfxVBox {
 		return (T) this;
 	}
 	
+	public JfxFileChooserWindow toFileChooserWindow(@ConcattedString Object... title)
+	{
+		return new JfxFileChooserWindow(this, title);
+	}
+	
 	public void updateContent()
 	{
 		
@@ -280,13 +279,7 @@ public class JfxFileChooser extends JfxVBox {
 		if (file == null)
 			return false;
 		
-		if (file.isDirectory() && !isAcceptsDirs)
-			return false;
-		
-		if (file.isFile() && !isAcceptsFiles)
-			return false;
-		
-		if (!file.exists() && !isAcceptsNonExisting)
+		if (!fileChoosingOptions.isAccepts(file))
 			return false;
 		
 		
@@ -419,5 +412,64 @@ public class JfxFileChooser extends JfxVBox {
 			devices.addItem(item);
 		}
 		
+	}
+	
+	@Data
+	public static class JfxFileChoosingOptions {
+		
+		public boolean isAcceptsFiles = true;
+		public boolean isAcceptsDirs;
+		public boolean isAcceptsNonExisting;
+		
+		public boolean isAccepts(FileSWL file)
+		{
+			if (file.isDirectory() && !isAcceptsDirs)
+				return false;
+			
+			if (file.isFile() && !isAcceptsFiles)
+				return false;
+			
+			if (!file.exists() && !isAcceptsNonExisting)
+				return false;
+			
+			return true;
+		}
+	}
+	
+	public static class JfxFileChooserWindow extends JfxWindow {
+
+		public JfxFileChooser fileChooser;
+		public ObservableProperty<FileSWL> result = Observables.createProperty();
+		public JfxTitleDecorator titleDecorator;
+		
+		public JfxFileChooserWindow(JfxFileChooser parent, @ConcattedString Object... title)
+		{
+			super(parent);
+			result.setPost(true);
+			
+			this.fileChooser = parent;
+			
+			parent.result.subscribe(this::onResultChanged);
+			
+			titleDecorator = setCustomDecorator(title);
+			
+			titleDecorator.buttonsBox.getChildren().remove(titleDecorator.btnMaximize);
+		}
+		
+		public void onResultChanged(PropertyChangeEvent event)
+		{
+			if (event.newValue != null)
+			{
+				result.setValue(event.getNewValue());
+			}
+			
+			close();
+		}
+		
+		public FileSWL getResult()
+		{
+			showAndWait();
+			return result.get();
+		}
 	}
 }

@@ -6,9 +6,12 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Map;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.collections.streams.DataStream;
@@ -21,6 +24,8 @@ import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction3NoR;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
 import ru.swayfarer.swl2.markers.InternalElement;
+import ru.swayfarer.swl2.resource.file.FileSWL;
+import ru.swayfarer.swl2.resource.rlink.ResourceLink;
 import ru.swayfarer.swl2.string.StringUtils;
 
 /**
@@ -30,7 +35,9 @@ import ru.swayfarer.swl2.string.StringUtils;
  */
 @SuppressWarnings( { "unchecked", "rawtypes" } )
 public class ReflectionUtils {
-
+	
+	public static IExtendedList<IFunction2<Class<?>, URL, String>> registeredSourcesFun = CollectionsSWL.createExtendedList();
+	
 	/** Логгер */
 	@InternalElement
 	public static ILogger logger = LoggingManager.getLogger();
@@ -56,6 +63,96 @@ public class ReflectionUtils {
 		return null;
 	};
 	
+	public static String getClassSource(String str)
+	{
+		return getClassSource(findClass(str));
+	}
+	
+	public static String getClassSource(Class<?> cl)
+	{
+		if (cl == null)
+			return null;
+		
+		String name = cl.getName().replace(".", "/") + ".class";
+		
+		ClassLoader classloader = cl.getClassLoader();
+		
+		if (classloader == null)
+			return "<jvm>";
+		
+		URL url = classloader.getResource(name);
+		
+		return getResourceSource(cl, url);
+	}
+	
+	public static void registerDefaultSourceFuns()
+	{
+		registeredSourcesFun.add((cl, url) -> {
+			if (url.getProtocol().equals("file"))
+			{
+				String pkg = cl.getPackage().getName();
+				int parentsCount = StringUtils.countMatches(pkg, ".") + 2;
+				FileSWL file = FileSWL.ofURL(url);
+				
+				if (file != null)
+				{
+					for (int i1 = 0; i1 < parentsCount && file != null; i1 ++)
+					{
+						file = file.getParentFile();
+					}
+					
+					if (file != null)
+						return file.getName() + "/";
+				}
+			}
+			return null;
+		});
+		
+		registeredSourcesFun.add((cl, url) -> {
+			if (url.getProtocol().equals("jar"))
+			{
+				//jar:file:/run/media/swayfarer/PC%20II%20-%20%d0%9e%d1%81%d0%bd%d0%be%d0%b2%d0%bd%d0%be%d0%b5/Soft/Okta/maven/repo/log4j/log4j/1.2.17/log4j-1.2.17.jar!/org/apache/log4j/Appender.class
+				String externalForm = url.toExternalForm();
+				externalForm = externalForm.substring(0, externalForm.lastIndexOf("!"));
+				return ResourceLink.getSimpleName(externalForm);
+			}
+			
+			return null;
+		});
+	}
+	
+	public static String getResourceSource(Class<?> cl, URL url)
+	{
+		if (url == null)
+			return "<unknown>";
+		
+		for (IFunction2<Class<?>, URL, String> fun : registeredSourcesFun)
+		{
+			String ret = fun.apply(cl, url);
+			
+			if (!StringUtils.isEmpty(ret))
+				return ret;
+		}
+		
+		return "<unknown>";
+	}
+	
+	public static void invokeMethods(IFunction1<Method, Boolean> filter, Class<?> classOfObj, Object obj, Object... args)
+	{
+		int argsCount = args == null ? 0 : args.length;
+		
+		getAccessibleMethods(classOfObj)
+			.dataStream()
+			.filter((m) -> m.getParameterCount() == argsCount)
+			.filter((m) -> isParamsAccepted(m.getParameters(), true, args))
+			.filter(filter)
+			.each((m) -> {
+				logger.safe(() -> {
+					m.invoke(obj, args);
+				}, "Error while invoking method of \nclass", classOfObj, "\ninstace", obj, "\nmethod", m, "\nwith args", args);
+			});
+	}
+	
 	/** Есть ли у поля аннотация? */
 	public static boolean hasAnnotation(Field field, Class<?> annotationClass)
 	{
@@ -71,7 +168,7 @@ public class ReflectionUtils {
 	/** Получить значение статического поля класса */
 	public static <T> T getFieldValue(Class<?> cl, Object... names)
 	{
-		return getFieldValue(cl, null, names);
+		return getFieldValue(null, cl, names);
 	}
 	
 	public static Field findField(Class<?> cl, Object instance, String... names)
@@ -109,11 +206,11 @@ public class ReflectionUtils {
 	/** Получить значение поля объекта */
 	public static <T> T getFieldValue(Object instance, Object... names)
 	{
-		return getFieldValue(instance.getClass(), instance, names);
+		return getFieldValue(instance, instance.getClass(), names);
 	}
 	
 	/** Получить значение поля */
-	public static <T> T getFieldValue(Class<?> cl, Object instance, Object... names)
+	public static <T> T getFieldValue(Object instance, Class<?> cl, Object... names)
 	{
 		Map<String, Field> fields = getAccessibleFields(cl);
 		
@@ -424,6 +521,11 @@ public class ReflectionUtils {
 		return null;
 	}
 	
+	public static <T> Class<T> findClass(String name)
+	{
+		return (Class<T>) logger.safeReturn(() -> Class.forName(name), null, "Error while finding class", name);
+	}
+	
 	/**
 	 * Найти подходящий под параметры метод
 	 * @param cl Класс, конструктор которого ищем
@@ -467,9 +569,11 @@ public class ReflectionUtils {
 	 * @param names Возможные имена поля (для обфускации)
 	 * @throws Exception Если во время выполнения метода что-то пошло не так
 	 */
-	public static <T> T invokeMethod(Object instance, Class<?>[] ptypes, Object[] args, String... names) throws Exception
+	public static MethodInvokationResult invokeMethod(Object instance, Class<?>[] ptypes, Object[] args, String... names)
 	{
 		Method method = null;
+		
+		MethodInvokationResult ret = new MethodInvokationResult();
 		
 		if (ptypes == null)
 			method = findMethod(instance.getClass(), names);
@@ -481,7 +585,19 @@ public class ReflectionUtils {
 		
 		method.setAccessible(true);
 		
-		return (T) method.invoke(instance, args);
+		Method finalMethod = method;
+		
+		try
+		{
+			ret.returnValue = finalMethod.invoke(instance, args);
+		}
+		catch (Throwable e)
+		{
+			ret.setInvokationThrowable(e);
+			logger.error(e, "Error while invoking method", method, "of", instance, "with args:", args);
+		}
+		
+		return ret;
 	}
 	
 	/**
@@ -490,9 +606,9 @@ public class ReflectionUtils {
 	 * @param names Возможные имена поля (для обфускации)
 	 * @throws Exception Если во время выполнения метода что-то пошло не так
 	 */
-	public static <T> T invokeMethod(Object instance, String... names) throws Exception
+	public static MethodInvokationResult invokeMethod(Object instance, String... names)
 	{
-		return (T) invokeMethod(instance, null, null, names);
+		return invokeMethod(instance, null, null, names);
 	}
 	
 	/**
@@ -501,7 +617,7 @@ public class ReflectionUtils {
 	 * @param name Имя метода 
 	 * @param args Аргумента 
 	 */
-	public static <T> T invokeMethod(Object instance, String name, Object... args)
+	public static MethodInvokationResult invokeMethod(String name, Object instance , Object... args)
 	{
 		ExceptionsUtils.IfNull(instance, IllegalArgumentException.class, "Object for method invoke can't be null!");
 		return invokeMethod(instance.getClass(), instance, name, args);
@@ -514,23 +630,26 @@ public class ReflectionUtils {
 	 * @param name Имя метода 
 	 * @param args Аргумента 
 	 */
-	public static <T> T invokeMethod(Class<?> cl, Object instance, String name, Object... args)
+	public static MethodInvokationResult invokeMethod(Class<?> cl, Object instance, String name, Object... args)
 	{
+		MethodInvokationResult ret = new MethodInvokationResult();
+		
 		try
 		{
 			Method method = findMethod(cl, name, args);
 			
 			if (method != null)
-				return (T) method.invoke(instance, args);
+				ret.returnValue = method.invoke(instance, args);
 			else
 				logger.warning("Can't find method", name, "with args", CollectionsSWL.createExtendedList(args), "at", cl);
 		}
 		catch (Throwable e)
 		{
+			ret.setInvokationThrowable(e);
 			logger.error(e, "Error while invoking method", name, "of", cl, "with args", Arrays.asList(args));
 		}
 		
-		return null;
+		return ret;
 	}
 	
 	/**
@@ -736,5 +855,23 @@ public class ReflectionUtils {
 			
 			}, "Error while processing fun", fun, "for field", field, "of class", cl, "at object", instance);
 		}
+	}
+	
+	@Data @AllArgsConstructor(staticName = "of")
+	public static class MethodInvokationResult {
+		public Object returnValue;
+		public Throwable invokationThrowable;
+		
+		public MethodInvokationResult() {}
+		
+		public <T> T getResult()
+		{
+			return (T) returnValue;
+		}
+	}
+	
+	static
+	{
+		registerDefaultSourceFuns();
 	}
 }

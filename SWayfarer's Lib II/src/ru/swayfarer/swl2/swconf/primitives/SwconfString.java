@@ -30,4 +30,9 @@ public class SwconfString extends SwconfPrimitive {
 		return true;
 	}
 	
+	@Override
+	public <T extends SwconfPrimitive> T copy()
+	{
+		return new SwconfString().setName(name).setComment(comment).setRawValue(getValue());
+	}
 }

@@ -62,4 +62,10 @@ public class SwconfNum extends SwconfPrimitive {
 	{
 		return true;
 	}
+	
+	@Override
+	public <T extends SwconfPrimitive> T copy()
+	{
+		return new SwconfNum().setComment(comment).setRawValue(getDouble()).setName(name);
+	}
 }

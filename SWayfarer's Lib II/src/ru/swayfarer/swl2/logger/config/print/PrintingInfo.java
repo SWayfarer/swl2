@@ -1,5 +1,6 @@
 package ru.swayfarer.swl2.logger.config.print;
 
+import lombok.ToString;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.string.StringUtils;
@@ -9,6 +10,7 @@ import ru.swayfarer.swl2.string.StringUtils;
  * @author swayfarer
  *
  */
+@ToString
 public class PrintingInfo {
 
 	/** Формат, в котором выводятся логи */

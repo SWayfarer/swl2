@@ -3,10 +3,11 @@ package ru.swayfarer.swl2.resource.compress;
 import java.io.InputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import ru.swayfarer.swl2.collections.streams.DataStream;
-import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1;
+import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction2NoR;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction3NoR;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
@@ -29,27 +30,62 @@ public class CompressionUtils {
 	public static ILogger logger = LoggingManager.getLogger();
 	
 	/** Запаковать в zip */
-	public static void packToZip(FileSWL file, FileSWL packedFile, IFunction1<FileSWL, ZipOutputStream> streamCreatorFun)
+	public static void packDirToZip(FileSWL file, FileSWL packedFile)
 	{
-		Archivers.zipCompressingFun.apply(file, packedFile, streamCreatorFun);
-	}
-	
-	/** Запаковать в zip */
-	public static void packToZip(FileSWL file, FileSWL packedFile)
-	{
-		packToZip(file, packedFile, (f) -> f.toOutputStream().zip());
-	}
-	
-	/** Распаковать из Zip*/
-	public static void unpackFromZip(FileSWL diretoryToUnpack, FileSWL compressedFile)
-	{
-		unpackFromZip(diretoryToUnpack, compressedFile, (is) -> is);
+		logger.safe(() -> {
+			ZipOutputStream zos = packedFile.toOutputStream().zip();
+			
+			file.getAllSubfiles(FileSWL::isFile).each((f) -> {
+				
+				String entryName = f == file ? f.getName() : f.getLocalPath(file);
+				
+				logger.safe(() -> {
+					
+					ZipEntry entry = new ZipEntry(entryName);
+					
+					zos.putNextEntry(entry);
+					
+					StreamsUtils.copyStream(f.toInputStream(), zos, true, false);
+					
+					zos.closeEntry();
+				}, "Error while packing entry", entryName);
+			});
+			
+			zos.close();
+		}, "Error while packing", file, false);
 	}
 	
 	/** Распаковать файл из Zip */
-	public static void unpackFromZip(FileSWL diretoryToUnpack, FileSWL compressedFile, IFunction1<InputStream, InputStream> streamCreationFun)
+	public static void unpackDirFromZip(FileSWL dir, FileSWL compressedFile)
 	{
-		Archivers.zipDecompressingFun.apply(diretoryToUnpack, compressedFile, streamCreationFun);
+		if (!dir.isDirectory())
+			dir = dir.getParentFile();
+		
+		final FileSWL diretoryToUnpack = dir;
+		
+		logger.safe(() -> {
+			
+			ZipFile zipFile = compressedFile.toZipFile();
+			
+			logger.info("Decompressing file", compressedFile, "to", diretoryToUnpack, diretoryToUnpack.isDirectory());
+			ZipInputStream zis = compressedFile.toInputStream().zip();
+			
+			if (zis != null)
+			{
+				ZipEntry entry = null;
+				
+				while ((entry = zis.getNextEntry()) != null)
+				{
+					InputStream is = zipFile.getInputStream(entry);
+					FileSWL file = diretoryToUnpack.subFile(entry.getName()).createIfNotFound();
+					StreamsUtils.copyStream(is, file.toOutputStream(), true, true);
+				}
+			}
+			
+			zis.close();
+			zipFile.close();
+			
+		}, "Error while unpacking", compressedFile, "to", diretoryToUnpack);
 	}
 	
 	/** Функции-архиверы */
@@ -71,7 +107,7 @@ public class CompressionUtils {
 			stream.closeSafe();
 		};
 		
-		public static IFunction3NoR<FileSWL, FileSWL, IFunction1<InputStream, InputStream>> zipDecompressingFun = (directoryToUnpack, decompessFile, streamCreationFun) -> {
+		public static IFunction2NoR<FileSWL, FileSWL> zipDecompressingFun = (directoryToUnpack, decompessFile) -> {
 			
 			logger.safe(() -> {
 				
@@ -83,8 +119,6 @@ public class CompressionUtils {
 				entries.each((e) -> {
 					logger.safe(() -> {
 						InputStream is = zipFile.getInputStream(e);
-						if (streamCreationFun != null)
-							is = streamCreationFun.apply(is);
 						
 						DataInputStreamSWL dis = DataInputStreamSWL.of(is);
 						
@@ -99,11 +133,11 @@ public class CompressionUtils {
 			}, "Error while creating restore file for", directoryToUnpack);
 		};
 		
-		public static IFunction3NoR<FileSWL, FileSWL, IFunction1<FileSWL, ZipOutputStream>> zipCompressingFun = (file, zipFile, streamCreationFun) -> {
+		public static IFunction2NoR<FileSWL, FileSWL> zipCompressingFun = (file, zipFile) -> {
 			
 			logger.safe(() -> {
 				
-				ZipOutputStream zos = streamCreationFun.apply(zipFile);
+				ZipOutputStream zos = zipFile.toOutputStream().zip();
 				
 				FilesUtils.forEachFile(null, (f) -> {
 					
@@ -111,6 +145,7 @@ public class CompressionUtils {
 					ZipEntry entry = new ZipEntry(entryName);
 					
 					logger.safe(() -> {
+						logger.info("Entry", entry.getName());
 						zos.putNextEntry(entry);
 						StreamsUtils.copyStream(f.toInputStream(), zos, true, false);
 						zos.closeEntry();

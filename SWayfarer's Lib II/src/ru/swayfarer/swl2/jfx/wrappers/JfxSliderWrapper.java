@@ -7,7 +7,7 @@ import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.observable.IObservable;
 import ru.swayfarer.swl2.observable.SimpleObservable;
 import ru.swayfarer.swl2.observable.property.ObservableProperty;
-import ru.swayfarer.swl2.observable.property.ObservableProperty.ChangeEvent;
+import ru.swayfarer.swl2.observable.property.ObservableProperty.PropertyChangeEvent;
 import ru.swayfarer.swl2.observable.ref.ObservableListernerRef;
 import ru.swayfarer.swl2.observable.subscription.ISubscription;
 import ru.swayfarer.swl2.recursive.RecursiveBreaker;
@@ -33,7 +33,7 @@ public class JfxSliderWrapper implements IFxmlWrapper {
 	
 	/** Активная подписка на проперти, обеспечивающая привязку к ней */
 	@InternalElement
-	public ISubscription<ChangeEvent> activeAttachPropertySubscription;
+	public ISubscription<PropertyChangeEvent> activeAttachPropertySubscription;
 	
 	/** Событие перемещения слайдера */
 	@InternalElement

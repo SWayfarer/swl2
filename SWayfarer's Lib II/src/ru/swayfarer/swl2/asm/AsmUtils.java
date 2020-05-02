@@ -21,37 +21,55 @@ import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.Type;
  */
 public class AsmUtils implements Opcodes{
 
-	/** Является ли класс с этим доступом интерфесом? */
+	/**
+	 *  Является ли класс с этим доступом интерфесом? 
+	 *  @param access Доступ в формате int см {@link Opcodes}
+	 */
 	public static boolean isInterface(int access)
 	{
 		return (access & ACC_INTERFACE) != 0;
 	}
 	
-	/** Является ли элемент с этим доступом финальным? (final) */
+	/** 
+	 * Является ли элемент с этим доступом финальным? (final) 
+	 * @param Доступ в формате int см {@link Opcodes}
+	 */
 	public static boolean isFinal(int access)
 	{
 		return (access & ACC_FINAL) != 0;
 	}
 	
-	/** Является ли элемент с этим доступом защищенным? (protected) */
+	/** 
+	 * Является ли элемент с этим доступом защищенным? (protected)
+	 * @param Доступ в формате int см {@link Opcodes}
+	 */
 	public static boolean isProtected(int access)
 	{
 		return (access & ACC_PROTECTED) != 0;
 	}
 	
-	/** Является ли элемент с этим доступом приватным? (provate) */
+	/** 
+	 * Является ли элемент с этим доступом приватным? (provate) 
+	 * @param Доступ в формате int см {@link Opcodes}
+	 */
 	public static boolean isPrivate(int access)
 	{
 		return (access & ACC_PRIVATE) != 0;
 	}
 	
-	/** Это опкод загрузки объекта? */
+	/** 
+	 * Это опкод загрузки объекта? 
+	 * @param Опкод в формате int см {@link Opcodes}
+	 */
 	public static boolean isObjectLoadOpcode(int opcode)
 	{
 		return EqualsUtils.objectEqualsSome(opcode, ALOAD, AALOAD, IALOAD, DALOAD, FALOAD, LALOAD);
 	}
 	
-	/** Открыть доступ. Сделать public и убрать final */
+	/** 
+	 * Открыть доступ. Сделать public и убрать final
+	 * @param Доступ в формате int см {@link Opcodes}
+	 */
 	public static int openAccess(int access) {
 		
 		if (isFinal(access))
@@ -76,6 +94,8 @@ public class AsmUtils implements Opcodes{
 	/** 
 	 * Получить "Internal name" класса. 
 	 * <br> Например, для java.lang.String вернет java/lang/String
+	 * @param type Тип, имя которого получаем 
+	 * @return Имя типа 
 	 */
 	public static String toInternalName(Type type)
 	{
@@ -85,6 +105,8 @@ public class AsmUtils implements Opcodes{
 	/** 
 	 * Получить "Internal name" класса. 
 	 * <br> Например, для java.lang.String вернет java/lang/String
+	 * @param desc Дескриптор, имя которого получаем 
+	 * @return Имя типа 
 	 */
 	public static String toInternalName(String desc)
 	{
@@ -95,8 +117,8 @@ public class AsmUtils implements Opcodes{
 	
 	/**
 	 * Является ли тип примитивным? (таким как int, boolean и т.п.)
-	 * @param type
-	 * @return
+	 * @param type Тип, который проверяется 
+	 * @return True, если примитив 
 	 */
 	public static boolean isPrimitive(Type type)
 	{
@@ -115,26 +137,42 @@ public class AsmUtils implements Opcodes{
 		);
 	}
 	
-	/** Получить дескриптор из каноничного названия класса */
+	/** 
+	 * Получить дескриптор из каноничного названия класса 
+	 * @param canonicalName Каноническое имя класса, дескриптор которого получаем 
+	 * @return Дескриптор класса 
+	 */
 	public static String toDescName(String canonicalName)
 	{
 		return "L"+canonicalName.replace(".", "/")+";";
 	}
 	
-	/** Создать объект указанного типа и вызвать пустой конструктор */
+	/** 
+	 * Создать объект указанного типа и вызвать пустой конструктор 
+	 * @param mv {@link MethodVisitor}, через который создаётся новый экземпляр
+	 * @param classType Тип создаваемого экземпляра 
+	 */
 	public static void createInstance(MethodVisitor mv, Type classType)
 	{
 		newInstance(mv, classType);
 		initInstance(mv, classType);
 	}
 	
-	/** Вызвать пустой конструктор */
+	/** 
+	 * Вызвать пустой конструктор 
+	 * @param mv {@link MethodVisitor}, через который запишется вызов конструктора 
+	 * @param classType Тип объекта, чей конструктор вызывается
+	 */
 	public static void initInstance(MethodVisitor mv, Type classType)
 	{
 		initInstance(mv, toInternalName(classType.getDescriptor()));
 	}
 	
-	/** Вызвать пустой конструктор*/
+	/** 
+	 * Вызвать пустой конструктор
+	 * @param mv {@link MethodVisitor}, через который запишется вызов конструктора 
+	 * @param classInternalName Имя объекта, чей конструктор вызывается
+	 */
 	public static void initInstance(MethodVisitor mv, String classInternalName)
 	{
 		mv.visitMethodInsn(INVOKESPECIAL, classInternalName, "<init>", "()V", false);

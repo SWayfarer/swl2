@@ -8,11 +8,12 @@ import java.util.Map;
 import ru.swayfarer.swl2.exceptions.ExceptionsUtils;
 import ru.swayfarer.swl2.exceptions.ExceptionsUtils.StacktraceOffsets;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1;
-import ru.swayfarer.swl2.json.JsonUtils;
 import ru.swayfarer.swl2.logger.ILogLevel.StandartLoggingLevels;
+import ru.swayfarer.swl2.logger.config.ILoggerConfigurator;
 import ru.swayfarer.swl2.logger.config.SimpleLoggerConfigutaror;
 import ru.swayfarer.swl2.logger.handlers.LogRedirectHandler;
 import ru.swayfarer.swl2.logger.printers.SOutInterceptor;
+import ru.swayfarer.swl2.markers.ConcattedString;
 import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.observable.IObservable;
 import ru.swayfarer.swl2.observable.SimpleObservable;
@@ -20,6 +21,7 @@ import ru.swayfarer.swl2.resource.rlink.RLUtils;
 import ru.swayfarer.swl2.resource.rlink.ResourceLink;
 import ru.swayfarer.swl2.resource.streams.DataInputStreamSWL;
 import ru.swayfarer.swl2.string.StringUtils;
+import ru.swayfarer.swl2.swconf.utils.SwconfSerializationHelper;
 
 /**
  * Менеджер логирования
@@ -186,6 +188,24 @@ public class LoggingManager {
 			rlink.getAdjacents(true).forEach(LoggingManager::loadConfig);
 	}
 	
+	public static ILoggerConfigurator loadConfigurator(@ConcattedString Object... rlink)
+	{
+		ILogger logger = getRootLogger();
+		
+		ResourceLink link = RLUtils.createLink(StringUtils.concat(rlink));
+		
+		if (link != null && link.isExists())
+		{
+			return SwconfSerializationHelper.forRlink(link).readFromSwconf(link.toSingleString(), SimpleLoggerConfigutaror.class);
+		}
+		else
+		{
+			logger.warning("Can't load logger configurator from rlink", link, "because it's not exists!");
+		}
+		
+		return null;
+	}
+	
 	public static void loadConfig(ResourceLink rlink)
 	{
 		ILogger logger = getRootLogger();
@@ -203,7 +223,9 @@ public class LoggingManager {
 		
 		String json = stream.readAllAsUtf8();
 		
-		SimpleLoggerConfigutaror rootConfigutaror = JsonUtils.loadFromJson(json, SimpleLoggerConfigutaror.class);
+		logger.info("Loading logging configutaion: '\n", json, "\n'...");
+		
+		SimpleLoggerConfigutaror rootConfigutaror = SwconfSerializationHelper.json.readFromSwconf(json, SimpleLoggerConfigutaror.class);
 		eventCreation.subscribe(rootConfigutaror);
 	}
 	

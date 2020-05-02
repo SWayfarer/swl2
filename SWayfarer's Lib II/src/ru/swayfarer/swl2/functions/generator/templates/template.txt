@@ -1,6 +1,7 @@
 /-- Code
 
 #set classType ${functionName}${argsCount}<${funGenerics}, ${returnType}>
+#set oneArgClassType ${functionName}1<${returnType}, ${returnType}>
 #set classTypeNoR ${functionName}${argsCount}NoR<${funGenerics}>
 #set classTypeNoRExtends ${functionName}${argsCount}<${funGenerics}, Void>
 
@@ -20,9 +21,14 @@ public static interface ${classType} {
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default ${returnType} _(${declareArgs})
+	public default ${returnType} __(${declareArgs})
 	{
 		return apply(${invokeArgs});
+	}
+	
+	public default ${classType} andApply(${oneArgClassType} fun)
+	{
+		return (${invokeArgs}) -> fun.apply(apply(${invokeArgs}));
 	}
 	
 	/**

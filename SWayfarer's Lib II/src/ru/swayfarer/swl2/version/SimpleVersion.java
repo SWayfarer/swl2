@@ -88,7 +88,7 @@ public class SimpleVersion implements Comparable<SimpleVersion> {
 
 				if (ver.length > 1)
 				{
-					major = Integer.valueOf(ver[1]);
+					minor = Integer.valueOf(ver[1]);
 				}
 
 				if (ver.length > 2)

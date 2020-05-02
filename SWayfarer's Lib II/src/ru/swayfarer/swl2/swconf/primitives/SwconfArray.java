@@ -34,4 +34,19 @@ public class SwconfArray extends SwconfPrimitive {
 	{
 		return true;
 	}
+	
+	@Override
+	public <T extends SwconfPrimitive> T copy()
+	{
+		SwconfArray array = new SwconfArray();
+		array.name = name;
+		array.comment = comment;
+		
+		for (SwconfPrimitive primitive : elements)
+		{
+			array.elements.add(primitive.copy());
+		}
+		
+		return (T) array;
+	}
 }

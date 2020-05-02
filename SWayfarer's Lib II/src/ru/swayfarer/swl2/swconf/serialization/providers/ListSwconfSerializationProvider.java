@@ -126,6 +126,7 @@ public class ListSwconfSerializationProvider implements ISwconfSerializationProv
 			obj.add(serialization.deserialize(typeOfElement, null, primitive, null));
 		}
 		
+		
 		return obj;
 	}
 	

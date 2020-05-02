@@ -5,7 +5,13 @@ import java.awt.image.BufferedImage;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.FloatProperty;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.LongProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.SwingFXUtils;
@@ -25,8 +31,11 @@ import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction0NoR;
 import ru.swayfarer.swl2.jfx.scene.layout.JfxRegion;
 import ru.swayfarer.swl2.jfx.tags.JfxTags;
 import ru.swayfarer.swl2.markers.InternalElement;
+import ru.swayfarer.swl2.observable.property.ObservableProperty;
 import ru.swayfarer.swl2.string.DynamicString;
 import ru.swayfarer.swl2.tasks.RecursiveSafeTask;
+import ru.swayfarer.swl2.threads.ThreadsUtils;
+import ru.swayfarer.swl2.threads.lock.SynchronizeLock;
 
 /**
  * Утилиты для работы с Jfx 
@@ -57,18 +66,24 @@ public class JfxUtils {
 	/** Запустить в Jfx-потоке */
 	public static void inJfxThread(IFunction0NoR run, boolean wait)
 	{
-		AtomicBoolean waitCondition = new AtomicBoolean(wait);
-		
-		Runnable runWait = () -> {
+		if (!Platform.isFxApplicationThread())
+		{
+			SynchronizeLock lock = new SynchronizeLock();
 			
+			Runnable runWait = () -> {
+				
+				run.apply();
+				lock.notifyLockAll();
+			};
+			
+			Platform.runLater(runWait);
+			
+			lock.waitFor();
+		}
+		else
+		{
 			run.apply();
-			waitCondition.set(false);
-		};
-		
-		Platform.runLater(runWait);
-		
-		// Ждем окончания работы 
-		while (waitCondition.get()) {}
+		}
 	}
 	
 	public static void setTextColor(Parent node, Color color)
@@ -96,6 +111,125 @@ public class JfxUtils {
 		setColorTag(JfxTags.BACKGROUND_COLOR, node, color);
 	}
 	
+	public static <T> void attachProperties(ObservableProperty<T> prop1, ObjectProperty<T> prop2)
+	{
+		RecursiveSafeTask recursiveSafeTask = new RecursiveSafeTask();
+		
+		prop1.eventChange.subscribe((event) -> {
+			recursiveSafeTask.start(() -> {
+				prop2.set(event.getNewValue());
+			});
+		});
+		
+		prop2.addListener((item, oldValue, newValue) -> {
+			recursiveSafeTask.start(() -> {
+				prop1.setValue(newValue);
+			});
+		});
+	}
+	
+	public static void attachProperties(ObservableProperty<String> prop1, StringProperty prop2)
+	{
+		RecursiveSafeTask recursiveSafeTask = new RecursiveSafeTask();
+		
+		prop1.eventChange.subscribe((event) -> {
+			recursiveSafeTask.start(() -> {
+				prop2.set(event.getNewValue());
+			});
+		});
+		
+		prop2.addListener((item, oldValue, newValue) -> {
+			recursiveSafeTask.start(() -> {
+				prop1.setValue(newValue);
+			});
+		});
+	}
+	
+	public static void attachProperties(ObservableProperty<Boolean> prop1, BooleanProperty prop2)
+	{
+		RecursiveSafeTask recursiveSafeTask = new RecursiveSafeTask();
+		
+		prop1.eventChange.subscribe((event) -> {
+			recursiveSafeTask.start(() -> {
+				prop2.set(event.getNewValue());
+			});
+		});
+		
+		prop2.addListener((item, oldValue, newValue) -> {
+			recursiveSafeTask.start(() -> {
+				prop1.setValue(newValue);
+			});
+		});
+	}
+	
+	public static void attachProperties(ObservableProperty<Long> prop1, LongProperty prop2)
+	{
+		RecursiveSafeTask recursiveSafeTask = new RecursiveSafeTask();
+		
+		prop1.eventChange.subscribe((event) -> {
+			recursiveSafeTask.start(() -> {
+				prop2.set(event.getNewValue());
+			});
+		});
+		
+		prop2.addListener((item, oldValue, newValue) -> {
+			recursiveSafeTask.start(() -> {
+				prop1.setValue(newValue.longValue());
+			});
+		});
+	}
+	
+	public static void attachProperties(ObservableProperty<Integer> prop1, IntegerProperty prop2)
+	{
+		RecursiveSafeTask recursiveSafeTask = new RecursiveSafeTask();
+		
+		prop1.eventChange.subscribe((event) -> {
+			recursiveSafeTask.start(() -> {
+				prop2.set(event.getNewValue());
+			});
+		});
+		
+		prop2.addListener((item, oldValue, newValue) -> {
+			recursiveSafeTask.start(() -> {
+				prop1.setValue(newValue.intValue());
+			});
+		});
+	}
+	
+	public static void attachProperties(ObservableProperty<Float> prop1, FloatProperty prop2)
+	{
+		RecursiveSafeTask recursiveSafeTask = new RecursiveSafeTask();
+		
+		prop1.eventChange.subscribe((event) -> {
+			recursiveSafeTask.start(() -> {
+				prop2.set(event.getNewValue());
+			});
+		});
+		
+		prop2.addListener((item, oldValue, newValue) -> {
+			recursiveSafeTask.start(() -> {
+				prop1.setValue(newValue.floatValue());
+			});
+		});
+	}
+	
+	public static void attachProperties(ObservableProperty<Double> prop1, DoubleProperty prop2)
+	{
+		RecursiveSafeTask recursiveSafeTask = new RecursiveSafeTask();
+		
+		prop1.eventChange.subscribe((event) -> {
+			recursiveSafeTask.start(() -> {
+				prop2.set(event.getNewValue());
+			});
+		});
+		
+		prop2.addListener((item, oldValue, newValue) -> {
+			recursiveSafeTask.start(() -> {
+				prop1.setValue(newValue.doubleValue());
+			});
+		});
+	}
+	
 	public static void setColorTag(String tagName, Node node, Color color)
 	{
 		setColorTag(tagName, node, (int) (color.getRed() * 255), (int) (color.getGreen() * 255), (int) (color.getBlue() * 255));
@@ -113,6 +247,11 @@ public class JfxUtils {
 	    g2d.dispose();
 
 	    return SwingFXUtils.toFXImage(dimg, null);
+	}
+	
+	public static void setTag(String tagName, Node node, String value)
+	{
+		node.setStyle(replaceTagValue(tagName, value, node.getStyle()));
 	}
 	
 	public static void setColorTag(String tagName, Node node, int red, int green, int blue)
@@ -253,11 +392,18 @@ public class JfxUtils {
 	 */
 	public static void fitTo(TabPane paneFromFit, Region paneToFit)
 	{
+		paneToFit.minWidthProperty().bind(paneFromFit.widthProperty());
+		paneToFit.maxWidthProperty().bind(paneFromFit.widthProperty());
 		paneToFit.prefWidthProperty().bind(paneFromFit.widthProperty());
 		
-		final DoubleProperty prop = paneToFit.prefHeightProperty();
+		DoubleProperty prop2 = paneToFit.prefHeightProperty();
+		paneFromFit.heightProperty().addListener((ChangeListener<Number>) (var1, var2, var3) -> prop2.set(var1.getValue().doubleValue() - paneFromFit.tabMaxHeightProperty().doubleValue() - 8));
 		
+		DoubleProperty prop = paneToFit.minHeightProperty();
 		paneFromFit.heightProperty().addListener((ChangeListener<Number>) (var1, var2, var3) -> prop.set(var1.getValue().doubleValue() - paneFromFit.tabMaxHeightProperty().doubleValue() - 8));
+		
+		DoubleProperty prop1 = paneToFit.maxHeightProperty();
+		paneFromFit.heightProperty().addListener((ChangeListener<Number>) (var1, var2, var3) -> prop1.set(var1.getValue().doubleValue() - paneFromFit.tabMaxHeightProperty().doubleValue() - 8));
 	}
 	
 	/**

@@ -23,15 +23,25 @@ public interface StandartSwconfFormats {
 		format.blockStarts.setAll("{");
 		format.blockEnds.setAll("}");
 		
+		format.literalBounds.setAll("\"");
+		
 		format.arrayStarts.setAll("[");
 		format.arrayEnds.setAll("]");
 		
 		format.literalBounds.setAll("\"");
-		
+		format.name = "Json";
 		format.propertyNameUnwrapper = (s) -> StringUtils.subString(1, -1, s);
 		format.propertyNameWrapper = (s) -> "\"" + s + "\"";
 		
-		format.writerFun = () -> new JsonFormattedSwconfWriter();
+		format.onStart = "{";
+		format.onEnd = "}";
+		
+		format.isCommentsEnabled = false;
+		
+		SwconfWriter w = new SwconfWriter();
+		w.swconfFormat = format;
+		
+		format.writerFun = () -> w;
 		
 		return format;
 	}
@@ -45,7 +55,7 @@ public interface StandartSwconfFormats {
 		format.elementSplitters.setAll(lineSplitter);
 		format.literalBounds.clear();
 		
-		format.writerFun = () -> new PropertyFormattedWriter(new SwconfWriter());
+		format.writerFun = () -> new PropertyFormattedWriter(new SwconfWriter().setFormat(format));
 		
 		return format;
 	}

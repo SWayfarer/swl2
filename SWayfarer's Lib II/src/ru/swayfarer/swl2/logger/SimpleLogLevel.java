@@ -17,11 +17,11 @@ public class SimpleLogLevel implements ILogLevel {
 
 	/** Название уровня {@link StandartLoggingLevels#LEVEL_INFO}*/
 	@InternalElement
-	public static String INFO_PREFIX_TEXT = "&{gr}Info&{h:1}";
+	public static String INFO_PREFIX_TEXT = "&{green}Info&{h:1}";
 	
 	/** Название уровня {@link StandartLoggingLevels#LEVEL_WARNING}*/
 	@InternalElement
-	public static String WARNING_PREFIX_TEXT = "&{yl}Warning&{h:1}";
+	public static String WARNING_PREFIX_TEXT = "&{yellow}Warning&{h:1}";
 	
 	/** Название уровня {@link StandartLoggingLevels#LEVEL_ERROR}*/
 	@InternalElement

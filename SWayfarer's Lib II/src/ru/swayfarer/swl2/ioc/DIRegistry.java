@@ -27,6 +27,8 @@ import ru.swayfarer.swl2.string.StringUtils;
 @SuppressWarnings("unchecked")
 public class DIRegistry {
 
+	public static boolean isLoggingBytecodeInjections = false;
+	
 	public static boolean isLoggingFields = false;
 	
 	public static boolean isLoggingInjections = false;
@@ -55,6 +57,16 @@ public class DIRegistry {
 		
 		ReflectionDIInjector.inject(defaultContext, object);
 		return (T) object;
+	}
+	
+	public static DIContext getRegisteredContext(String name)
+	{
+		DIManager manager = registeredManagers.get(name);
+		
+		if (manager == null)
+			return null;
+		
+		return manager.context;
 	}
 	
 	/** Зарегистрировать контекст как стандартный, если его еще нет*/
@@ -133,7 +145,9 @@ public class DIRegistry {
 		String s = StringUtils.concat(name);
 		
 		if (registeredManagers.containsKey(s))
-			logger.warning("Overwriting di manager:", s);
+			logger.warning(new Throwable(), "Overwriting di manager:", s);
+		
+		DIRegistry.registerDefultIfNotFound(manager);
 		
 		registeredManagers.put(s, manager);
 		

@@ -3,6 +3,7 @@ package ru.swayfarer.swl2.logger.config;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.ToString;
 import ru.swayfarer.swl2.json.JsonUtils;
 import ru.swayfarer.swl2.json.NonJson;
 import ru.swayfarer.swl2.logger.ILogger;
@@ -12,6 +13,7 @@ import ru.swayfarer.swl2.logger.config.filtering.FilteringInfo;
 import ru.swayfarer.swl2.logger.config.print.PrintingInfo;
 import ru.swayfarer.swl2.resource.file.FileSWL;
 
+@ToString
 public class SimpleLoggerConfigutaror implements ILoggerConfigurator {
 
 	@NonJson
@@ -40,6 +42,9 @@ public class SimpleLoggerConfigutaror implements ILoggerConfigurator {
 			{
 				file.apply(logger);
 			}
+			
+			logger.enableColoring();
+			
 		}, "Error while configuring logger", logger);
 	}
 	

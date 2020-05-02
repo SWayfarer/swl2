@@ -26,13 +26,13 @@ public class ObservableProperty<Element_Type> extends PropertyContainer {
 	
 	/** Событие изменения проперти */
 	@InternalElement
-	public IObservable<ChangeEvent> eventChange = new SimpleObservable<>();
+	public IObservable<PropertyChangeEvent> eventChange = new SimpleObservable<>();
 	
 	/** Событие изменения проперти */
 	@InternalElement
-	public IObservable<ChangeEvent> eventPostChange = new SimpleObservable<>();
+	public IObservable<PropertyChangeEvent> eventPostChange = new SimpleObservable<>();
 	
-	public ISubscription<ChangeEvent> bindingEventSubscribe;
+	public ISubscription<PropertyChangeEvent> bindingEventSubscribe;
 	
 	public ObservableProperty() {}
 	
@@ -45,6 +45,12 @@ public class ObservableProperty<Element_Type> extends PropertyContainer {
 	public <T extends ObservableProperty<Element_Type>> T setPost(boolean isPost) 
 	{
 		this.isPostByDefault = isPost;
+		return (T) this;
+	}
+	
+	public <T extends ObservableProperty<Element_Type>> T update() 
+	{
+		setValue(get());
 		return (T) this;
 	}
 	
@@ -109,7 +115,7 @@ public class ObservableProperty<Element_Type> extends PropertyContainer {
 	 * @param valueFun Функция, конвертирующая значение цели подсписки в значение, которое будет задано этой проперти 
 	 * @return Оригинальную(эту) проперти
 	 */
-	public <E, T extends ObservableProperty<Element_Type>> T bind(IFunction1<ChangeEvent, ? extends Element_Type> valueFun, ObservableProperty<? extends E> target)
+	public <E, T extends ObservableProperty<Element_Type>> T bind(IFunction1<PropertyChangeEvent, ? extends Element_Type> valueFun, ObservableProperty<? extends E> target)
 	{
 		if (target == this)
 			return (T) this;
@@ -162,22 +168,22 @@ public class ObservableProperty<Element_Type> extends PropertyContainer {
 	}
 	
 	/** Получить {@link #eventChange} */
-	public IObservable<ChangeEvent> getEventChange()
+	public IObservable<PropertyChangeEvent> getEventChange()
 	{
 		return eventChange;
 	}
 	
 	/** Подписаться на изменения проперти */
 	@Alias("addChangeHandler")
-	public <T extends ObservableProperty<Element_Type>> T subscribe(IFunction1NoR<ChangeEvent> handlerFun)
+	public <T extends ObservableProperty<Element_Type>> T subscribe(IFunction1NoR<PropertyChangeEvent> handlerFun)
 	{
 		return addChangeHandler(handlerFun);
 	}
 	
 	/** Подписаться на изменения проперти */
-	public <T extends ObservableProperty<Element_Type>> T addChangeHandler(IFunction1NoR<ChangeEvent> handlerFun)
+	public <T extends ObservableProperty<Element_Type>> T addChangeHandler(IFunction1NoR<PropertyChangeEvent> handlerFun)
 	{
-		IObservable<ChangeEvent> observable = isPostByDefault ? eventPostChange : eventChange;
+		IObservable<PropertyChangeEvent> observable = isPostByDefault ? eventPostChange : eventChange;
 		
 		observable.subscribe(handlerFun);
 		
@@ -185,7 +191,7 @@ public class ObservableProperty<Element_Type> extends PropertyContainer {
 	}
 	
 	/** Подписаться на изменения проперти */
-	public <T extends ObservableProperty<Element_Type>> T addChangeHandler(IReference<IFunction1NoR<ChangeEvent>> ref)
+	public <T extends ObservableProperty<Element_Type>> T addChangeHandler(IReference<IFunction1NoR<PropertyChangeEvent>> ref)
 	{
 		eventChange.subscribe((evt) -> ref.getValue().apply(evt));
 		return (T) this;
@@ -207,7 +213,7 @@ public class ObservableProperty<Element_Type> extends PropertyContainer {
 	/** Задать значение */
 	public <T extends ObservableProperty<Element_Type>> T setValue(Element_Type value)
 	{
-		ChangeEvent event = ChangeEvent.of(this.value, value);
+		PropertyChangeEvent event = PropertyChangeEvent.of(this.value, value);
 		eventChange.next(event);
 		
 		if (!event.isCanceled())
@@ -224,7 +230,7 @@ public class ObservableProperty<Element_Type> extends PropertyContainer {
 	 *
 	 */
 	@AllArgsConstructor(staticName = "of")
-	public static class ChangeEvent extends AbstractCancelableEvent { 
+	public static class PropertyChangeEvent extends AbstractCancelableEvent { 
 		
 		/** Старое значение */
 		public Object oldValue;
@@ -249,7 +255,7 @@ public class ObservableProperty<Element_Type> extends PropertyContainer {
 		}
 		
 		/** Задать {@link #newValue} */
-		public <T extends ChangeEvent> T setNewValue(Object newValue)
+		public <T extends PropertyChangeEvent> T setNewValue(Object newValue)
 		{
 			this.newValue = newValue;
 			return (T) this;

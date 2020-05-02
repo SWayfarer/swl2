@@ -6,6 +6,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.streams.DataStream;
 import ru.swayfarer.swl2.exceptions.ExceptionsUtils;
 import ru.swayfarer.swl2.logger.ILogger;
@@ -53,6 +54,24 @@ public class RLUtils {
 	{
 		ResourceLink rlink = createLink(StringUtils.concat(path));
 		return rlink == null ? null : rlink.toSingleString();
+	}
+	
+	public static ResourceLink findSome(String postfix, String... prefixes)
+	{
+		if (CollectionsSWL.isNullOrEmpty(prefixes))
+			return null;
+		
+		for (String prefix : prefixes)
+		{
+			String rlink = prefix + postfix;
+			
+			ResourceLink ret = createLink(rlink);
+			
+			if (ret != null && ret.isExists())
+				return ret;
+		}
+		
+		return null;
 	}
 	
 	/** Создать ссылку */

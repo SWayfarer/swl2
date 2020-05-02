@@ -10,6 +10,8 @@ import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.exceptions.ExceptionsUtils;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1NoR;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction2NoR;
+import ru.swayfarer.swl2.ioc.componentscan.ComponentScan;
+import ru.swayfarer.swl2.ioc.componentscan.DISwlComponent;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
 import ru.swayfarer.swl2.markers.InternalElement;
@@ -53,19 +55,38 @@ public abstract class ApplicationSWL {
 	 * <h1> На этом этапе нельзя работать с полями приложения. 
 	 * <br> Класслоадер создаст новый экземпляр, прежде чем выполнится {@link #preStart(IExtendedList)}!
 	 * <br> Тут можно только настраивать класслоадер. </br>
+	 * @param classLoader Загрузчик классов, который настраивается
 	 */
 	public void configureClassloader(ClassLoaderSWL classLoader) {}
 	
-	/** Предзагрузка приложения */
+	/**
+	 *  Предзагрузка приложения 
+	 *  @param args Лист аргументов, переданных при старте
+	 */
 	public void preStart(IExtendedList<String> args) {}
 	
-	/** Загрузка приложения */
+	/** 
+	 *  Загрузка приложения 
+	 *  @param args Лист аргументов, переданных при старте
+	 */
 	public void start(IExtendedList<String> args) {}
 	
-	/** Пост-загрузка приложения */
+	/** 
+	 * Пост-загрузка приложения
+	 * @param args Лист аргументов, переданных при старте
+	 */
 	public void postStart(IExtendedList<String> args) {}
+	
+	/** Отсканировать DI-компоненты, отмеченные аннтотацией {@link DISwlComponent}*/
+	public void scanDIComponents()
+	{
+		new ComponentScan().setStreamFun(ComponentScan.streamFunOfClassSource(getClass())).scan(getClass().getPackage().getName());
+	}
 
-	/** Старт приложения */
+	/** 
+	 * Старт приложения 
+	 * @param optionsList Лист аргументов, переданных при старте
+	 */
 	@InternalElement
 	public void launch(List<String> optionsList)
 	{
@@ -88,14 +109,21 @@ public abstract class ApplicationSWL {
 			applicationStarter.apply(options, this::postStart);
 	}
 	
-	/** Вызов стартера приложения из указанного класса */
+	/** 
+	 * Вызов стартера приложения из указанного класса 
+	 * @param args Аргументы из метода main
+	 */
 	@SneakyThrows
 	public static void startApplication(String[] args)
 	{
 		startApplication(Class.forName(ExceptionsUtils.getCallerStacktrace().getClassName()), args);
 	}
 	
-	/** Вызов стартера приложения из указанного класса */
+	/** 
+	 * Вызов стартера приложения из указанного класса
+	 * @param cl Класс приложения
+	 * @param args Аргументы из метода main
+	 */
 	public static void startApplication(Class<?> cl, String[] args)
 	{
 		ILogger logger = LoggingManager.getLogger();

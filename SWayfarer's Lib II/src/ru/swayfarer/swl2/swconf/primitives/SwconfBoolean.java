@@ -26,4 +26,10 @@ public class SwconfBoolean extends SwconfPrimitive {
 	{
 		return true;
 	}
+	
+	@Override
+	public <T extends SwconfPrimitive> T copy()
+	{
+		return new SwconfBoolean().setName(name).setComment(comment).setRawValue(getValue());
+	}
 }

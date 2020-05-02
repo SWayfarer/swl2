@@ -2,12 +2,19 @@ package ru.swayfarer.swl2.asm.transformer.ditransformer.visitor;
 
 import static ru.swayfarer.swl2.asm.transformer.ditransformer.DIClassTransformer.DI_ANNOTATION_DESC;
 
+import java.util.Map;
+
 import ru.swayfarer.swl2.asm.AsmUtils;
 import ru.swayfarer.swl2.asm.informated.AnnotationInfo;
 import ru.swayfarer.swl2.asm.informated.ClassInfo;
 import ru.swayfarer.swl2.asm.informated.FieldInfo;
+import ru.swayfarer.swl2.collections.CollectionsSWL;
+import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.ioc.DIManager;
+import ru.swayfarer.swl2.ioc.DIRegistry;
 import ru.swayfarer.swl2.ioc.DIManager.DISwL;
+import ru.swayfarer.swl2.logger.ILogger;
+import ru.swayfarer.swl2.logger.LoggingManager;
 import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.string.StringUtils;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.MethodVisitor;
@@ -20,6 +27,11 @@ import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.commons.AdviceAdapter;
  */
 public class DIMethodVisitor extends AdviceAdapter {
 
+	public static ILogger logger = LoggingManager.getLogger();
+	
+	public IExtendedList<String> injectedConstructorDescs = CollectionsSWL.createExtendedList();
+	public Map<String, Integer> invokeSpecialsReservedCounts = CollectionsSWL.createHashMap();
+	
 	/** Будет ли при иньекции все происходить через {@link DIManager#injectContextElements(String, Object)}? */
 	public static boolean injectByReflection = true;
 	
@@ -27,24 +39,79 @@ public class DIMethodVisitor extends AdviceAdapter {
 	@InternalElement
 	public ClassInfo classInfo;
 	
+	public String methodName;
+	
 	/** Конструктор */
 	protected DIMethodVisitor(MethodVisitor methodVisitor, int access, String name, String descriptor, ClassInfo classInfo)
 	{
 		super(ASM7, methodVisitor, access, name, descriptor);
 		this.classInfo = classInfo;
+		this.methodName = name;
 	}
 	
-	/** Посещение инструкции байткода */
 	@Override
-	public void visitInsn(int opcode)
+	public void visitMethodInsn(int opcodeAndSource, String owner, String name, String descriptor, boolean isInterface)
 	{
-		if (getName().equals("<init>") && opcode == RETURN)
-		{
-			appendFieldsInits(this);
-		}
+		super.visitMethodInsn(opcodeAndSource, owner, name, descriptor, isInterface);
 		
-		super.visitInsn(opcode);
+		if (methodName.equals("<init>") && opcodeAndSource == INVOKESPECIAL && name.equals("<init>"))
+		{
+			if (DIRegistry.isLoggingBytecodeInjections)
+				logger.info("Checking for injection constructor", classInfo.name, descriptor, invokeSpecialsReservedCounts.get(owner));
+			
+			if (!hasReservedInvokeSpecial(owner))
+			{
+				if (!isAlreadyInjectedTo(descriptor))
+				{
+					if (DIRegistry.isLoggingBytecodeInjections)
+					{
+						logger.info("Injecting DIManager#injectContextElements to constructor", classInfo.name, methodDesc);
+					}
+					
+					appendFieldsInits(this);
+					
+					setInjected(descriptor);
+				}
+				else
+				{
+					if (DIRegistry.isLoggingBytecodeInjections)
+						logger.warning("Is already injected to", classInfo.name, methodDesc);
+				}
+			}
+			else
+			{
+				if (DIRegistry.isLoggingBytecodeInjections)
+					logger.warning("This invoke special is reserved by", owner);
+			}
+		}
 	}
+	
+	
+	
+	public void reserveInvokeSpecial(String internalName)
+	{
+		Integer i = invokeSpecialsReservedCounts.get(internalName);
+		invokeSpecialsReservedCounts.put(internalName, i == null ? 1 : i + 1);
+	}
+	
+	public boolean hasReservedInvokeSpecial(String internalName)
+	{
+		Integer i = invokeSpecialsReservedCounts.get(internalName);
+		invokeSpecialsReservedCounts.put(internalName, i == null ? 0 : i - 1);
+		return i != null && i > 0;
+	}
+	
+//	/** Посещение инструкции байткода */
+//	@Override
+//	public void visitInsn(int opcode)
+//	{
+//		if (getName().equals("<init>") && opcode == RETURN)
+//		{
+//			appendFieldsInits(this);
+//		}
+//		
+//		super.visitInsn(opcode);
+//	}
 	
 	/** Добавить инициализацию всех отмеченных {@link DISwL} полей */
 	public void appendFieldsInits(MethodVisitor mv)
@@ -62,6 +129,16 @@ public class DIMethodVisitor extends AdviceAdapter {
 				appendFieldInit(mv, fieldInfo, true);
 			}
 		}
+	}
+	
+	public boolean isAlreadyInjectedTo(String desc)
+	{
+		return injectedConstructorDescs.contains(desc);
+	}
+	
+	public void setInjected(String desc)
+	{
+		injectedConstructorDescs.addExclusive(desc);
 	}
 	
 	/** Дописать инициализацию в конкретное поле */
@@ -103,6 +180,15 @@ public class DIMethodVisitor extends AdviceAdapter {
 				appendFieldInit(mv, fieldInfo, elementType, elementName, contextName, put);
 			}
 		}
+	}
+	
+	@Override
+	public void visitTypeInsn(int opcode, String type)
+	{
+		if (opcode == NEW)
+			reserveInvokeSpecial(type);
+		
+		super.visitTypeInsn(opcode, type);
 	}
 	
 	/** Дописать инициализацию в конкретное поле */
