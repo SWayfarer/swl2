@@ -12,6 +12,7 @@ import ru.swayfarer.swl2.swconf.primitives.SwconfPrimitive;
 import ru.swayfarer.swl2.swconf.serialization.providers.ArraySwconfSerialization;
 import ru.swayfarer.swl2.swconf.serialization.providers.BooleanSwconfSerializationProvider;
 import ru.swayfarer.swl2.swconf.serialization.providers.ListSwconfSerializationProvider;
+import ru.swayfarer.swl2.swconf.serialization.providers.MapSwconfSerializationProvider;
 import ru.swayfarer.swl2.swconf.serialization.providers.NumberSwconfSerializationProvider;
 import ru.swayfarer.swl2.swconf.serialization.providers.ObservablePropertySwconfSerializationProvider;
 import ru.swayfarer.swl2.swconf.serialization.providers.ReflectionSwconfSerializationProvider;
@@ -54,6 +55,7 @@ public class SwconfSerialization {
 		registerProvider(new ArraySwconfSerialization(this));
 		registerProvider(new ListSwconfSerializationProvider(this));
 		registerProvider(new ObservablePropertySwconfSerializationProvider(this));
+		registerProvider(new MapSwconfSerializationProvider(this));
 		
 		return (T) this;
 	}

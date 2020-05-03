@@ -5,6 +5,7 @@ import java.util.Map;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.markers.ConcattedString;
 import ru.swayfarer.swl2.markers.InternalElement;
+import ru.swayfarer.swl2.string.DynamicString;
 import ru.swayfarer.swl2.string.StringUtils;
 
 /**
@@ -91,6 +92,38 @@ public class SwconfObject extends SwconfPrimitive {
 		}
 		
 		return (T) ret;
+	}
+	
+	@Override
+	public String toString(int indent)
+	{
+		String indentStr = StringUtils.createSpacesSeq(4 * indent);
+		DynamicString ret = new DynamicString();
+		
+		ret.append(indentStr);
+		ret.append("object: ");
+		ret.append(name);
+		ret.append(" = {\n");
+		
+		boolean isFirst = true;
+		
+		for (Map.Entry<String, SwconfPrimitive> child : children.entrySet())
+		{
+			if (!isFirst)
+			{
+				ret.append(",\n");
+			}
+			
+			ret.append(child.getValue().toString(indent + 1));
+			
+			isFirst = false;
+		}
+		
+		ret.append("\n");
+		ret.append(indentStr);
+		ret.append("}");
+		
+		return ret.toString();
 	}
 	
 }

@@ -115,6 +115,9 @@ public class ReflectionSwconfSerializationProvider implements ISwconfSerializati
 			if (ReflectionUtils.hasAnnotation(IgnoreSwconf.class, field))
 				continue;
 			
+			if (field.getClass().equals(ILogger.class))
+				continue;
+			
 			logger.safe(() -> {
 				Class<?> classOfField = field.getType();
 				

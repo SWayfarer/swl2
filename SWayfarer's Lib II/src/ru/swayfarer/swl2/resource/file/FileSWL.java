@@ -36,7 +36,7 @@ import ru.swayfarer.swl2.string.StringUtils;
  * Расширенный файл
  * @author swayfarer
  */
-@SuppressWarnings("serial")
+@SuppressWarnings( {"serial", "unchecked"} )
 public class FileSWL extends File implements IHasSubfiles {
 
 	/** Локи по файлам ({@link FileSWL} можно залочить, чтоьы не случилось параллельной записи)*/
@@ -55,6 +55,13 @@ public class FileSWL extends File implements IHasSubfiles {
 	public URL toURL()
 	{
 		return toRlink().toURL();
+	}
+	
+	public int getSubfilesCount()
+	{
+		String[] subs = list();
+		
+		return subs == null ? 0 : subs.length;
 	}
 	
 	public boolean hasSubFile(String name)
@@ -77,10 +84,18 @@ public class FileSWL extends File implements IHasSubfiles {
 		return dis == null ? null : dis.readAllSafe();
 	}
 	
+	public <T extends FileSWL> T removeIfExists() 
+	{
+		if (exists())
+			remove();
+		
+		return (T) this;
+	}
+	
 	public FileSWL withPostfix(@ConcattedString Object... text)
 	{
 		String postfix = StringUtils.concat(text);
-		return new FileSWL(getAbsolutePath() + text);
+		return new FileSWL(getAbsolutePath() + postfix);
 	}
 	
 	/** Лежит ли файл в указанной директории? */
@@ -136,9 +151,6 @@ public class FileSWL extends File implements IHasSubfiles {
 	/** Получить подфайл */
 	public FileSWL subFile(@ConcattedString Object... filepath)
 	{
-		if (!isDirectory())
-			return null;
-		
 		return new FileSWL(this, StringUtils.concat(filepath));
 	}
 	

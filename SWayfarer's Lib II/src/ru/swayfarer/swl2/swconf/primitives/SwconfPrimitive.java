@@ -116,4 +116,9 @@ public class SwconfPrimitive {
 		
 		return (T) ret;
 	}
+	
+	public String toString(int indent)
+	{
+		return toString();
+	}
 }

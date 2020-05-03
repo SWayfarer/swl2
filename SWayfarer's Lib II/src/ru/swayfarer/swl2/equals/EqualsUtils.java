@@ -43,14 +43,17 @@ public class EqualsUtils {
 		{
 			if (obj == null && o != null && allMatches)
 				return false;
-			
-			boolean isMatches = obj.equals(o);
-			
-			if (allMatches && !isMatches)
-				return false;
-			else if (isMatches)
+			else if (!allMatches && obj == null && o == null)
 				return true;
-			
+			else if (obj != null)
+			{
+				boolean isMatches = obj.equals(o);
+				
+				if (allMatches && !isMatches)
+					return false;
+				else if (isMatches)
+					return true;
+			}
 		}
 		
 		return allMatches;

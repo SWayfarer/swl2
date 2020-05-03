@@ -5,6 +5,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import ru.swayfarer.swl2.exceptions.ExceptionsUtils;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1;
@@ -54,7 +57,7 @@ public class ThreadPoolTaskFactory implements IFunction1<Runnable, ITask> {
 
 	/** Следующий свободный id для потока. Для наименований. */
 	@InternalElement
-	public int nextThreadId = 0;
+	public AtomicInteger nextThreadId = new AtomicInteger(0);
 
 	/** Очередь из задач, которые нужно выполнить */
 	@InternalElement
@@ -66,11 +69,11 @@ public class ThreadPoolTaskFactory implements IFunction1<Runnable, ITask> {
 
 	/** Следующий свободный id для набора потоков. Для наименований. */
 	@InternalElement
-	public static int nextPoolId = 0;
+	public static AtomicInteger nextPoolId = new AtomicInteger(0);
 
 	/** Префикс, вставляемый в имя потока */
 	@InternalElement
-	public String name = getClass().getSimpleName() + "-" + (nextPoolId++) + "";
+	public String name = getClass().getSimpleName() + "-" + (nextPoolId.getAndAdd(1)) + "";
 
 	/**
 	 * Конструктор
@@ -135,11 +138,11 @@ public class ThreadPoolTaskFactory implements IFunction1<Runnable, ITask> {
 		{
 			TaskProcessorThread thread = $i.next();
 
-			if (!thread.isAlive)
+			if (!thread.isAlive.get())
 				$i.remove();
-			else if (thread.emptyLifeTime > 0)
+			else if (thread.emptyLifeTime.get() > 0)
 			{
-				thread.emptyLifeTime = 0;
+				thread.emptyLifeTime.set(0);
 				ret = true;
 			}
 		}
@@ -279,18 +282,18 @@ public class ThreadPoolTaskFactory implements IFunction1<Runnable, ITask> {
 
 		/** Время работы потока без задачи */
 		@InternalElement
-		public volatile long emptyLifeTime;
+		public AtomicLong emptyLifeTime = new AtomicLong(0);
 
 		/** Выполняется ли в данный момент задача? */
 		@InternalElement
-		public volatile boolean isProcessingTask;
+		public AtomicBoolean isProcessingTask = new AtomicBoolean(false);
 
 		/**
 		 * Жив ли поток? ("Мертвые" потоки удаляются из
 		 * {@link ThreadPoolTaskFactory})
 		 */
 		@InternalElement
-		public volatile boolean isAlive = true;
+		public AtomicBoolean isAlive = new AtomicBoolean(true);
 
 		/**
 		 * Конструктор
@@ -300,7 +303,7 @@ public class ThreadPoolTaskFactory implements IFunction1<Runnable, ITask> {
 		 */
 		public TaskProcessorThread(ThreadPoolTaskFactory poolManager)
 		{
-			super(poolManager.name + ":Thread-" + poolManager.nextThreadId++);
+			super(poolManager.name + ":Thread-" + poolManager.nextThreadId.getAndAdd(1));
 			this.poolManager = poolManager;
 		}
 
@@ -310,8 +313,8 @@ public class ThreadPoolTaskFactory implements IFunction1<Runnable, ITask> {
 		@InternalElement
 		public void onStop()
 		{
-			isProcessingTask = false;
-			isAlive = false;
+			isProcessingTask.set(false);
+			isAlive.set(false);
 		}
 
 		/**
@@ -329,9 +332,9 @@ public class ThreadPoolTaskFactory implements IFunction1<Runnable, ITask> {
 
 					if (task == null)
 					{
-						isProcessingTask = false;
+						isProcessingTask.set(false);
 
-						if (emptyLifeTime > poolManager.getMaxThreadLifetime())
+						if (emptyLifeTime.get() > poolManager.getMaxThreadLifetime())
 						{
 							onStop();
 							interrupt();
@@ -340,14 +343,14 @@ public class ThreadPoolTaskFactory implements IFunction1<Runnable, ITask> {
 						else
 						{
 							sleep(1);
-							emptyLifeTime++;
+							emptyLifeTime.incrementAndGet();
 						}
 					}
 					else
 					{
-						isProcessingTask = true;
+						isProcessingTask.set(true);
 						task.start();
-						emptyLifeTime = 0;
+						emptyLifeTime.set(0);
 					}
 				}
 			}
@@ -362,7 +365,7 @@ public class ThreadPoolTaskFactory implements IFunction1<Runnable, ITask> {
 		/** Выполняется ли сейчас задача? */
 		public boolean isProcessingTask()
 		{
-			return isProcessingTask;
+			return isProcessingTask.get();
 		}
 	}
 }

@@ -35,4 +35,9 @@ public class SwconfString extends SwconfPrimitive {
 	{
 		return new SwconfString().setName(name).setComment(comment).setRawValue(getValue());
 	}
+	
+	public String toString(int indent)
+	{
+		return StringUtils.createSpacesSeq(4 * indent) + "string: " + name + " = " + rawValue;
+	}
 }

@@ -3,6 +3,8 @@ package ru.swayfarer.swl2.swconf.primitives;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.markers.InternalElement;
+import ru.swayfarer.swl2.string.DynamicString;
+import ru.swayfarer.swl2.string.StringUtils;
 
 /**
  * Массив Swconf
@@ -48,5 +50,31 @@ public class SwconfArray extends SwconfPrimitive {
 		}
 		
 		return (T) array;
+	}
+	
+	public String toString(int indent)
+	{
+		String indentStr = StringUtils.createSpacesSeq(4 * indent);
+		DynamicString ret = new DynamicString();
+		ret.append(indentStr + "boolean [" + name + " = {\n");
+		
+		boolean isFirst = true;
+		
+		for (SwconfPrimitive child : elements)
+		{
+			if (!isFirst)
+			{
+				ret.append(",\n");
+			}
+			
+			ret.append(child.toString(indent + 1));
+			
+			isFirst = false;
+		}
+		ret.append("\n");
+		ret.append(indentStr);
+		ret.append("}");
+		
+		return ret.toString();
 	}
 }

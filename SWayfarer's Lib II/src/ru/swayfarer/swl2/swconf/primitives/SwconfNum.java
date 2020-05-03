@@ -1,5 +1,7 @@
 package ru.swayfarer.swl2.swconf.primitives;
 
+import ru.swayfarer.swl2.string.StringUtils;
+
 /**
  * Число
  * @author swayfarer
@@ -67,5 +69,10 @@ public class SwconfNum extends SwconfPrimitive {
 	public <T extends SwconfPrimitive> T copy()
 	{
 		return new SwconfNum().setComment(comment).setRawValue(getDouble()).setName(name);
+	}
+	
+	public String toString(int indent)
+	{
+		return StringUtils.createSpacesSeq(4 * indent) + "boolean: " + name + " = " + rawValue;
 	}
 }

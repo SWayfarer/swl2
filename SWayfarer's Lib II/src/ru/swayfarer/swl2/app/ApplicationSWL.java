@@ -71,6 +71,8 @@ public abstract class ApplicationSWL {
 	 */
 	public void start(IExtendedList<String> args) {}
 	
+	public void startSafe(IExtendedList<String> args) throws Throwable {}
+	
 	/** 
 	 * Пост-загрузка приложения
 	 * @param args Лист аргументов, переданных при старте
@@ -104,6 +106,7 @@ public abstract class ApplicationSWL {
 		});
 		
 		applicationStarter.apply(options, this::start);
+		applicationStarter.apply(options, (e) -> logger.safe(() -> startSafe(e)));
 		
 		if (isPostStartEnabled)
 			applicationStarter.apply(options, this::postStart);
