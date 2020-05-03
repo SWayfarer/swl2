@@ -339,6 +339,25 @@ public interface ILogger {
 		return safe(run, "Error while processing safe action");
 	}
 	
+	public default <T> T safeOperationReturn(IUnsafeRunnableWithReturn<T> operation, T defaultValue, @ConcattedString Object... text)
+	{
+		IReference<T> ref = new ParameterizedReference<>();
+		
+		operation(() -> {
+			try
+			{
+				ref.setValue(operation.run());
+			}
+			catch (Throwable e)
+			{
+				String errorText = "Error while " + StringUtils.concatWithSpaces(text);
+				error(e, errorText);
+			}
+		}, text);
+		
+		return ref.isSetted() ? ref.getValue() : defaultValue;
+	}
+	
 	/** Безопасно выполнить действие и отлогировать ошибку, если будет */
 	public default Throwable safeOperation(IUnsafeRunnable operation, @ConcattedString Object... text)
 	{
@@ -396,6 +415,8 @@ public interface ILogger {
 		
 		return ifnull;
 	}
+	
+	public String getStringFromThrowable(Throwable e, @ConcattedString Object... text);
 	
 	/** Установить позднюю загрузку через {@link LoggingManager} */
 	public default <T extends ILogger> T lateinit()

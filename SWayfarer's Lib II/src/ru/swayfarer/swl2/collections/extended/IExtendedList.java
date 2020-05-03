@@ -299,7 +299,8 @@ public interface IExtendedList<Element_Type> extends List<Element_Type>{
 			System.currentTimeMillis(),
 			false,
 			logger,
-			false
+			false,
+			null
 		);
 		
 		logger.log(logInfo);

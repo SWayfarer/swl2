@@ -67,9 +67,13 @@ public class SimpleLoggerSWL implements ILogger, StandartLoggingLevels, Stacktra
 	public void log(LogInfo logInfo)
 	{
 		LogEvent event = LogEvent.of(logInfo, this);
+		
 		evtLogging().next(event);
 		if (event.isCanceled())
 			return;
+		
+		if (logInfo.attachedThrowable != null)
+			logInfo.content = getStringFromThrowable(logInfo.attachedThrowable, logInfo.content);
 		
 		if (!logInfo.isFormatted() && formatter != null)
 		{
@@ -117,31 +121,31 @@ public class SimpleLoggerSWL implements ILogger, StandartLoggingLevels, Stacktra
 	@Override
 	public void info(Throwable e, @ConcattedString Object... text)
 	{
-		log(LogInfo.of(this, LEVEL_INFO, OFFSET_CALLER, getStringFromThrowable(e, text)).setDecorated(true));
+		log(LogInfo.of(this, LEVEL_INFO, OFFSET_CALLER, text).setAttachedThrowable(e).setDecorated(true));
 	}
 
 	@Override
 	public void warning(Throwable e, @ConcattedString Object... text)
 	{
-		log(LogInfo.of(this, LEVEL_WARNING, OFFSET_CALLER, getStringFromThrowable(e, text)).setDecorated(true));
+		log(LogInfo.of(this, LEVEL_WARNING, OFFSET_CALLER, text).setAttachedThrowable(e).setDecorated(true));
 	}
 
 	@Override
 	public void error(Throwable e, @ConcattedString Object... text)
 	{
-		log(LogInfo.of(this, LEVEL_ERROR, OFFSET_CALLER, getStringFromThrowable(e, text)).setDecorated(true));
+		log(LogInfo.of(this, LEVEL_ERROR, OFFSET_CALLER, text).setAttachedThrowable(e).setDecorated(true));
 	}
 
 	@Override
 	public void fatal(Throwable e, @ConcattedString Object... text)
 	{
-		log(LogInfo.of(this, LEVEL_FATAL, OFFSET_CALLER, getStringFromThrowable(e, text)).setDecorated(true));
+		log(LogInfo.of(this, LEVEL_FATAL, OFFSET_CALLER, text).setAttachedThrowable(e).setDecorated(true));
 	}
 
 	@Override
 	public void log(ILogLevel lvl, Throwable e, Object... text)
 	{
-		log(LogInfo.of(this, lvl, 0, getStringFromThrowable(e, text)).setDecorated(true));
+		log(LogInfo.of(this, lvl, 0, text).setAttachedThrowable(e).setDecorated(true));
 	}
 
 	@Override

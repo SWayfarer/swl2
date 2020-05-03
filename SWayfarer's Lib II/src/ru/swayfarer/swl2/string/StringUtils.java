@@ -16,6 +16,7 @@ import ru.swayfarer.swl2.logger.LoggingManager;
 import ru.swayfarer.swl2.markers.ConcattedString;
 import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.math.MathUtils;
+import ru.swayfarer.swl2.resource.streams.BytesInputStreamSWL;
 import ru.swayfarer.swl2.string.reader.StringReaderSWL;
 import ru.swayfarer.swl2.string.regex.RegexBuilder;
 
@@ -467,6 +468,21 @@ public class StringUtils {
 				ret = line.length();
 		
 		return ret;
+	}
+	
+	public static BytesInputStreamSWL getBytesStream(String encoding, @ConcattedString Object... text)
+	{
+		return BytesInputStreamSWL.createStream(getBytes(encoding, text));
+	}
+	
+	public static byte[] getBytes(String encoding, @ConcattedString Object... text)
+	{
+		String str = concat(text);
+		
+		if (str == null)
+			return null;
+		
+		return str.getBytes(getCharset(encoding));
 	}
 	
 	public static String subStringByFirst(String indexOfString, @ConcattedString Object... text)

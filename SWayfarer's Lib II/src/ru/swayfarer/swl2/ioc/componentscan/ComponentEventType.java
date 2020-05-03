@@ -4,5 +4,5 @@ public enum ComponentEventType
 {
 	PreInit,
 	Init,
-	PostInit
+//	PostInit
 }

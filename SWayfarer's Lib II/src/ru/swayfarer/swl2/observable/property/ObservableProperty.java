@@ -1,6 +1,7 @@
 package ru.swayfarer.swl2.observable.property;
 
 import lombok.AllArgsConstructor;
+import ru.swayfarer.swl2.classes.ReflectionUtils;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction0NoR;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1NoR;
@@ -71,6 +72,8 @@ public class ObservableProperty<Element_Type> extends PropertyContainer {
 	{
 		RecursiveSafeTask taskExec = new RecursiveSafeTask();
 		
+		setValue(target.get());
+		
 		target.subscribe((event) -> {
 			taskExec.start(() -> {
 				this.setValue(event.getNewValue());
@@ -93,6 +96,8 @@ public class ObservableProperty<Element_Type> extends PropertyContainer {
 	public <T extends ObservableProperty<Element_Type>> T bindTwinAutocast(ObservableProperty<? extends Object> target) 
 	{
 		RecursiveSafeTask taskExec = new RecursiveSafeTask();
+		
+		setValue(ReflectionUtils.forceCast(target.get()));
 		
 		target.subscribe((event) -> {
 			taskExec.start(() -> {

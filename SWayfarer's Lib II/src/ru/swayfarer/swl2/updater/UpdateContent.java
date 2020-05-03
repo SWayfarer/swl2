@@ -116,7 +116,14 @@ public class UpdateContent {
 			FileInfo ret = new FileInfo();
 			
 			if (uploader != null)
-				ret.url = uploader.apply(localPath, file).toExternalForm();
+			{
+				URL url = uploader.apply(localPath, file);
+				
+				if (url != null)
+					ret.url = url.toExternalForm();
+				else
+					ret.url = "<no>";
+			}
 			
 			ret.hashType = hashingType;
 			ret.hash = file.isDirectory() ? file.getSubfilesCount() + "" : file.getHash(hashingType);

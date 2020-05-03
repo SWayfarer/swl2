@@ -36,7 +36,7 @@ import ru.swayfarer.swl2.string.StringUtils;
 @SuppressWarnings( { "unchecked", "rawtypes" } )
 public class ReflectionUtils {
 	
-	public static IExtendedList<IFunction2<Class<?>, URL, String>> registeredSourcesFun = CollectionsSWL.createExtendedList();
+	public static IExtendedList<IFunction2<String, URL, String>> registeredSourcesFun = CollectionsSWL.createExtendedList();
 	
 	/** Логгер */
 	@InternalElement
@@ -63,9 +63,13 @@ public class ReflectionUtils {
 		return null;
 	};
 	
-	public static String getClassSource(String str)
+	public static String getClassSource(String className)
 	{
-		return getClassSource(findClass(str));
+		String name = className.replace(".", "/") + ".class";
+		
+		URL url = ReflectionUtils.class.getClassLoader().getResource(name);
+		
+		return getResourceSource(className, url);
 	}
 	
 	public static String getClassSource(Class<?> cl)
@@ -82,7 +86,7 @@ public class ReflectionUtils {
 		
 		URL url = classloader.getResource(name);
 		
-		return getResourceSource(cl, url);
+		return getResourceSource(cl.getName(), url);
 	}
 	
 	public static void registerDefaultSourceFuns()
@@ -90,7 +94,7 @@ public class ReflectionUtils {
 		registeredSourcesFun.add((cl, url) -> {
 			if (url.getProtocol().equals("file"))
 			{
-				String pkg = cl.getPackage().getName();
+				String pkg = ExceptionsUtils.getClassPackage(cl);
 				int parentsCount = StringUtils.countMatches(pkg, ".") + 2;
 				FileSWL file = FileSWL.ofURL(url);
 				
@@ -121,14 +125,14 @@ public class ReflectionUtils {
 		});
 	}
 	
-	public static String getResourceSource(Class<?> cl, URL url)
+	public static String getResourceSource(String className, URL url)
 	{
 		if (url == null)
 			return "<unknown>";
 		
-		for (IFunction2<Class<?>, URL, String> fun : registeredSourcesFun)
+		for (IFunction2<String, URL, String> fun : registeredSourcesFun)
 		{
-			String ret = fun.apply(cl, url);
+			String ret = fun.apply(className, url);
 			
 			if (!StringUtils.isEmpty(ret))
 				return ret;

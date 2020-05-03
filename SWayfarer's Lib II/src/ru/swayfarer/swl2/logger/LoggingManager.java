@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import ru.swayfarer.swl2.exceptions.ExceptionsUtils;
 import ru.swayfarer.swl2.exceptions.ExceptionsUtils.StacktraceOffsets;
@@ -33,7 +34,7 @@ public class LoggingManager {
 	
 	/** Закончена ли ранняя загрузка */
 	@InternalElement
-	public static boolean isLateinitCompleted;
+	public static AtomicBoolean isLateinitCompleted = new AtomicBoolean(false);
 	
 	/** Событие создания логгера */
 	public static IObservable<ILogger> eventCreation = new SimpleObservable<>();
@@ -152,12 +153,14 @@ public class LoggingManager {
 	 */
 	public static void setAllToRootRedirecting()
 	{
-		eventCreation.subscribe((sub, logger) -> logger.evtLogging().subscribe(new LogRedirectHandler(rootLogger)));
+		eventCreation.subscribe((sub, logger) -> {
+			logger.evtLogging().subscribe(new LogRedirectHandler(rootLogger));
+		});
 	}
 	
 	public static void registerLateinitLogger(ILogger logger)
 	{
-		if (isLateinitCompleted)
+		if (isLateinitCompleted.get())
 		{
 			eventCreation.next(logger);
 		}
@@ -169,7 +172,7 @@ public class LoggingManager {
 	
 	public static void onInited()
 	{
-		isLateinitCompleted = true;
+		isLateinitCompleted.set(true);
 		lateinitLoggers.forEach(eventCreation::next);
 		lateinitLoggers.clear();
 	}

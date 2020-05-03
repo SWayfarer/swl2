@@ -34,7 +34,6 @@ import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.observable.property.ObservableProperty;
 import ru.swayfarer.swl2.string.DynamicString;
 import ru.swayfarer.swl2.tasks.RecursiveSafeTask;
-import ru.swayfarer.swl2.threads.ThreadsUtils;
 import ru.swayfarer.swl2.threads.lock.SynchronizeLock;
 
 /**
@@ -351,9 +350,7 @@ public class JfxUtils {
 		@Override
 		public void start(Stage arg0) throws Exception
 		{
-			isInited.set(true);
 			run.apply();
-			isInited.set(false);
 		}
 		
 	}

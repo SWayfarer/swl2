@@ -10,6 +10,7 @@ import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.exceptions.ExceptionsUtils;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1NoR;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction2NoR;
+import ru.swayfarer.swl2.ioc.DIManager;
 import ru.swayfarer.swl2.ioc.componentscan.ComponentScan;
 import ru.swayfarer.swl2.ioc.componentscan.DISwlComponent;
 import ru.swayfarer.swl2.logger.ILogger;
@@ -50,6 +51,8 @@ public abstract class ApplicationSWL {
 	/** Стартер для приложения */
 	public IFunction2NoR<IExtendedList<String>, IFunction1NoR<IExtendedList<String>>> applicationStarter = (args, method) -> method.apply(args);
 
+	public ComponentScan componentScan = new ComponentScan().setStreamFun(ComponentScan.streamFunOfClassSource(getClass()));
+
 	/** 
 	 * Настроить класслоадер, который будет грузить приложение 
 	 * <h1> На этом этапе нельзя работать с полями приложения. 
@@ -58,6 +61,8 @@ public abstract class ApplicationSWL {
 	 * @param classLoader Загрузчик классов, который настраивается
 	 */
 	public void configureClassloader(ClassLoaderSWL classLoader) {}
+	
+	public void configureLauncher() {};
 	
 	/**
 	 *  Предзагрузка приложения 
@@ -71,6 +76,8 @@ public abstract class ApplicationSWL {
 	 */
 	public void start(IExtendedList<String> args) {}
 	
+	public boolean initDI(IExtendedList<String> args) { return false; }
+	
 	public void startSafe(IExtendedList<String> args) throws Throwable {}
 	
 	/** 
@@ -82,9 +89,17 @@ public abstract class ApplicationSWL {
 	/** Отсканировать DI-компоненты, отмеченные аннтотацией {@link DISwlComponent}*/
 	public void scanDIComponents()
 	{
-		new ComponentScan().setStreamFun(ComponentScan.streamFunOfClassSource(getClass())).scan(getClass().getPackage().getName());
+		componentScan.scan(getClass().getPackage().getName());
 	}
+	
+	public IFunction2NoR<List<String>, IFunction1NoR<List<String>>> launcherFun = (args, fun) -> fun.apply(args);
 
+	public void launchByLauncher(List<String> optionsList)
+	{
+		configureLauncher();
+		launcherFun.apply(optionsList, this::launch);
+	}
+	
 	/** 
 	 * Старт приложения 
 	 * @param optionsList Лист аргументов, переданных при старте
@@ -95,6 +110,10 @@ public abstract class ApplicationSWL {
 		IExtendedList<String> options = CollectionsSWL.createExtendedList(optionsList);
 		optionsParser = new OptionsParser();
 		preStart(options);
+		
+		if (initDI(options))
+			DIManager.injectContextElements(this);
+		
 		this.options = optionsParser.parse(options);
 		optionsParser.init(logger, this.options);
 		
@@ -145,7 +164,7 @@ public abstract class ApplicationSWL {
 			
 			applicationSWL.configureClassloader(classLoaderSWL);
 			
-			classLoaderSWL.startAt(cl, "launch", args);
+			classLoaderSWL.startAt(cl, "launchByLauncher", args);
 			
 		}, "Error while starting application");
 	}

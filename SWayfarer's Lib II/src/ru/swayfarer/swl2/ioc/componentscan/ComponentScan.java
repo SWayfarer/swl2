@@ -86,6 +86,20 @@ public class ComponentScan {
 	{
 		IExtendedMap<String, IFunction0<DataInputStreamSWL>> ret = CollectionsSWL.createExtendedMap();
 		
+		int backsCount = StringUtils.countMatches(pkg, ".") + 2;
+		
+		while (rootDir != null && backsCount > 0)
+		{
+			rootDir = rootDir.getParentFile();
+			
+			if (rootDir == null)
+				return null;
+			
+			backsCount --;
+		}
+		
+		logger.info("Searching package", pkg, "at", rootDir);
+		
 		IExtendedList<FileSWL> subFiles = rootDir.getAllSubfiles();
 		
 		String start = pkg.replace(".", "/");
@@ -176,7 +190,8 @@ public class ComponentScan {
 		if (isInject)
 			DIManager.injectContextElements(instance);
 		
-		ReflectionUtils.invokeMethods(new EventAnnotatedMethodFilter(ComponentEventType.Init), cl, instance, new Object[0]);
+		if (isInject)
+			ReflectionUtils.invokeMethods(new EventAnnotatedMethodFilter(ComponentEventType.Init), cl, instance, new Object[0]);
 		
 		return instance;
 	}
@@ -216,6 +231,7 @@ public class ComponentScan {
 						{
 							instance = createNewObject(cl, false);
 							DIManager.injectContextElements(instance);
+							ReflectionUtils.invokeMethods(new EventAnnotatedMethodFilter(ComponentEventType.Init), cl, instance, new Object[0]);
 						}
 						
 						return instance;
@@ -296,6 +312,7 @@ public class ComponentScan {
 				elementType = ContextElementType.valueOf(elementTypeStr);
 			}
 			
+			System.out.println("name");
 			Class<?> cl = ReflectionUtils.findClass(name);
 			scanClass(cl, contextName, elementName, elementType);
 		}
@@ -339,6 +356,11 @@ public class ComponentScan {
 				e.getKey();
 				scanClassByResource(pkg, e.getKey(), e.getValue());
 			}
+		}
+		else
+		{
+			if (isLoggingScan)
+				logger.warning("Empty stream creators!", streamCreationFun);
 		}
 	}
 	

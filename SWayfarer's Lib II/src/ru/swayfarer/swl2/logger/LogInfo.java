@@ -2,12 +2,13 @@ package ru.swayfarer.swl2.logger;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.experimental.Accessors;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.exceptions.ExceptionsUtils;
 import ru.swayfarer.swl2.markers.ConcattedString;
 import ru.swayfarer.swl2.string.StringUtils;
 
-@Data @AllArgsConstructor(staticName = "of")
+@Data @AllArgsConstructor(staticName = "of") @Accessors(chain = true)
 @SuppressWarnings("unchecked")
 public class LogInfo {
 
@@ -19,6 +20,7 @@ public class LogInfo {
 	public boolean isFormatted;
 	public ILogger logger;
 	public boolean isDecorated;
+	public Throwable attachedThrowable;
 	
 	public static LogInfo of(ILogger logger, ILogLevel level, int stacktraceOffset, @ConcattedString Object... text)
 	{
@@ -31,7 +33,8 @@ public class LogInfo {
 				System.currentTimeMillis(),
 				false,
 				logger,
-				false
+				false,
+				null
 		);
 	}
 	

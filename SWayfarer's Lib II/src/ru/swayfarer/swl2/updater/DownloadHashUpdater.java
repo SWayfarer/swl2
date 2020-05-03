@@ -54,6 +54,65 @@ public class DownloadHashUpdater {
 	 */
 	public void refresh(FileSWL root, IFunction1NoR<String> remoteRemover, IFunction2<String, FileSWL, URL> uploader)
 	{
+		UpdateContent remoteUpdateContent = updaterInfo.getUpdateContent();
+		
+		// Удаляем лишнее из удаленного хранилища 
+		for (FileInfo remoteFileInfo : CollectionsSWL.createExtendedList(remoteUpdateContent.files.values()))
+		{
+			FileSWL localFile = root.subFile(remoteFileInfo.path);
+			
+			boolean isMustRemove = false;
+			
+			if (!localFile.exists())
+			{
+				isMustRemove = true;
+			}
+			else if (remoteFileInfo.isDirectory != localFile.isDirectory())
+			{
+				isMustRemove = true;
+			}
+			
+			if (isMustRemove)
+			{
+				remoteUpdateContent.files.remove(remoteFileInfo.path);
+				remoteRemover.apply(remoteFileInfo.path);
+			}
+		}
+		
+		for (FileSWL localFile : root.getAllSubfiles())
+		{
+			String localPath = localFile.getLocalPath(root);
+			FileInfo remoteFileInfo = remoteUpdateContent.files.get(localPath);
+			
+			boolean isMustUpload = false;
+			
+			if (remoteFileInfo == null)
+			{
+				isMustUpload = true;
+			}
+			else if (localFile.isFile())
+			{
+				if (!remoteFileInfo.hash.equals(localFile.getHash(remoteUpdateContent.hashingType)))
+				{
+					isMustUpload = true;
+				}
+			}
+			
+			if (isMustUpload)
+			{
+				remoteUpdateContent.add(root, localFile, remoteUpdateContent.hashingType, uploader, false); //.files.put(localPath, FileInfo.of(localFile, localPath, remoteUpdateContent.hashingType, uploader));
+			}
+		}
+	}
+	
+	/**
+	 * Обновить текущую информацию об обновлении с Корневой директории и залить изменения на удаленное хранилище
+	 * @param root Корневой файл, от которого пойдет обновление
+	 * @param remoteRemover Функция, удаляющая файл с удаленного хоста 
+	 * @param uploader Функция, которая выгружает файл на удаленный хост
+	 */
+	public void refreshNew(FileSWL root, IFunction1NoR<String> remoteRemover, IFunction2<String, FileSWL, URL> uploader)
+	{
 		UpdateContent updateContent = updaterInfo.getUpdateContent();
 		
 		UpdateContent actualInfo = UpdaterInfo.of(root, updateContent.hashingType, null);
@@ -238,7 +297,7 @@ public class DownloadHashUpdater {
 				
 				if (isMustUpdate)
 				{
-					logger.safe(() -> {
+					logger.safeOperation(() -> {
 						IProgressLoading loading = new ProgressDownloading(new URL(fileInfo.url));
 						ObservableProperty<Integer> progress = loading.getProgress();
 						eventStartUpdating.next(new FileUpdateEvent(localFile, fileInfo, progress));
@@ -248,10 +307,11 @@ public class DownloadHashUpdater {
 							eventFail.next(new FileUpdateEvent(localFile, fileInfo, progress));
 						}
 						
-					}, "Error while updating file", fileInfo.path);
+					}, "Updating file", fileInfo.path);
 				}
 				else
 				{
+					eventStartUpdating.next(new FileUpdateEvent(localFile, fileInfo, null));
 					eventStartUpdating.next(new FileUpdateEvent(localFile, fileInfo, null));
 				}
 			}

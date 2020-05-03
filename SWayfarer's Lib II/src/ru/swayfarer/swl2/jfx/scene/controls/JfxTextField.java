@@ -8,6 +8,7 @@ import ru.swayfarer.swl2.jfx.utils.JfxUtils;
 import ru.swayfarer.swl2.observable.Observables;
 import ru.swayfarer.swl2.observable.property.ObservableProperty;
 
+@SuppressWarnings("unchecked")
 public class JfxTextField extends TextField implements IJavafxWidget {
 
 	public KeyboardEventsHelper eventsKeyboard = new KeyboardEventsHelper().init(this);
@@ -31,6 +32,12 @@ public class JfxTextField extends TextField implements IJavafxWidget {
 	public void init()
 	{
 		JfxUtils.attachProperties(value, textProperty());
+	}
+	
+	public <T extends JfxTextField> T bindTo(ObservableProperty<String> target) 
+	{
+		value.bindTwin(target);
+		return (T) this;
 	}
 
 }

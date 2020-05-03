@@ -55,7 +55,7 @@ public class ClassLoaderSWL extends URLClassLoader {
 
 	/** Исключения, которые будут загружены стандартным загрузчиком */
 	@InternalElement
-	public IExtendedList<String> systemExclusions = CollectionsSWL.createExtendedList("java.", "javax.", "sun.", "jdk.internal.");
+	public IExtendedList<String> systemExclusions = CollectionsSWL.createExtendedList("javafx.", "com.sun.javafx.", "java.", "javax.", "sun.", "jdk.internal.");
 
 	/** Исключения, которые будут загружены стандартным загрузчиком */
 	@InternalElement
