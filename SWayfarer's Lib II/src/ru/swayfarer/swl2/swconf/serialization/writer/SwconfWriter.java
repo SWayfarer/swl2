@@ -300,5 +300,17 @@ public class SwconfWriter implements ISwconfWriter {
 		this.swconfFormat = format;
 		return (T) this;
 	}
+
+	@Override
+	public void writeln(String str)
+	{
+		writeRaw(str);
+	}
+
+	@Override
+	public SwconfFormat getFormat()
+	{
+		return swconfFormat;
+	}
 	
 }

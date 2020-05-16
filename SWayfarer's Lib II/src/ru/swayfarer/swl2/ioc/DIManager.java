@@ -221,7 +221,10 @@ public class DIManager {
 
 			logger.safe(() -> {
 
-				for (Method method : obj.getClass().getDeclaredMethods())
+				IExtendedList<Method> methods = CollectionsSWL.createExtendedList(obj.getClass().getDeclaredMethods());
+				methods.sortBy((m1, m2) -> m1.getName().compareTo(m2.getName()));
+				
+				for (Method method : methods)
 				{
 					DISwL annotation = method.getDeclaredAnnotation(DISwL.class);
 
@@ -850,7 +853,9 @@ public class DIManager {
 					}
 				}
 				
-				invokeArgs.add(DIManager.getContextElement(contextName, name, classOfParam));
+				Object contextElement = DIManager.getContextElement(contextName, name, classOfParam);
+				
+				invokeArgs.add(contextElement);
 			}
 			
 		}

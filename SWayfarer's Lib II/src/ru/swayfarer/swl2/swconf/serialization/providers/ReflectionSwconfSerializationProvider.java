@@ -99,6 +99,9 @@ public class ReflectionSwconfSerializationProvider implements ISwconfSerializati
 	@Override
 	public SwconfObject serialize(Object obj)
 	{
+		if (obj == null)
+			return null;
+		
 		SwconfObject object = new SwconfObject();
 		
 		Map<String, Field> fields = getAccessibleFields(obj.getClass());
@@ -122,14 +125,18 @@ public class ReflectionSwconfSerializationProvider implements ISwconfSerializati
 				Class<?> classOfField = field.getType();
 				
 				SwconfPrimitive primitive = serialization.serialize(classOfField, field.get(obj), null);
-				primitive.setName(field.getName());
-				object.addChild(primitive);
 				
-				CommentSwconf commentAnnotation = field.getAnnotation(CommentSwconf.class);
-				
-				if (commentAnnotation != null)
+				if (primitive != null)
 				{
-					primitive.setComment(commentAnnotation.value());
+					primitive.setName(field.getName());
+					object.addChild(primitive);
+					
+					CommentSwconf commentAnnotation = field.getAnnotation(CommentSwconf.class);
+					
+					if (commentAnnotation != null)
+					{
+						primitive.setComment(commentAnnotation.value());
+					}
 				}
 				
 			}, "Error while serializing field", field, "of object", obj);

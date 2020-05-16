@@ -73,6 +73,8 @@ public interface ISwconfWriter {
 	/** Записать конец исключения */
 	public void writeExclusionEnd();
 	
+	public void writeln(String str);
+	
 	/** Записать сырую строку */
 	public void writeRaw(@ConcattedString Object... text);
 	
@@ -87,5 +89,7 @@ public interface ISwconfWriter {
 	
 	/** Задать формат */
 	public <T extends ISwconfWriter> T setFormat(SwconfFormat format);
+	
+	public SwconfFormat getFormat();
 
 }

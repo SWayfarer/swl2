@@ -116,7 +116,7 @@ public class JfxUtils {
 		
 		prop1.eventChange.subscribe((event) -> {
 			recursiveSafeTask.start(() -> {
-				prop2.set(event.getNewValue());
+				inJfxThread(() -> prop2.set(event.getNewValue()));
 			});
 		});
 		
@@ -133,7 +133,7 @@ public class JfxUtils {
 		
 		prop1.eventChange.subscribe((event) -> {
 			recursiveSafeTask.start(() -> {
-				prop2.set(event.getNewValue());
+				inJfxThread(() -> prop2.set(event.getNewValue()));
 			});
 		});
 		
@@ -150,7 +150,7 @@ public class JfxUtils {
 		
 		prop1.eventChange.subscribe((event) -> {
 			recursiveSafeTask.start(() -> {
-				prop2.set(event.getNewValue());
+				inJfxThread(() -> prop2.set(event.getNewValue()));
 			});
 		});
 		
@@ -167,7 +167,7 @@ public class JfxUtils {
 		
 		prop1.eventChange.subscribe((event) -> {
 			recursiveSafeTask.start(() -> {
-				prop2.set(event.getNewValue());
+				inJfxThread(() -> prop2.set(event.getNewValue()));
 			});
 		});
 		
@@ -184,7 +184,7 @@ public class JfxUtils {
 		
 		prop1.eventChange.subscribe((event) -> {
 			recursiveSafeTask.start(() -> {
-				prop2.set(event.getNewValue());
+				inJfxThread(() -> prop2.set(event.getNewValue()));
 			});
 		});
 		
@@ -201,7 +201,7 @@ public class JfxUtils {
 		
 		prop1.eventChange.subscribe((event) -> {
 			recursiveSafeTask.start(() -> {
-				prop2.set(event.getNewValue());
+				inJfxThread(() -> prop2.set(event.getNewValue()));
 			});
 		});
 		
@@ -218,7 +218,7 @@ public class JfxUtils {
 		
 		prop1.eventChange.subscribe((event) -> {
 			recursiveSafeTask.start(() -> {
-				prop2.set(event.getNewValue());
+				inJfxThread(() -> prop2.set(event.getNewValue()));
 			});
 		});
 		

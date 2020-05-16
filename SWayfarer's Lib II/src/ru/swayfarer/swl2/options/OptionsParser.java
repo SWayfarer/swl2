@@ -16,6 +16,8 @@ import ru.swayfarer.swl2.string.StringUtils;
 @SuppressWarnings("unchecked")
 public class OptionsParser {
 
+	public String optionPrefix = "-";
+
 	/** Локализованное описание команды --help */
 	public String HELP_COMMAND_DESCRIPTION = "Shows this help";
 	
@@ -99,9 +101,9 @@ public class OptionsParser {
 		
 		for (String arg : argsList)
 		{
-			if (arg.startsWith("-"))
+			if (arg.startsWith(optionPrefix))
 			{
-				String argName = arg.substring(1);
+				String argName = arg.substring(optionPrefix.length());
 				
 				if (option != null && option.hasValue && option.value == null)
 					missingValueHandler.apply(option.name);

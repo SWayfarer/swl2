@@ -177,9 +177,9 @@ public class ClassLoaderSWL extends URLClassLoader {
 	 * <br> Метод должен содержать параметер {@link List}<{@link String}>, в который будут помещены переданные аргументы 
 	 * <br> Смотри {@link #startAt(String, String, Object...)}
 	 */
-	public void startAt(Class<?> cl, String methodname, String... args)
+	public Object startAt(Class<?> cl, String methodname, String... args)
 	{
-		startAt(cl.getName(), methodname, (Object[]) args);
+		return startAt(cl.getName(), methodname, (Object[]) args);
 	}
 	
 	/**
@@ -198,7 +198,7 @@ public class ClassLoaderSWL extends URLClassLoader {
 	 * @param args
 	 *            Аргументы для старта
 	 */
-	public void startAt(String className, String methodname, Object... args)
+	public Object startAt(String className, String methodname, Object... args)
 	{
 		Thread currentThread = Thread.currentThread();
 		ClassLoader context = currentThread.getContextClassLoader();
@@ -208,6 +208,8 @@ public class ClassLoaderSWL extends URLClassLoader {
 			Object obj = this.findClass(className).getConstructor().newInstance();
 			
 			ReflectionUtils.invokeMethod(methodname, obj, Arrays.asList(args));
+			
+			return obj;
 		}
 		catch (Throwable e)
 		{
@@ -215,6 +217,8 @@ public class ClassLoaderSWL extends URLClassLoader {
 		}
 
 		currentThread.setContextClassLoader(context);
+		
+		return null;
 	}
 
 	/** Класс не должен быть загружен этим ClassLoader'ом? */

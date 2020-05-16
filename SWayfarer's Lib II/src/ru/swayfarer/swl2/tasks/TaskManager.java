@@ -1,6 +1,7 @@
 package ru.swayfarer.swl2.tasks;
 
 import java.util.Queue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import ru.swayfarer.swl2.exceptions.ExceptionsUtils;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction0NoR;
@@ -14,6 +15,8 @@ import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1;
 @SuppressWarnings("unchecked")
 public class TaskManager {
 
+	public static AtomicInteger nextShutdownThreadId = new AtomicInteger();
+	
 	/**
 	 * Получить задачу из {@link Runnable}
 	 * @param factory Функция, превращающая {@link Runnable} в задачу
@@ -31,6 +34,17 @@ public class TaskManager {
 			task.start();
 		
 		return (T) task;
+	}
+	
+	public static ITask onClose(IFunction0NoR fun)
+	{
+		ITask task = once(fun);
+		
+		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+			task.start();
+		}, "ShutdownListener-" + nextShutdownThreadId.getAndIncrement()));
+		
+		return task;
 	}
 	
 	public static void waitFor(Queue<ITask> tasks)

@@ -39,4 +39,10 @@ public class PropertyFormattedWriter extends SwconfWriterParent {
 		return new PropertyFormattedWriter(writer);
 	}
 
+	@Override
+	public void writeln(String str)
+	{
+		parent.writeRaw(str);	
+	}
+
 }

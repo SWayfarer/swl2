@@ -1,6 +1,7 @@
 package ru.swayfarer.swl2.logger.handlers;
 
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import lombok.AllArgsConstructor;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1;
@@ -33,6 +34,8 @@ public class LogArchiverHandler implements IFunction2NoR <ISubscription<LogEvent
 	/** Функция, архивирующая файл */
 	public IFunction3NoR<FileSWL, FileSWL, String> archiveFun = Archivers.gzArchiver;
 	
+	public AtomicBoolean isForceSave = new AtomicBoolean(true);
+	
 	/** Конструктор */
 	public LogArchiverHandler(FileSWL archivesDir, FileSWL logsFile)
 	{
@@ -43,30 +46,67 @@ public class LogArchiverHandler implements IFunction2NoR <ISubscription<LogEvent
 	@Override
 	public void applyNoR(ISubscription<LogEvent> sub, LogEvent logEvent)
 	{
-		logsFile.lock();
+		if (isNeedsToArchive(logEvent))
+		{
+			save(true);
+		}
+	}
+	
+	public void save(boolean isReCreate)
+	{
+		if (!logsFile.exists())
+			return;
 		
+		logsFile.lock();
+
 		if (StringUtils.isEmpty(archiveTemplate))
 			archiveTemplate = "%file%_%date[dd.MM.YYYY_HH-mm-ss]%";
-		
-		if (isNeedsToArchiveFun != null && isNeedsToArchiveFun.apply(logsFile))
+
+		archivesDir.createIfNotFoundDir();
+		logsFile.createIfNotFoundSafe();
+
+		String archiveName = archiveTemplate;
+		archiveName = archiveName.replace("%file%", logsFile.getName());
+		archiveName = DateFormatRule.format(archiveName, new Date());
+
+		archiveFun.apply(logsFile, archivesDir, archiveName);
+
+		if (isReCreate)
 		{
-			archivesDir.createIfNotFoundDir();
+			logsFile.removeIfExists();
 			logsFile.createIfNotFoundSafe();
-			String archiveName = archiveTemplate;
-			archiveName = archiveName.replace("%file%", logsFile.getName());
-			archiveName = DateFormatRule.format(archiveName, new Date());
-			
-			archiveFun.apply(logsFile, archivesDir, archiveName);
-			logsFile.delete();
 		}
-		
+
 		logsFile.unlock();
+		
+		isForceSave.set(false);
+	}
+	
+	public boolean isNeedsToArchive(LogEvent logEvent)
+	{
+		return (isForceSave.get() && logsFile != null && logsFile.exists()) || isNeedsToArchiveFun != null && isNeedsToArchiveFun.apply(logsFile);
 	}
 
 	/** Задать {@link #isNeedsToArchiveFun} */
 	public <T extends LogArchiverHandler> T setArchiveConditionFun(IFunction1<FileSWL, Boolean> conditionFun)
 	{
 		this.isNeedsToArchiveFun= conditionFun;
+		return (T) this;
+	}
+	
+	public <T extends LogArchiverHandler> T appendCondition(IFunction1<FileSWL, Boolean> conditionFun) 
+	{
+		IFunction1<FileSWL, Boolean> current = isNeedsToArchiveFun;
+		
+		if (current != null)
+		{
+			setArchiveConditionFun((f) -> conditionFun.apply(f) && current.apply(f));
+		}
+		else
+		{
+			setArchiveConditionFun(conditionFun);
+		}
+		
 		return (T) this;
 	}
 	

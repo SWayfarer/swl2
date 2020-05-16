@@ -24,7 +24,7 @@ public class StreamsUtils {
 	public static ILogger logger = LoggingManager.getLogger();
 	
 	/** Размер буффреа, используемого для операций с потоками */
-	public static final int BUFFER_SIZE = 1 << 12;
+	public static final int BUFFER_SIZE = 4096;
 
 	/** Прочитать безопасно поток полностью и закрыть его. */
 	public static byte[] readAllAndClose(InputStream is)

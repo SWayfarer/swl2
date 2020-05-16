@@ -30,6 +30,8 @@ import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.commons.AdviceAdapter;
  */
 public class MethodInjection implements IMethodInjection, Opcodes {
 
+	public static IExtendedList<String> registeredRetRefNames = CollectionsSWL.createExtendedList("retRef", "returnRef", "ret");
+	
 	/** Событие пост-создания иньекции */
 	public static IObservable<InjectionCreationEvent> eventCreation = new SimpleObservable<>();
 	
@@ -278,7 +280,7 @@ public class MethodInjection implements IMethodInjection, Opcodes {
 				VariableInfo lastParam = methodParams.getLastElement();
 				
 				// Если параметер типа IReference и либо его имя returnRef, либо он отмечен аннотацией @ReturnRef
-				if (lastParam.descriptor.equals(REF_DESCRIPTOR) && (lastParam.name.equals("returnRef") || lastParam.hasAnnotation(RETURN_REF_ANNOTATION_DESC)))
+				if (lastParam.descriptor.equals(REF_DESCRIPTOR) && (registeredRetRefNames.contains(lastParam.name) || lastParam.hasAnnotation(RETURN_REF_ANNOTATION_DESC)))
 				{
 					methodParams.removeLastElement();
 					hasReturnRef = true;

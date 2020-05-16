@@ -12,7 +12,6 @@ import ru.swayfarer.swl2.logger.ILogLevel.StandartLoggingLevels;
 import ru.swayfarer.swl2.logger.decorators.FilteredStacktraceDecorator;
 import ru.swayfarer.swl2.logger.decorators.FormattedStacktraceDecorator;
 import ru.swayfarer.swl2.logger.event.LogEvent;
-import ru.swayfarer.swl2.logger.formatter.AnsiColorsFormatter;
 import ru.swayfarer.swl2.logger.formatter.DecoratorFormatter;
 import ru.swayfarer.swl2.logger.formatter.TemplateLogFormatter;
 import ru.swayfarer.swl2.logger.handlers.LogFileHandler;
@@ -124,6 +123,16 @@ public interface ILogger {
 		return (T) this;
 	}
 	
+	public default <T extends ILogger> T hideColors()
+	{
+		evtLogging().subscribe((e) -> {
+			LogInfo logInfo = e.logInfo;
+			logInfo.content = logInfo.content.replaceAll("\033\\[[^m]*m", "");
+		});
+		
+		return (T) this;
+	}
+	
 	public default <T extends ILogger> T addStackstraceBlocker(String... packageStarts)
 	{
 		return addStacktraceFilter((st) -> !StringUtils.isStringStartsWith(st.getClassName(), (Object[])packageStarts));
@@ -194,10 +203,13 @@ public interface ILogger {
 		return (T) this;
 	}
 	
-	/** Включить поддержку цветов через {@link AnsiColorsFormatter#instance} */
-	public default <T extends ILogger> T enableColoring()
+	/** Добавить форматтер, не удаляя текущий */
+	public default <T extends ILogger> T prependFormatter(IFunction2NoR<ILogger, LogInfo> newFormatter)
 	{
-		return appendFormatter(AnsiColorsFormatter.instance);
+		IFunction2NoR<ILogger, LogInfo> formatter = getFormatter();
+		setFormatter(formatter == null ? newFormatter : newFormatter.andThan(formatter));
+		
+		return (T) this;
 	}
 	
 	/** Задать место, из которого был создан логгер */
@@ -266,7 +278,10 @@ public interface ILogger {
 	{
 		evtPostLogging().subscribe((sub, log) -> {
 			if (log.logInfo.level == StandartLoggingLevels.LEVEL_FATAL)
+			{
+				
 				System.exit(1);
+			}
 		});
 		
 		return (T) this;
@@ -402,7 +417,7 @@ public interface ILogger {
 	}
 	
 	/** Безопасно выпонить и вернуть резуьтат */
-	public default <T> T safeReturn(IUnsafeRunnableWithReturn<T> fun, T ifnull, @ConcattedString Object... text)
+	public default <T> T safeReturn(IUnsafeRunnableWithReturn<T> fun, T ifex, @ConcattedString Object... text)
 	{
 		try
 		{
@@ -413,7 +428,7 @@ public interface ILogger {
 			error(e, text);
 		}
 		
-		return ifnull;
+		return ifex;
 	}
 	
 	public String getStringFromThrowable(Throwable e, @ConcattedString Object... text);

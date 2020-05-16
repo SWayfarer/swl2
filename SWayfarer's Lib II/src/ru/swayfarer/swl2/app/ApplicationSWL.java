@@ -136,9 +136,9 @@ public abstract class ApplicationSWL {
 	 * @param args Аргументы из метода main
 	 */
 	@SneakyThrows
-	public static void startApplication(String[] args)
+	public static Object startApplication(String[] args)
 	{
-		startApplication(Class.forName(ExceptionsUtils.getCallerStacktrace().getClassName()), args);
+		return startApplication(Class.forName(ExceptionsUtils.getCallerStacktrace().getClassName()), args);
 	}
 	
 	/** 
@@ -146,7 +146,7 @@ public abstract class ApplicationSWL {
 	 * @param cl Класс приложения
 	 * @param args Аргументы из метода main
 	 */
-	public static void startApplication(Class<?> cl, String[] args)
+	public static Object startApplication(Class<?> cl, String[] args)
 	{
 		ILogger logger = LoggingManager.getLogger();
 		
@@ -155,17 +155,17 @@ public abstract class ApplicationSWL {
 		if (applicationSWL == null)
 		{
 			logger.error("Can't start null application!");
-			return;
+			return null;
 		}
 		
-		logger.safe(() -> {
+		return logger.safeReturn(() -> {
 			
 			ClassLoaderSWL classLoaderSWL = new ClassLoaderSWL();
 			
 			applicationSWL.configureClassloader(classLoaderSWL);
 			
-			classLoaderSWL.startAt(cl, "launchByLauncher", args);
+			return classLoaderSWL.startAt(cl, "launchByLauncher", args);
 			
-		}, "Error while starting application");
+		}, null, "Error while starting application");
 	}
 }

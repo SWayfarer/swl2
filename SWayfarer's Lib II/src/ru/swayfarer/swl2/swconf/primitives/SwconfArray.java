@@ -56,7 +56,7 @@ public class SwconfArray extends SwconfPrimitive {
 	{
 		String indentStr = StringUtils.createSpacesSeq(4 * indent);
 		DynamicString ret = new DynamicString();
-		ret.append(indentStr + "boolean [" + name + " = {\n");
+		ret.append(indentStr + "array: " + name + " = {\n");
 		
 		boolean isFirst = true;
 		

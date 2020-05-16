@@ -91,8 +91,16 @@ public class AutoSerializableConfig {
 		configureIn(dis);
 		
 		SwconfObject object = reader.readSwconf(dis.readAllAsString());
+		
+		if (object == null)
+		{
+			configInfo.isReadedSuccessfully.set(false);
+			return (T) this;
+		}
+		
 		SwconfSerialization serialization = getSwconfSerialization();
 		serialization.deserialize(this, object);
+		configInfo.isReadedSuccessfully.set(true);
 		
 		return (T) this;
 	}
@@ -319,6 +327,9 @@ public class AutoSerializableConfig {
 		@InternalElement @IgnoreSwconf
 		public AtomicBoolean isNeedsToSave = new AtomicBoolean();
 		
+		@InternalElement @IgnoreSwconf
+		public AtomicBoolean isReadedSuccessfully = new AtomicBoolean();
+		
 		/** Время, раз в которое конфиг будет сохраняться, если это необходимо */
 		@InternalElement
 		public long saveDelayInMilisis = DEFAULT_SAVE_DELAY;
@@ -334,6 +345,11 @@ public class AutoSerializableConfig {
 			{
 				this.isNeedsToSave.set(isNeedsToSave);
 			}
+		}
+		
+		public boolean isReadedSuccessfully()
+		{
+			return isReadedSuccessfully.get();
 		}
 	}
 	

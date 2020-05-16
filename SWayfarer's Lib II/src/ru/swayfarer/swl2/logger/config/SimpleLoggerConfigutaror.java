@@ -43,8 +43,6 @@ public class SimpleLoggerConfigutaror implements ILoggerConfigurator {
 				file.apply(logger);
 			}
 			
-			logger.enableColoring();
-			
 		}, "Error while configuring logger", logger);
 	}
 	

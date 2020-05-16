@@ -12,6 +12,7 @@ import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1;
 import ru.swayfarer.swl2.logger.ILogLevel.StandartLoggingLevels;
 import ru.swayfarer.swl2.logger.config.ILoggerConfigurator;
 import ru.swayfarer.swl2.logger.config.SimpleLoggerConfigutaror;
+import ru.swayfarer.swl2.logger.configurator.LoggingConfiguration;
 import ru.swayfarer.swl2.logger.handlers.LogRedirectHandler;
 import ru.swayfarer.swl2.logger.printers.SOutInterceptor;
 import ru.swayfarer.swl2.markers.ConcattedString;
@@ -58,7 +59,7 @@ public class LoggingManager {
 	public static String soutLoggerName = "SOUT";
 	
 	/** Формат, с которым будет создан {@link #soutLogger} */
-	public static String soutLoggerFormat = "(%from%) [%logger%] -> %text%";
+	public static String soutLoggerFormat = ">> (%from%) [%logger%] -> %text%";
 	
 	/** Логгер, в который редиректится {@link System#out}, если вызван */
 	@InternalElement
@@ -182,7 +183,7 @@ public class LoggingManager {
 		String loggerConf = System.getProperty("swl.logging.conf");
 		
 		if (StringUtils.isEmpty(loggerConf))
-			loggerConf = "/assets/swl/conf/logging/logger.json";
+			loggerConf = "/assets/swl2/conf/logging/logging.swconf";
 		
 		ResourceLink rlink = RLUtils.createLink(loggerConf);
 		loadConfig(rlink);
@@ -232,4 +233,15 @@ public class LoggingManager {
 		eventCreation.subscribe(rootConfigutaror);
 	}
 	
+	static
+	{
+		try
+		{
+			LoggingConfiguration.loadDefaultConfigToRoot();
+		}
+		catch (Throwable e)
+		{
+			e.printStackTrace();
+		}
+	}
 }

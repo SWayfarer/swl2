@@ -6,6 +6,7 @@ import ru.swayfarer.swl2.equals.EqualsUtils;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
 import ru.swayfarer.swl2.markers.ConcattedString;
+import ru.swayfarer.swl2.string.DynamicString;
 import ru.swayfarer.swl2.string.StringUtils;
 import ru.swayfarer.swl2.string.reader.StringReaderSWL;
 import ru.swayfarer.swl2.swconf.format.SwconfFormat;
@@ -27,9 +28,9 @@ public class SwconfReader {
 	
 	public SwconfFormat swconfFormat = new SwconfFormat();
 	
-	public StringBuilder stringBuilder = new StringBuilder();
+	public DynamicString stringBuilder = new DynamicString();
 	
-	public StringBuilder commentBuilder = new StringBuilder();
+	public DynamicString commentBuilder = new DynamicString();
 	
 	public CurrentReadingInfo currentReadingInfo, prevReadingInfo;
 	
@@ -38,7 +39,7 @@ public class SwconfReader {
 	public <T extends SwconfReader> T reset() 
 	{
 		readingInfos.clear();
-		currentReadingInfo = new CurrentReadingInfo();
+		currentReadingInfo = createReadingInfo();
 		readingInfos.add(currentReadingInfo);
 		cleanBuilder();
 		return (T) this;
@@ -57,12 +58,17 @@ public class SwconfReader {
 		return (T) this;
 	}
 	
-	public SwconfObject readSwconf(String swconfString)
+	public void onStart(String swconfString)
 	{
 		reset();
 		setString(swconfString);
 		currentReadingInfo = getReadingInfo();
 		currentReadingInfo.root = new SwconfObject();
+	}
+	
+	public SwconfObject readSwconf(String swconfString)
+	{
+		onStart(swconfString);
 		
 		while (reader.hasNextElement())
 		{
@@ -88,7 +94,7 @@ public class SwconfReader {
 					readCurrent();
 				}
 			}
-			else if (!reader.skipSome(swconfFormat.ignore))
+			else if (isCurrentNotSkiped())
 			{
 				if (reader.skipSome(swconfFormat.blockStarts))
 				{
@@ -100,16 +106,6 @@ public class SwconfReader {
 					closeLayer();
 				}
 				
-				else if (reader.skipSome(swconfFormat.arrayStarts))
-				{
-					newArray();
-				}
-				
-				else if (reader.skipSome(swconfFormat.arrayEnds))
-				{
-					endArray();
-				}
-				
 				else if (reader.skipSome(swconfFormat.equals))
 				{
 					onEqual();
@@ -118,6 +114,21 @@ public class SwconfReader {
 				else if (reader.skipSome(swconfFormat.exclusionStarts))
 				{
 					onExclusionStarted();
+				}
+				
+				else if (isReadingName())
+				{
+					readCurrent();
+				}
+				
+				else if (reader.skipSome(swconfFormat.arrayStarts))
+				{
+					newArray();
+				}
+				
+				else if (reader.skipSome(swconfFormat.arrayEnds))
+				{
+					endArray();
 				}
 				
 				else if (reader.skipSome(swconfFormat.elementSplitters))
@@ -133,6 +144,9 @@ public class SwconfReader {
 				
 				else
 				{
+					if (StringUtils.isEmpty(currentReadingInfo.lastReadedName))
+						currentReadingInfo.isReadingName = true;
+					
 					readCurrent();
 				}
 			}
@@ -147,6 +161,33 @@ public class SwconfReader {
 		
 		return currentReadingInfo.root;
 	}
+
+	private boolean isCurrentNotSkiped()
+	{
+		return isReadingName() || !reader.skipSome(swconfFormat.ignore);
+	}
+	
+	public boolean isReadingName()
+	{
+		int pos = reader.pos;
+		
+		while (pos < reader.str.length())
+		{
+			String s = reader.str.charAt(pos) + "";
+			
+			if (!swconfFormat.ignore.contains(s))
+			{
+				if (swconfFormat.equals.contains(s))
+					return false;
+				else
+					break;
+			}
+			
+			pos ++;
+		}
+		
+		return currentReadingInfo != null && currentReadingInfo.isReadingName;
+	}
 	
 	public boolean isAtLiteralBound()
 	{
@@ -157,6 +198,7 @@ public class SwconfReader {
 	{
 		currentReadingInfo.thereWasLiteral = false;
 		currentReadingInfo.lastReadedName = swconfFormat.propertyNameUnwrapper.apply(stringBuilder.toString());
+		currentReadingInfo.isReadingName = false;
 		
 		cleanBuilder();
 	}
@@ -176,13 +218,13 @@ public class SwconfReader {
 	
 	public <T extends SwconfReader> T cleanBuilder() 
 	{
-		stringBuilder = new StringBuilder();
+		stringBuilder = new DynamicString();
 		return (T) this;
 	}
 	
 	public boolean isReadingPropertyValue()
 	{
-		return currentReadingInfo.isInArray() || !StringUtils.isEmpty(currentReadingInfo.lastReadedName);
+		return currentReadingInfo != null && (currentReadingInfo.isInArray() || !StringUtils.isEmpty(currentReadingInfo.lastReadedName));
 	}
 	
 	public void readProperty()
@@ -303,10 +345,13 @@ public class SwconfReader {
 		{
 			SwconfObject object = new SwconfObject();
 			object.setName(name);
-			currentReadingInfo.root.addChild(object);
+			
+			if (!currentReadingInfo.isInArray())
+				currentReadingInfo.root.addChild(object);
+			
 			currentReadingInfo.lastReadedName = "";
 			
-			CurrentReadingInfo readingInfo = new CurrentReadingInfo();
+			CurrentReadingInfo readingInfo = createReadingInfo();
 			readingInfo.root = object;
 			
 			readingInfos.add(0, readingInfo);
@@ -320,13 +365,18 @@ public class SwconfReader {
 		
 		return currentReadingInfo;
 	}
-	
-	public CurrentReadingInfo getReadingInfo()
+
+	public CurrentReadingInfo createReadingInfo()
 	{
-		return readingInfos.getFirstElement();
+		return new CurrentReadingInfo();
 	}
 	
-	public class CurrentReadingInfo {
+	public <T extends CurrentReadingInfo> T getReadingInfo()
+	{
+		return (T) readingInfos.getFirstElement();
+	}
+	
+	public static class CurrentReadingInfo {
 		
 		public boolean isInExlusion;
 		
@@ -343,6 +393,8 @@ public class SwconfReader {
 		public String lastComment;
 		
 		public boolean isStartsWithBlock;
+		
+		public boolean isReadingName = false;
 		
 		public boolean isInArray()
 		{

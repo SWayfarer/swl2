@@ -10,6 +10,7 @@ import ru.swayfarer.swl2.classes.ReflectionUtils;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.collections.streams.DataStream;
+import ru.swayfarer.swl2.equals.EqualsUtils;
 import ru.swayfarer.swl2.exceptions.ExceptionsUtils;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
@@ -96,6 +97,41 @@ public class StringUtils {
 		}
 		
 		return sb.toString();
+	}
+	
+	public static String removeAllWhitespaces(String str)
+	{
+		return str == null ? null : str.replace(" ", "").replace("\t", "");
+	}
+	
+	public static String removeFirstWhitespaces(String str)
+	{
+		int indexOfNonWhitespace = indexOfNotWhitespace(str, 0);
+		
+		if (indexOfNonWhitespace < 0)
+			return null;
+		
+		return str.substring(indexOfNonWhitespace);
+	}
+	
+	public static String removeBorderWhitespaces(String str)
+	{
+		return removeFirstWhitespaces(removeLastWhitespaces(str));
+	}
+	
+	public static String removeLastWhitespaces(String str)
+	{
+		int indexOfNonWhitespace = indexOfLastNotWhitespace(str);
+		
+		if (indexOfNonWhitespace < 0)
+			return null;
+		
+		return str.substring(0, indexOfNonWhitespace);
+	}
+	
+	public static boolean isBlank(Object obj)
+	{
+		return obj == null || String.valueOf(obj).replace(" ", "").replace(TAB, "").isEmpty();
 	}
 	
 	/**
@@ -313,6 +349,50 @@ public class StringUtils {
 	{
 		String enc = concat(text);
 		return !isEmpty(enc) && Charset.isSupported(enc);
+	}
+	
+	public static int indexOfNotWhitespace(String str, int start)
+	{
+		if (str == null)
+			return -1;
+		
+		StringReaderSWL reader = new StringReaderSWL(str);
+		reader.pos = start;
+		
+		while (reader.hasNextElement())
+		{
+			Character ch = reader.next();
+			
+			if (!EqualsUtils.objectEqualsSome(ch, ' ', '\t'))
+			{
+				reader.close();
+				return reader.pos - 1;	
+			}
+		}
+		
+		reader.close();
+		
+		return -1;
+	}
+	
+	public static int indexOfLastNotWhitespace(String str)
+	{
+		StringReaderSWL reader = new StringReaderSWL(new DynamicString(str).reverse().toString());
+		
+		while (reader.hasNextElement())
+		{
+			Character ch = reader.next();
+			
+			if (!EqualsUtils.objectEqualsSome(ch, ' ', '\t'))
+			{
+				reader.close();
+				return str.length() - (reader.pos - 1);	
+			}
+		}
+		
+		reader.close();
+		
+		return -1;
 	}
 	
 	/**
@@ -612,6 +692,29 @@ public class StringUtils {
 		return createSeq(" ", count);
 	}
 	
+	public static String maskToRegExp(String str)
+	{
+		// Присваиваем в качестве результата маску
+		String res = str;
+		// Этап 1: экранируем служебные символы
+		String[] arr = new String[] { "\\", "#", "|", "(", ")", "[", "]", "{", "}", "^", "$", "+", "." };
+
+		int len = arr.length;
+
+		for (int i = 0; i < len; i++)
+		{
+			res = res.replace(arr[i], "\\" + arr[i]);
+		}
+
+		// Этап 2: заменяем служебные символы маски
+		// на соответствующие аналоги в регулярных выражениях
+		res = res.replace("*", ".*");
+		res = res.replace("?", ".");
+
+		// Этап 3: добавляем символы начала и конца строки
+		return "^" + res + "$";
+	}
+	
 	/**
 	 * Создать последовательность символов
 	 * @param part Текст, который будет дублироваться, пока строка не будет необходимой длины
@@ -677,7 +780,7 @@ public class StringUtils {
 	/** */
 	public static boolean isMatchesByMask(String mask, Object... objects)
 	{
-		return isMatchesByRegex(regexByMask(mask), objects);
+		return isMatchesByRegex(maskToRegExp(mask), objects);
 	}
 	
 	public static boolean isMatchesByRegex(String regex, Object... objects)

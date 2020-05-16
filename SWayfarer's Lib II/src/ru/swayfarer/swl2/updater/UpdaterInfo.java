@@ -1,16 +1,24 @@
 package ru.swayfarer.swl2.updater;
 
 import java.net.URL;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
+import ru.swayfarer.swl2.collections.extended.IExtendedMap;
+import ru.swayfarer.swl2.equals.EqualsUtils;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction2;
 import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.math.MathUtils;
 import ru.swayfarer.swl2.resource.file.FileSWL;
 import ru.swayfarer.swl2.resource.file.FilesUtils;
+import ru.swayfarer.swl2.resource.rlink.RLUtils;
+import ru.swayfarer.swl2.resource.rlink.ResourceLink;
 import ru.swayfarer.swl2.string.StringUtils;
 import ru.swayfarer.swl2.swconf.config.AutoSerializableConfig;
+import ru.swayfarer.swl2.swconf.serialization.comments.CommentSwconf;
+import ru.swayfarer.swl2.swconf.utils.SwconfSerializationHelper;
+import ru.swayfarer.swl2.updater.UpdateContent.FileInfo;
 
 /**
  * Информация об обновлении, на основании которой происходит обновление
@@ -21,17 +29,112 @@ public class UpdaterInfo extends AutoSerializableConfig implements IUpdaterInfo 
 
 	/** Маски, имена соответствующие которым будут игнорироваться */
 	@InternalElement
+	@CommentSwconf("If file local path starts with exlusion it will be not touched by updating")
 	public IExtendedList<String> exlusions = CollectionsSWL.createExtendedList();
+	
+	@InternalElement
+	@CommentSwconf("If not empty, update will be tounch only files which local names starts with inclusions")
+	public IExtendedList<String> inclusions = CollectionsSWL.createExtendedList();
 	
 	/** Контент обновления */
 	@InternalElement
+	@CommentSwconf("Update content")
 	public UpdateContent content;
+	
+	@CommentSwconf("Parent imports of update. This configuration will override imports if it's needed.")
+	public IExtendedList<String> imports = CollectionsSWL.createExtendedList();
+	
+	public AtomicBoolean isImportsLoaded = new AtomicBoolean(false);
 	
 	@Override
 	public boolean isAcceptsFile(FileSWL root, FileSWL file)
 	{
 		String localPath = file.getLocalPath(root);
 		return exlusions == null ? true : !exlusions.dataStream().contains((mask) -> StringUtils.isMatchesByMask(mask, localPath));
+	}
+	
+	public void initImports()
+	{
+		if (isImportsLoaded.get())
+			return;
+		
+		isImportsLoaded.set(true);
+		
+		IExtendedMap<String,FileInfo> files = this.content.files;
+		
+		for (String importInfo : imports)
+		{
+			ResourceLink rlink = RLUtils.createLink(importInfo);
+			
+			if (rlink != null)
+			{
+				SwconfSerializationHelper helper = SwconfSerializationHelper.forRlink(rlink);
+				
+				if (helper != null)
+				{
+					String singleString = rlink.toSingleString();
+					
+					if (!StringUtils.isEmpty(singleString))
+					{
+						UpdaterInfo info = helper.readFromSwconf(singleString, UpdaterInfo.class);
+						
+						if (info != null)
+							importInfo(info);
+					}
+				}
+			}
+		}
+		
+		this.content.files.putAll(files);
+	}
+	
+	public void importInfo(UpdaterInfo info)
+	{
+		if (info == null)
+			return;
+		
+		info.initImports();
+		
+		if (!content.hashingType.equals(info.content.hashingType))
+		{
+			logger.warning("Skiping import", info, "for", this, "because content hashing types are not equal: ", info.content.hashingType, content.hashingType);
+			return;
+		}
+		
+		int oldInclusionsSize = inclusions.size();
+		int oldExlusionsSize = exlusions.size();
+		int oldContentSize = content.files.size();
+		
+		logger.info("Importing info", info, "inclusions count is", info.inclusions.size(), "exlusions", info.exlusions.size(), "content size is", info.content.files.size(), "and hashing type", info.content.hashingType);
+		
+		this.inclusions.addAll(info.inclusions);
+		this.exlusions.addAll(info.exlusions);
+		this.content.files.putAll(info.content.files);
+		
+		logger.info("Imported info sucsessfull! Added", inclusions.size() - oldInclusionsSize, "inclusions", exlusions.size() - oldExlusionsSize, "exclusions", content.files.size() - oldContentSize, "files!");
+	}
+	
+	public boolean isAcceptsFile(String localPath)
+	{
+		if (!CollectionsSWL.isNullOrEmpty(inclusions))
+		{
+			if (!inclusions.dataStream().contains((s) -> localPath.startsWith(s)))
+			{
+				return false;
+			}
+		}
+		
+		return !isExclusion(localPath);
+	}
+	
+	public boolean isExclusion(String localPath)
+	{
+		if (!CollectionsSWL.isNullOrEmpty(exlusions))
+		{
+			return exlusions.dataStream().contains((s) -> localPath.startsWith(s));
+		}
+		
+		return false;
 	}
 
 	@Override

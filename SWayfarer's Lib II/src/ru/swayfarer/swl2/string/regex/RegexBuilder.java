@@ -56,11 +56,14 @@ public class RegexBuilder {
 			builder.append("[^");
 			text(text);
 			builder.append("]");
+			
+			onAppendEnd();
 		}
 		else
 		{
 			builder.append("((?!" + text + ").)*");
 		}
+		
 		
 		return (T) this;
 	}
@@ -73,6 +76,8 @@ public class RegexBuilder {
 			builder.append("[^");
 			text(text);
 			builder.append("]");
+			
+			onAppendEnd();
 		}
 		else
 		{

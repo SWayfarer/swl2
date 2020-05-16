@@ -1,0 +1,87 @@
+
+/** If set to false confirurations will be skipped */
+isEnabled = true,
+
+/** Configurations for some packages */
+configuration = [
+    {
+        
+        /** Console printing settings */
+        printing = {
+            
+            /** 
+            Format of logging. Use actors: 
+            %file% - file where logging source located
+            %level% - level of log
+            %thread% - name of thread from which log was called
+            %logger% - name of log's logger
+            %text% - text of log message
+            %from% - line and source file simple name (e.g. SomeFile.java:123) from which log was called
+            %fromFull% - line and source file full name (e.g. some.path.to.SomeFile.java:123) from which log was called
+             */
+            format = "123 [%thread%/%level%]&{153} (%from%) &{h:1}[%logger%] -> %text%",
+            
+            /** Stacktrace element format */
+            stacktraceFormat = "%class%.%method%&{153,,4}(%source%:%lineNumber%)&{}&{h:2} &{147}[~%file%] &{h:1}",
+            
+            /** If sets to true output colors will be hidden */
+            hideColors = false,
+            
+            /** Throwables decorator seq */
+            decoratorSeq = "=-",
+            
+            /** All stacktrace elements that starts with element of this list will be not shown */
+            stacktraceBlocks = [
+                
+            ]
+        },
+        
+        /** Packages filtering for this configuration */
+        applySources = [
+            "mask:ru.swayfarer.*"
+        ],
+        
+        /** Files saving settings */
+        files = [
+            {
+                
+                /** Logfile name */
+                fileName = "logs/log.log",
+                
+                /** Filtering of logs for this logfile */
+                filtering = {
+                    
+                    /** Min log level for save */
+                    minLevel = -2.147483648E9,
+                    
+                    /** Loggers logs from which will be saved to logfile */
+                    loggerNames = [
+                        
+                    ]
+                },
+                
+                /** Archiving of this log file */
+                archiving = {
+                    
+                    /** Archive already existing logfile on start? */
+                    ifPrefExists = true,
+                    
+                    /** Archive logfile on application close? */
+                    onClose = true,
+                    
+                    /** File size at which it is archived */
+                    maxFileSize = "10mb",
+                    
+                    /** Archiving delay */
+                    delay = "per 1 days",
+                    
+                    /** Archive file pattern */
+                    archiveFilePattern = "%date[YYYY.MM.DD-HH.mm.ssss]%.log",
+                    
+                    /** Directory where arhived logfiles will be located */
+                    archivesDir = "logs/archives/"
+                }
+            }
+        ]
+    }
+]

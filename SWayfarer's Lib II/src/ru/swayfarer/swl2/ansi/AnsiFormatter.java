@@ -118,9 +118,9 @@ public class AnsiFormatter {
 				if (totalColor.length() != 0)
 				{
 					colors.add(0, totalColor.toString());
-				
-					text = text.replace(colorPrefix, totalColor);
 				}
+				
+				text = text.replace(colorPrefix, totalColor);
 			}
 		}
 		

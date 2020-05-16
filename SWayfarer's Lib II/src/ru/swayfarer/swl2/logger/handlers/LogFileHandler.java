@@ -17,7 +17,7 @@ import ru.swayfarer.swl2.resource.streams.DataOutputStreamSWL;
  *
  */
 @SuppressWarnings("unchecked")
-@AllArgsConstructor(staticName = "of") @Data
+@Data
 public class LogFileHandler implements IFunction2NoR <ISubscription<LogEvent>, LogEvent> {
 
 	/** Файл, в который пишутся логи */
@@ -29,6 +29,8 @@ public class LogFileHandler implements IFunction2NoR <ISubscription<LogEvent>, L
 	@InternalElement
 	public IFunction1<LogEvent, Boolean> logConditionFun;
 	
+	public static String colorRegex = "\033\\[[^m]*m";
+	
 	@Override
 	public void applyNoR(ISubscription<LogEvent> sub, LogEvent event)
 	{
@@ -36,7 +38,9 @@ public class LogFileHandler implements IFunction2NoR <ISubscription<LogEvent>, L
 		{
 			file.lock();
 			DataOutputStreamSWL stream = file.toAppendStream();
-			stream.writeLn(event.logInfo.content);
+			String content = event.logInfo.content;
+			content = content.replaceAll(colorRegex, "");
+			stream.writeLn(content);
 			stream.closeSafe();
 			file.unlock();
 		}
@@ -47,5 +51,17 @@ public class LogFileHandler implements IFunction2NoR <ISubscription<LogEvent>, L
 	{
 		this.logConditionFun = logCondition;
 		return (T) this;
+	}
+
+	public LogFileHandler(FileSWL file, IFunction1<LogEvent, Boolean> logConditionFun)
+	{
+		super();
+		this.file = file;
+		this.logConditionFun = logConditionFun;
+	}
+	
+	public static LogFileHandler of(FileSWL file, IFunction1<LogEvent, Boolean> logConditionFun)
+	{
+		return new LogFileHandler(file, logConditionFun);
 	}
 }

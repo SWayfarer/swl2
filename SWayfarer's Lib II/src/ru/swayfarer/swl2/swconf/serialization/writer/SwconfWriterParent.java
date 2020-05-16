@@ -18,7 +18,7 @@ import ru.swayfarer.swl2.swconf.primitives.SwconfString;
  *
  */
 @SuppressWarnings("unchecked")
-public class SwconfWriterParent implements ISwconfWriter {
+public abstract class SwconfWriterParent implements ISwconfWriter {
 
 	/** Родительский {@link ISwconfWriter} */
 	@InternalElement
@@ -184,6 +184,12 @@ public class SwconfWriterParent implements ISwconfWriter {
 	public void writeName(String name)
 	{
 		wrappedWriter.writeRaw(name);
+	}
+
+	@Override
+	public SwconfFormat getFormat()
+	{
+		return wrappedWriter.getFormat();
 	}
 
 }

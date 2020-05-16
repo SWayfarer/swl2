@@ -10,6 +10,7 @@ import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction2NoR;
 import ru.swayfarer.swl2.logger.ILogLevel.StandartLoggingLevels;
 import ru.swayfarer.swl2.logger.event.LogEvent;
+import ru.swayfarer.swl2.logger.formatter.AnsiColorsFormatter;
 import ru.swayfarer.swl2.logger.formatter.TemplateLogFormatter;
 import ru.swayfarer.swl2.markers.ConcattedString;
 import ru.swayfarer.swl2.markers.InternalElement;
@@ -42,13 +43,12 @@ public class SimpleLoggerSWL implements ILogger, StandartLoggingLevels, Stacktra
 	
 	public static boolean coloringEnabledByDefault = true;
 	
+	private AnsiColorsFormatter ansiFormatter = AnsiColorsFormatter.instance;
+	
 	public SimpleLoggerSWL()
 	{
 		this(ExceptionsUtils.getSimpleClassAt(OFFSET_CALLER));
 		setFrom(OFFSET_CALLER);
-		
-		if (coloringEnabledByDefault)
-			enableColoring();
 	}
 	
 	public SimpleLoggerSWL(String name)
@@ -58,9 +58,6 @@ public class SimpleLoggerSWL implements ILogger, StandartLoggingLevels, Stacktra
 		printer = defaultPrinter;
 		setFrom(OFFSET_CALLER);
 		setDecoratorSeq(defaultDecoratorSeq);
-		
-		if (coloringEnabledByDefault)
-			enableColoring();
 	}
 	
 	@Override
@@ -81,6 +78,15 @@ public class SimpleLoggerSWL implements ILogger, StandartLoggingLevels, Stacktra
 			logInfo.setFormatted(true);
 		}
 		
+		if (ansiFormatter != null)
+		{
+			ansiFormatter.apply(this, logInfo);
+		}
+		else
+		{
+			System.out.println("Colors formatter is null!");
+		}
+		
 		if (printer != null)
 			printer.apply(this, logInfo);
 		
@@ -88,6 +94,13 @@ public class SimpleLoggerSWL implements ILogger, StandartLoggingLevels, Stacktra
 		evtPostLogging().next(event);
 	}
 
+	@Override
+	public <T extends ILogger> T hideColors()
+	{
+		ansiFormatter = new ClearAnsiFormatter();
+		return (T) this;
+	}
+	
 	@Override
 	public void info(@ConcattedString Object... text)
 	{
@@ -281,6 +294,14 @@ public class SimpleLoggerSWL implements ILogger, StandartLoggingLevels, Stacktra
 	{
 		stacktraceToStringFun = fun;
 		return (T) this;
+	}
+	
+	public static class ClearAnsiFormatter extends AnsiColorsFormatter {
+		@Override
+		public String getColor(String code, String background, String style)
+		{
+			return "";
+		}
 	}
 }
 

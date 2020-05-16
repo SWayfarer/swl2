@@ -9,6 +9,7 @@ import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.net.URI;
 import java.net.URL;
+import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -17,6 +18,7 @@ import java.util.jar.Manifest;
 import java.util.zip.ZipFile;
 
 import ru.swayfarer.swl2.collections.CollectionsSWL;
+import ru.swayfarer.swl2.collections.extended.ExtendedListWrapper;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1;
 import ru.swayfarer.swl2.logger.ILogger;
@@ -68,6 +70,11 @@ public class FileSWL extends File implements IHasSubfiles {
 	{
 		FileSWL subFile = subFile(name);
 		return subFile == null ? false : subFile.isExistingFile();
+	}
+	
+	public <T extends FileSWL> T setData(String content) 
+	{
+		return (T) setData(content.getBytes(StringUtils.getCharset("UTF-8")));	
 	}
 	
 	public boolean hasSubDir(String name)
@@ -132,7 +139,7 @@ public class FileSWL extends File implements IHasSubfiles {
 	public IExtendedList<FileSWL> getSubfilesTo(IFunction1<FileSWL, Boolean> filter, IExtendedList<FileSWL> target)
 	{
 		if (target == null)
-			target = CollectionsSWL.createExtendedList();
+			target = new ExtendedListWrapper<FileSWL>(new LinkedList<>());
 		
 		if (filter.apply(this))
 			target.add(this);
@@ -184,10 +191,7 @@ public class FileSWL extends File implements IHasSubfiles {
 	/** Удалить (если папка, то включая подпапки и подфайлы) */
 	public boolean remove()
 	{
-		if (exists() && isDirectory())
-			for (FileSWL file : getSubfiles())
-				if (!file.remove())
-					return false;
+		getAllSubfiles((f) -> !f.equals(this)).each(FileSWL::remove);
 		
 		return delete();
 	}
@@ -409,17 +413,17 @@ public class FileSWL extends File implements IHasSubfiles {
 	{
 		if (!this.exists())
 		{
+			FileSWL parent = getParentFile();
+			
+			if (parent != null)
+				parent.mkdirs();
+			
 			if (this.isDirectory())
 			{
 				this.mkdirs();
 			}
 			else
 			{
-				File parent = this.getParentFile();
-				
-				if (parent != null)
-					parent.mkdirs();
-				
 				this.createNewFile();
 			}
 		}
@@ -656,7 +660,7 @@ public class FileSWL extends File implements IHasSubfiles {
 		if (file instanceof FileSWL)
 			return (FileSWL) file;
 		
-		return new FileSWL(file.getAbsolutePath());
+		return new FileSWL(PathTransforms.fixSlashes(file.getAbsolutePath()));
 	}
 
 }

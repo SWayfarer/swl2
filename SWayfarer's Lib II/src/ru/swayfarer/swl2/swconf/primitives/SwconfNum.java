@@ -73,6 +73,6 @@ public class SwconfNum extends SwconfPrimitive {
 	
 	public String toString(int indent)
 	{
-		return StringUtils.createSpacesSeq(4 * indent) + "boolean: " + name + " = " + rawValue;
+		return StringUtils.createSpacesSeq(4 * indent) + "num: " + name + " = " + rawValue;
 	}
 }

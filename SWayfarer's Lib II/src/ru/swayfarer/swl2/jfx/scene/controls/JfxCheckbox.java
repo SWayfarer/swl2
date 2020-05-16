@@ -5,6 +5,7 @@ import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1;
 import ru.swayfarer.swl2.jfx.helpers.KeyboardEventsHelper;
 import ru.swayfarer.swl2.jfx.helpers.MouseEventsHelper;
 import ru.swayfarer.swl2.jfx.helpers.ScaleEventsHelper;
+import ru.swayfarer.swl2.jfx.utils.JfxUtils;
 import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.observable.Observables;
 import ru.swayfarer.swl2.observable.property.ObservableProperty;
@@ -77,11 +78,15 @@ public class JfxCheckbox extends CheckBox implements IJavafxWidget {
 		setSelected(checkMapper.apply(propery.getValue()));
 		
 		activeAttachPropertySubscription = propery.eventChange.subscribe((listener) -> { 
-			recursiveSafeTask.start(() -> setSelected(checkMapper.apply(listener.getNewValue())));
+			JfxUtils.inJfxThread(() -> {
+				recursiveSafeTask.start(() -> setSelected(checkMapper.apply(listener.getNewValue())));
+			});
 		});
 		
 		activeAttachCheckboxFunRef.setValue((sub, isChecked) -> {
-			recursiveSafeTask.start(() -> propery.setValue(valueMapper.apply(isSelected())));
+			JfxUtils.inJfxThread(() -> {
+				recursiveSafeTask.start(() -> propery.setValue(valueMapper.apply(isSelected())));
+			});
 		});
 		
 		return (T) this;

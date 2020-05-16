@@ -32,13 +32,6 @@ public class PrettyFormattedWriter extends SwconfWriterParent {
 	}
 	
 	@Override
-	public void writeExclusion(String comment)
-	{
-		super.writeExclusion(comment);
-		decorate();
-	}
-	
-	@Override
 	public void writeExclusionStart()
 	{
 		super.writeExclusionStart();
@@ -112,4 +105,53 @@ public class PrettyFormattedWriter extends SwconfWriterParent {
 		return new PrettyFormattedWriter(writer);
 	}
 
+	@Override
+	public void writeln(String str)
+	{
+		writeIndient();
+		writeRaw(str);
+		writeRaw("\n");
+	}
+	
+	public void writeExclusion(String comment)
+	{
+		decorate();
+		
+		if (getFormat().isCommentsEnabled)
+		{
+			if (!StringUtils.isEmpty(comment))
+			{
+				parent.writeExclusionStart();
+				
+				String[] split = comment.split("\n");
+				
+				boolean isFirst = true;
+				
+				for (String str : split)
+				{
+					if (!isFirst)
+					{
+						if (split.length > 1)
+						{
+							decorate();
+						}
+					}
+					
+					parent.writeRaw(str);
+					
+					isFirst = false;
+				}
+
+				if (split.length > 1)
+				{
+					decorate();
+				}
+				
+				parent.writeExclusionEnd();
+				
+				decorate();
+			}
+		}
+	}
+	
 }

@@ -45,7 +45,7 @@ public class SOutInterceptor {
 		
 		wrapper.eventPrintLn.subscribe((sub, evt) -> {
 			
-			LogInfo logInfo = LogInfo.of(interceptor.logger, interceptor.level, 7, evt.content);
+			LogInfo logInfo = LogInfo.of(interceptor.logger, interceptor.level, 8, evt.content);
 			logger.log(logInfo);
 			evt.setCanceled(true);
 			

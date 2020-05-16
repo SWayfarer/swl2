@@ -9,6 +9,7 @@ import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.resource.file.FileSWL;
 import ru.swayfarer.swl2.resource.file.FilesUtils;
 import ru.swayfarer.swl2.string.StringUtils;
+import ru.swayfarer.swl2.swconf.serialization.comments.CommentSwconf;
 
 /**
  * Контент обновления
@@ -19,13 +20,15 @@ import ru.swayfarer.swl2.string.StringUtils;
 @SuppressWarnings("unchecked")
 public class UpdateContent {
 
-	/** Информация о файлах и папках обновления */
-	@InternalElement
-	public IExtendedMap<String, FileInfo> files = CollectionsSWL.createExtendedMap();
-	
 	/** Тип хэширования, по которому сравниваются файлы */
 	@InternalElement
+	@CommentSwconf("Type of hashing that will be used for update refreshing")
 	public String hashingType;
+	
+	/** Информация о файлах и папках обновления */
+	@InternalElement
+	@CommentSwconf("Files of update with additional information about them")
+	public IExtendedMap<String, FileInfo> files = CollectionsSWL.createExtendedMap();
 	
 	/**
 	 * Есть ли в обновлении информация о файле?

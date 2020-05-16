@@ -41,4 +41,10 @@ public class JsonFormattedSwconfWriter extends SwconfWriterParent {
 		parent.writeRaw("}");
 		return ret;
 	}
+
+	@Override
+	public void writeln(String str)
+	{
+		parent.writeRaw(str);
+	}
 }

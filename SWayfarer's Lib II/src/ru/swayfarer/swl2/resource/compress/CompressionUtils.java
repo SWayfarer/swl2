@@ -102,7 +102,7 @@ public class CompressionUtils {
 			
 			DataOutputStreamSWL stream = archiveFile.toOutputStream().gz();
 			
-			StreamsUtils.copyStreamSafe(archiveFile.toInputStream(), stream);
+			StreamsUtils.copyStreamSafe(file.toInputStream(), stream);
 			
 			stream.closeSafe();
 		};

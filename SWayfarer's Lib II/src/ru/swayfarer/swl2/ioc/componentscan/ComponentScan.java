@@ -58,7 +58,7 @@ public class ComponentScan {
 	
 	public static IExtendedMap<String, IFunction0<DataInputStreamSWL>> sourceOfClassSource(String pkg, Class<?> cl)
 	{
-		URL location = cl.getProtectionDomain().getCodeSource().getLocation();
+		URL location = cl.getClassLoader().getResource(cl.getName().replace(".", "/") + ".class");
 		
 		if (location.getProtocol().equals("file"))
 		{
@@ -98,7 +98,7 @@ public class ComponentScan {
 			backsCount --;
 		}
 		
-		logger.info("Searching package", pkg, "at", rootDir);
+//		logger.info("Searching package", pkg, "at", rootDir);
 		
 		IExtendedList<FileSWL> subFiles = rootDir.getAllSubfiles();
 		
@@ -144,6 +144,8 @@ public class ComponentScan {
 			String start = pkg.replace(".", "/");
 			
 			ZipFile file = jarFile.toZipFile();
+			
+//			logger.info("Searching in", jarFile);
 			
 			if (file == null)
 				return null;
@@ -312,7 +314,6 @@ public class ComponentScan {
 				elementType = ContextElementType.valueOf(elementTypeStr);
 			}
 			
-			System.out.println("name");
 			Class<?> cl = ReflectionUtils.findClass(name);
 			scanClass(cl, contextName, elementName, elementType);
 		}
@@ -366,7 +367,10 @@ public class ComponentScan {
 	
 	public <T extends ComponentScan> T scan(String pkg) 
 	{
-		logger.safeOperation(() -> scanInternal(pkg), "Scanning package", pkg);
+		if (isLoggingScan)
+			logger.safeOperation(() -> scanInternal(pkg), "Scanning package", pkg);
+		else
+			logger.safe(() -> scanInternal(pkg), "Error while scanning package", pkg);
 		
 		return (T) this;
 	}

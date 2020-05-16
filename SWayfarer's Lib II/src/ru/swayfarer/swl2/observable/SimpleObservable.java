@@ -1,6 +1,7 @@
 package ru.swayfarer.swl2.observable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.List;
@@ -20,11 +21,11 @@ import ru.swayfarer.swl2.observable.subscription.WeakSubscription;
 public class SimpleObservable<Event_Type> implements IObservable<Event_Type> {
 
 	/** Список подписок */
-	public List<ISubscription<Event_Type>> subscriptions = new ArrayList<>();
+	public List<ISubscription<Event_Type>> subscriptions = Collections.synchronizedList(new ArrayList<>());
 	
 	/** Передать слушателям следующую партию данных */
 	@Override
-	public synchronized <T extends IObservable<Event_Type>> T next(Event_Type event)
+	public <T extends IObservable<Event_Type>> T next(Event_Type event)
 	{
 		Iterator<ISubscription<Event_Type>> $i = new ArrayList<>(subscriptions).iterator();
 		
@@ -45,7 +46,7 @@ public class SimpleObservable<Event_Type> implements IObservable<Event_Type> {
 
 	/** Подписаться на события объекта */
 	@Override
-	public synchronized <T extends ISubscription<Event_Type>> T subscribe(int priority, IFunction2NoR<ISubscription<Event_Type>, Event_Type> fun)
+	public <T extends ISubscription<Event_Type>> T subscribe(int priority, IFunction2NoR<ISubscription<Event_Type>, Event_Type> fun)
 	{
 		ISubscription<Event_Type> sub = new Subscription<>(fun).setPriority(priority);
 		subscriptions.add(sub);
@@ -55,7 +56,7 @@ public class SimpleObservable<Event_Type> implements IObservable<Event_Type> {
  
 	/** Подписаться "слабой" подпиской, см {@link WeakSubscription} */
 	@Override
-	public synchronized <T extends ISubscription<Event_Type>> T subscribeWeak(IFunction2NoR<ISubscription<Event_Type>, Event_Type> fun)
+	public <T extends ISubscription<Event_Type>> T subscribeWeak(IFunction2NoR<ISubscription<Event_Type>, Event_Type> fun)
 	{
 		ISubscription<Event_Type> sub = new WeakSubscription<>(fun);
 		subscriptions.add(sub);

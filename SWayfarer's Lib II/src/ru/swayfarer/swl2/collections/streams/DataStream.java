@@ -2,11 +2,9 @@ package ru.swayfarer.swl2.collections.streams;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Deque;
 import java.util.Enumeration;
 import java.util.LinkedHashSet;
 import java.util.TreeSet;
-import java.util.concurrent.ConcurrentLinkedDeque;
 
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.ExtendedListWrapper;
@@ -17,8 +15,8 @@ import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction2NoR;
 import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.system.SystemUtils;
 import ru.swayfarer.swl2.tasks.ITask;
-import ru.swayfarer.swl2.tasks.TaskManager;
 import ru.swayfarer.swl2.tasks.factories.ThreadPoolTaskFactory;
+import ru.swayfarer.swl2.threads.lock.CounterLock;
 
 /**
  * Простая реализация {@link IDataStream}
@@ -230,16 +228,22 @@ public class DataStream<Element_Type> implements IDataStream<Element_Type>{
 	{
 		int next = 0;
 		
-		Deque<ITask> tasks = new ConcurrentLinkedDeque<>();
- 		
+		IExtendedList<ITask> tasks = CollectionsSWL.createExtendedList();
+		CounterLock lock = new CounterLock();
+		
 		if (isParallel())
 		{
 			for (Element_Type element : elements)
 			{
 				final int id = next ++;
-				ITask task = getThreadPoolTaskFactory().execute(() -> fun.apply(id, element));
+
+				lock.counter.incrementAndGet();
+				ITask task = getThreadPoolTaskFactory().execute(() -> {
+					fun.apply(id, element);
+					lock.reduce();
+				});
 				
-				tasks.offer(task);
+				tasks.add(task);
 			}
 		}
 		else
@@ -250,7 +254,7 @@ public class DataStream<Element_Type> implements IDataStream<Element_Type>{
 			}
 		}
 		 
-		TaskManager.waitFor(tasks);
+		lock.waitFor();
 		
 		return (T) this;
 	}
