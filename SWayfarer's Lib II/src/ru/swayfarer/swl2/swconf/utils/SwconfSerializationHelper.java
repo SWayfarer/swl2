@@ -1,6 +1,7 @@
 package ru.swayfarer.swl2.swconf.utils;
 
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction0;
+import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1;
 import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.resource.rlink.ResourceLink;
 import ru.swayfarer.swl2.string.StringUtils;
@@ -9,7 +10,6 @@ import ru.swayfarer.swl2.swconf.format.SwconfFormat;
 import ru.swayfarer.swl2.swconf.primitives.SwconfObject;
 import ru.swayfarer.swl2.swconf.primitives.SwconfPrimitive;
 import ru.swayfarer.swl2.swconf.serialization.SwconfSerialization;
-import ru.swayfarer.swl2.swconf.serialization.reader.SwconfReader;
 import ru.swayfarer.swl2.swconf.serialization.writer.ISwconfWriter;
 import ru.swayfarer.swl2.threads.ThreadsUtils;
 
@@ -33,6 +33,9 @@ public class SwconfSerializationHelper {
 	
 	/** {@link SwconfSerializationHelper} с форматом пропети, разделенный символами LF ('\n') */
 	public static SwconfSerializationHelper propertyLf = new SwconfSerializationHelper().setFormat(StandartSwconfFormats.getPropertyFormat(StringUtils.LF));
+	
+	/** {@link SwconfSerializationHelper} с форматом lua, разделенный символами LF ('\n') */
+	public static SwconfSerializationHelper lua = new SwconfSerializationHelper().setFormat(StandartSwconfFormats.LUA_FORMAT);
 	
 	/** Формат, который будет использован для (де)сериализации Swconf */
 	@InternalElement
@@ -68,14 +71,14 @@ public class SwconfSerializationHelper {
 	/** Прочитать из Swconf строки */
 	public <T extends SwconfObject> T readFromSwconf(String swconfString)
 	{
-		return (T) swconfFormat.getReader().readSwconf(swconfString);
+		return (T) swconfFormat.getReader().apply(swconfString);
 	}
 	
 	/** Прочитать из Swconf строки */
 	public <T> T readFromSwconf(String swconfString, Class<?> cl)
 	{
-		SwconfReader reader = swconfFormat.getReader();
-		SwconfObject object = reader.readSwconf(swconfString);
+		IFunction1<String, SwconfObject> reader = swconfFormat.getReader();
+		SwconfObject object = reader.apply(swconfString);
 		return readFromSwconf(object, cl);
 	}
 	
@@ -89,8 +92,8 @@ public class SwconfSerializationHelper {
 	/** Прочитать из Swconf строки */
 	public <T> T readFromSwconf(String swconfString, T instance)
 	{
-		SwconfReader reader = swconfFormat.getReader();
-		SwconfObject object = reader.readSwconf(swconfString);
+		IFunction1<String, SwconfObject> reader = swconfFormat.getReader();
+		SwconfObject object = reader.apply(swconfString);
 		return readFromSwconf(object, instance);
 	}
 	
@@ -124,6 +127,8 @@ public class SwconfSerializationHelper {
 			return standart;
 		else if (ext.endsWith(".properties"))
 			return propertyCrLf;
+		else if (ext.endsWith(".lua"))
+			return lua;
 		
 		return standart;
 	}

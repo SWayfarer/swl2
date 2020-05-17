@@ -1,7 +1,7 @@
 package ru.swayfarer.swl2.swconf.format;
 
 import ru.swayfarer.swl2.string.StringUtils;
-import ru.swayfarer.swl2.swconf.serialization.formatter.JsonFormattedSwconfWriter;
+import ru.swayfarer.swl2.swconf.lua.LuaSwconfFormat;
 import ru.swayfarer.swl2.swconf.serialization.formatter.PropertyFormattedWriter;
 import ru.swayfarer.swl2.swconf.serialization.writer.SwconfWriter;
 
@@ -9,7 +9,8 @@ public interface StandartSwconfFormats {
 
 	public static final SwconfFormat PROPERTY_FORMAT = getPropertyFormat(System.lineSeparator());
 	public static final SwconfFormat JSON_FORMAT = getJsonFormat();
-	
+	public static final SwconfFormat LUA_FORMAT = new LuaSwconfFormat();
+		
 	public static SwconfFormat getJsonFormat()
 	{
 		SwconfFormat format = new SwconfFormat();

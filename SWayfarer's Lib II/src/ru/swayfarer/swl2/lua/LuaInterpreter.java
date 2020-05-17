@@ -56,7 +56,7 @@ public class LuaInterpreter {
 	/** Обработать кастомный скрипт */
 	public void processCustomScript(String script)
 	{
-		process(BytesInputStreamSWL.createStream(script.getBytes()));
+		process(StringUtils.getBytesStream("UTF-8", script), "<customScript>");
 	}
 	
 	/** Регистрация объектов, из которого возьмутся элементы, отмеченные @{@link LuaElement} */
@@ -66,11 +66,17 @@ public class LuaInterpreter {
 		return (T) this;
 	}
 	
+	public <T extends LuaInterpreter> T clearGlobals()
+	{
+		globalsTable = new LuaTable();
+		return (T) this;
+	}
+	
 	/** Обработать скрипт по ссылке */
 	public void process(@ConcattedString Object... rlink)
 	{
 		String rlinkText = StringUtils.concat(rlink);
-		process(RLUtils.createLink(rlinkText), rlinkText);
+		process(RLUtils.createLink(rlinkText));
 	}
 	
 	/** Обработать скрипт по ссылке */

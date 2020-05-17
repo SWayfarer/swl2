@@ -14,6 +14,8 @@ import ru.swayfarer.swl2.markers.InternalElement;
  */
 public class AnsiColorsFormatter extends AnsiFormatter implements IFunction2NoR<ILogger, LogInfo> {
 	
+	public boolean isAppendsSane = true;
+	
 	/** Экземляр для работы */
 	@InternalElement
 	public static AnsiColorsFormatter instance = new AnsiColorsFormatter();
@@ -21,7 +23,7 @@ public class AnsiColorsFormatter extends AnsiFormatter implements IFunction2NoR<
 	@Override
 	public void applyNoR(ILogger logger, LogInfo info) {
 		
-		info.content = format(info.content) + Ansi.SANE;
+		info.content = format(info.content) + ( isAppendsSane ? Ansi.SANE : "") ;
 	}
 
 }

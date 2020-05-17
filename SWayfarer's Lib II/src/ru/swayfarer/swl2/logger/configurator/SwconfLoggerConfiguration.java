@@ -9,6 +9,7 @@ import ru.swayfarer.swl2.logger.configurator.entry.ConfiguartorEntry;
 import ru.swayfarer.swl2.logger.handlers.LogMultiloggerHandler;
 import ru.swayfarer.swl2.string.StringUtils;
 import ru.swayfarer.swl2.swconf.config.AutoSerializableConfig;
+import ru.swayfarer.swl2.swconf.format.StandartSwconfFormats;
 import ru.swayfarer.swl2.swconf.serialization.comments.CommentSwconf;
 import ru.swayfarer.swl2.swconf.serialization.comments.IgnoreSwconf;
 
@@ -41,6 +42,7 @@ public class SwconfLoggerConfiguration extends AutoSerializableConfig {
 	public static SwconfLoggerConfiguration of(String rlink)
 	{
 		SwconfLoggerConfiguration ret = new SwconfLoggerConfiguration();
+		ret.configInfo.configurationFormat = StandartSwconfFormats.LUA_FORMAT;
 		ret.setResourceLink(rlink);
 		ret.init();
 		return ret;

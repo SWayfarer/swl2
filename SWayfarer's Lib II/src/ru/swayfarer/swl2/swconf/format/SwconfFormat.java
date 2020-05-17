@@ -5,6 +5,7 @@ import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction0;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1;
 import ru.swayfarer.swl2.string.StringUtils;
+import ru.swayfarer.swl2.swconf.primitives.SwconfObject;
 import ru.swayfarer.swl2.swconf.serialization.formatter.PrettyFormattedWriter;
 import ru.swayfarer.swl2.swconf.serialization.reader.SwconfReader;
 import ru.swayfarer.swl2.swconf.serialization.writer.ISwconfWriter;
@@ -26,7 +27,7 @@ public class SwconfFormat {
 	public IFunction0<ISwconfWriter> writerFun = () -> new SwconfWriter().setFormat(this);
 	
 	/** Функция, возвращаюшая {@link SwconfReader} для этого формата */
-	public IFunction0<SwconfReader> readerFun = () -> new SwconfReader().setFormat(this);
+	public IFunction0<IFunction1<String, SwconfObject>> readerFun = () -> new SwconfReader().setFormat(this);
 	
 	/** Разворачивалка имен пропертей */
 	public IFunction1<String, String> propertyNameUnwrapper = (s) -> s;
@@ -84,9 +85,9 @@ public class SwconfFormat {
 	}
 	
 	/** Получить {@link SwconfReader} для этого формата */
-	public <T extends SwconfReader> T getReader()
+	public IFunction1<String, SwconfObject> getReader()
 	{
-		return (T) readerFun.apply();
+		return readerFun.apply();
 	}
 
 	@Override

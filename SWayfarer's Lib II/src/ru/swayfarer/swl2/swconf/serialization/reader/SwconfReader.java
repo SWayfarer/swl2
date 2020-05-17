@@ -3,6 +3,7 @@ package ru.swayfarer.swl2.swconf.serialization.reader;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.equals.EqualsUtils;
+import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
 import ru.swayfarer.swl2.markers.ConcattedString;
@@ -18,7 +19,7 @@ import ru.swayfarer.swl2.swconf.primitives.SwconfPrimitive;
 import ru.swayfarer.swl2.swconf.primitives.SwconfString;
 
 @SuppressWarnings("unchecked")
-public class SwconfReader {
+public class SwconfReader implements IFunction1<String, SwconfObject> {
 	
 	public String lineSplitter = StringUtils.LF;
 	
@@ -409,6 +410,12 @@ public class SwconfReader {
 			isInExlusion = false;
 			array = null;
 		}
+	}
+
+	@Override
+	public SwconfObject apply(String str)
+	{
+		return readSwconf(str);
 	}
 	
 }

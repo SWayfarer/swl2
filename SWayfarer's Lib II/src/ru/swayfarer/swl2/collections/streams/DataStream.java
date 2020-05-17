@@ -85,7 +85,7 @@ public class DataStream<Element_Type> implements IDataStream<Element_Type>{
 	@InternalElement
 	public <E, T extends IDataStream<E>> T wrap(IExtendedList<E> list)
 	{
-		return (T) new DataStream<E>(list);
+		return (T) new DataStream<E>(list).setParrallel(isParallel());
 	}
 
 	/** Парраллельный ли поток? */

@@ -77,7 +77,7 @@ public class LuaTable extends LuaValue {
 	protected LuaValue[] array;
 	
 	/** the hash keys */
-	protected LuaValue[] hashKeys;
+	public LuaValue[] hashKeys;
 	
 	/** the hash values */
 	protected LuaValue[] hashValues;

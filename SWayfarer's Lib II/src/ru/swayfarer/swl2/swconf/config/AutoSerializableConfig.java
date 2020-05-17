@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import ru.swayfarer.swl2.classes.ReflectionUtils;
 import ru.swayfarer.swl2.collections.observable.IObservableList;
+import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
 import ru.swayfarer.swl2.markers.ConcattedString;
@@ -22,9 +23,8 @@ import ru.swayfarer.swl2.string.StringUtils;
 import ru.swayfarer.swl2.swconf.format.SwconfFormat;
 import ru.swayfarer.swl2.swconf.primitives.SwconfObject;
 import ru.swayfarer.swl2.swconf.serialization.SwconfSerialization;
-import ru.swayfarer.swl2.swconf.serialization.comments.TextContainerSwconf;
 import ru.swayfarer.swl2.swconf.serialization.comments.IgnoreSwconf;
-import ru.swayfarer.swl2.swconf.serialization.reader.SwconfReader;
+import ru.swayfarer.swl2.swconf.serialization.comments.TextContainerSwconf;
 import ru.swayfarer.swl2.swconf.serialization.writer.ISwconfWriter;
 import ru.swayfarer.swl2.threads.ThreadsUtils;
 
@@ -79,7 +79,7 @@ public class AutoSerializableConfig {
 	/** Загрузить конфиг из ссылки {@link #resourceLink} */
 	public <T extends AutoSerializableConfig> T load() 
 	{
-		SwconfReader reader = configInfo.configurationFormat.getReader();
+		IFunction1<String, SwconfObject> reader = configInfo.configurationFormat.getReader();
 		DataInputStreamSWL dis = configInfo.resourceLink.toStream();
 		
 		if (dis == null)
@@ -90,7 +90,7 @@ public class AutoSerializableConfig {
 		
 		configureIn(dis);
 		
-		SwconfObject object = reader.readSwconf(dis.readAllAsString());
+		SwconfObject object = reader.apply(dis.readAllAsString());
 		
 		if (object == null)
 		{
@@ -258,6 +258,11 @@ public class AutoSerializableConfig {
 	public <T extends AutoSerializableConfig> T setResourceLink(ResourceLink rlink) 
 	{
 		configInfo.resourceLink = rlink;
+		return (T) this;
+	}
+	
+	public <T extends AutoSerializableConfig> T autoSerialization()
+	{
 		return (T) this;
 	}
 	

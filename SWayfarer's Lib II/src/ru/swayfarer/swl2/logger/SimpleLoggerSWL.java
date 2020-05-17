@@ -297,6 +297,12 @@ public class SimpleLoggerSWL implements ILogger, StandartLoggingLevels, Stacktra
 	}
 	
 	public static class ClearAnsiFormatter extends AnsiColorsFormatter {
+		
+		public ClearAnsiFormatter()
+		{
+			isAppendsSane = false;
+		}
+		
 		@Override
 		public String getColor(String code, String background, String style)
 		{

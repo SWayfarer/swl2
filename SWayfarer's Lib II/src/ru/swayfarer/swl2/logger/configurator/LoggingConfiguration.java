@@ -10,7 +10,7 @@ public class LoggingConfiguration {
 	
 	public static SystemProperty loggingLocation = new SystemProperty(
 			"swl2.logging.config",
-			"/assets/config/logging.swconf"
+			"/assets/config/logging.lua"
 	);
 	
 	public static SystemProperty isAutoEnable = new SystemProperty(

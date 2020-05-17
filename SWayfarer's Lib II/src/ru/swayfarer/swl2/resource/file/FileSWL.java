@@ -42,7 +42,7 @@ import ru.swayfarer.swl2.string.StringUtils;
 public class FileSWL extends File implements IHasSubfiles {
 
 	/** Локи по файлам ({@link FileSWL} можно залочить, чтоьы не случилось параллельной записи)*/
-	public static ConcurrentHashMap<String, Lock> filesLocks = new ConcurrentHashMap<>();
+	public static ConcurrentHashMap<String, ReentrantLock> filesLocks = new ConcurrentHashMap<>();
 	
 	/** Логгер */
 	@InternalElement
@@ -505,13 +505,13 @@ public class FileSWL extends File implements IHasSubfiles {
 	}
 	
 	
-	public Lock getLock()
+	public ReentrantLock getLock()
 	{
 		try
 		{
 			String key = getCanonicalPath();
 			
-			Lock ret = filesLocks.get(key);
+			ReentrantLock ret = filesLocks.get(key);
 			
 			if (ret == null)
 			{
@@ -538,7 +538,10 @@ public class FileSWL extends File implements IHasSubfiles {
 	/** Разблокировать файл в потоке */
 	public void unlock()
 	{
-		getLock().unlock();
+		ReentrantLock lock = getLock();
+		
+		if (lock.isHeldByCurrentThread())
+			lock.unlock();
 	}
 	
 	/**

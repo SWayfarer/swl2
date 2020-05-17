@@ -1,5 +1,7 @@
 package ru.swayfarer.swl2.lua;
 
+import ru.swayfarer.swl2.logger.ILogger;
+import ru.swayfarer.swl2.logger.LoggingManager;
 import ru.swayfarer.swl2.z.dependencies.org.luaj.vm2.LuaTable;
 import ru.swayfarer.swl2.z.dependencies.org.luaj.vm2.LuaValue;
 import ru.swayfarer.swl2.z.dependencies.org.luaj.vm2.lib.jse.JavaArray;
@@ -8,9 +10,12 @@ import ru.swayfarer.swl2.z.dependencies.org.luaj.vm2.lib.jse.JavaInstance;
 
 public class LuaUtils {
 	
+	private static final ILogger logger = LoggingManager.getLogger();
+
 	public static LuaTable getOrCreateTable(String name, LuaValue root)
 	{
 		LuaValue value = root.get(name);
+		
 		if (value == null || !value.istable())
 		{
 			LuaTable ret = new LuaTable();
@@ -19,6 +24,22 @@ public class LuaUtils {
 		}
 		
 		return (LuaTable) root.get(name);
+	}
+	
+	public static void clearTable(LuaTable lua)
+	{
+		int size = lua.keyCount();
+		
+		logger.info(size);
+		
+		for (int i1 = size - 1; i1 > -1; i1 --)
+		{
+			lua.remove(i1);
+		}
+		
+		size = lua.keyCount();
+		
+		logger.info(size);
 	}
 	
 	public static LuaValue toLuaValue(Object obj)
