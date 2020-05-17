@@ -11,7 +11,6 @@ import java.net.URI;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
@@ -23,6 +22,7 @@ import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
+import ru.swayfarer.swl2.markers.Alias;
 import ru.swayfarer.swl2.markers.ConcattedString;
 import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.math.MathUtils;
@@ -635,6 +635,24 @@ public class FileSWL extends File implements IHasSubfiles {
 	public DataInputStreamSWL toInputStream()
 	{
 		return DataInputStreamSWL.of(toInputFileStream());
+	}
+	
+	@Alias("toInputStream")
+	public DataInputStreamSWL in()
+	{
+		return toInputStream();
+	}
+	
+	@Alias("toOutputStream")
+	public DataOutputStreamSWL out()
+	{
+		return toOutputStream();
+	}
+	
+	@Alias("toAppendStream")
+	public DataOutputStreamSWL append()
+	{
+		return toAppendStream();
 	}
 	
 	/** Получить поток входящих данных */
