@@ -77,6 +77,11 @@ public class FileSWL extends File implements IHasSubfiles {
 		return (T) setData(content.getBytes(StringUtils.getCharset("UTF-8")));	
 	}
 	
+	public long size()
+	{
+		return logger.safeReturn(this::length, -1l, "Error while getting file size", this);
+	}
+	
 	public boolean hasSubDir(String name)
 	{
 		FileSWL subFile = subFile(name);
