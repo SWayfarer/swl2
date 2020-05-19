@@ -12,6 +12,7 @@ import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1NoR;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction2NoR;
 import ru.swayfarer.swl2.ioc.DIManager;
 import ru.swayfarer.swl2.ioc.componentscan.ComponentScan;
+import ru.swayfarer.swl2.ioc.componentscan.ContextSourcesScan;
 import ru.swayfarer.swl2.ioc.componentscan.DISwlComponent;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
@@ -53,6 +54,8 @@ public abstract class ApplicationSWL {
 
 	public ComponentScan componentScan = new ComponentScan();
 
+	public ContextSourcesScan contextSourcesScan = new ContextSourcesScan();
+	
 	/** 
 	 * Настроить класслоадер, который будет грузить приложение 
 	 * <h1> На этом этапе нельзя работать с полями приложения. 
@@ -90,6 +93,12 @@ public abstract class ApplicationSWL {
 	public void scanDIComponents()
 	{
 		componentScan.scan(getClass().getPackage().getName());
+	}
+	
+	/** Отсканировать источники контекста в пакете приложения и дальше*/
+	public void scanContextSources()
+	{
+		contextSourcesScan.scan(getClass().getPackage().getName());
 	}
 	
 	public IFunction2NoR<List<String>, IFunction1NoR<List<String>>> launcherFun = (args, fun) -> fun.apply(args);

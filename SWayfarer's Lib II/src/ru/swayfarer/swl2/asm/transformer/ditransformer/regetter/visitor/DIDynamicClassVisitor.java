@@ -5,17 +5,20 @@ import ru.swayfarer.swl2.asm.informated.ClassInfo;
 import ru.swayfarer.swl2.asm.informated.FieldInfo;
 import ru.swayfarer.swl2.asm.informated.MethodInfo;
 import ru.swayfarer.swl2.asm.informated.visitor.InformatedClassVisitor;
-import ru.swayfarer.swl2.asm.transformer.ditransformer.visitor.DIMethodVisitor;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
+import ru.swayfarer.swl2.ioc.DIRegistry;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
 import ru.swayfarer.swl2.string.StringUtils;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.ClassVisitor;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.MethodVisitor;
+import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.Type;
 
 public class DIDynamicClassVisitor extends InformatedClassVisitor {
 
+	public static String sourceOwnerInternalName = Type.getInternalName(DIRegistry.class);
+	
 	public static ILogger logger = LoggingManager.getLogger();
 	
 	public IExtendedList<String> fieldsToGenerate = CollectionsSWL.createExtendedList();
@@ -63,7 +66,10 @@ public class DIDynamicClassVisitor extends InformatedClassVisitor {
 		MethodVisitor mv = visitMethod(ACC_PUBLIC, methodName, methodDesc, "", null);
 		
 		mv.visitCode();
-			DIMethodVisitor.appendFieldInit(mv, field, false);
+			mv.visitVarInsn(ALOAD, 0);
+			mv.visitLdcInsn(field.getName());
+			mv.visitMethodInsn(INVOKESTATIC, sourceOwnerInternalName, "getContextElementValue", "(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;", false);
+			AsmUtils.invokeObjectCheckcast(mv, field.getType());
 			AsmUtils.invokeReturn(mv, field.getType());
 			mv.visitMaxs(2, 2);
 		mv.visitEnd();

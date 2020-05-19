@@ -1,5 +1,6 @@
 package ru.swayfarer.swl2.ioc.context;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,9 +9,11 @@ import lombok.experimental.var;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.ioc.DIManager;
+import ru.swayfarer.swl2.ioc.DIManager.DISwL;
 import ru.swayfarer.swl2.ioc.context.elements.DIContextElementSingleton;
 import ru.swayfarer.swl2.ioc.context.elements.IDIContextElement;
 import ru.swayfarer.swl2.markers.InternalElement;
+import ru.swayfarer.swl2.string.StringUtils;
 import ru.swayfarer.swl2.threads.ThreadsUtils;
 import ru.swayfarer.swl2.threads.lock.SynchronizeLock;
 
@@ -40,6 +43,25 @@ public class DIContext {
 		}
 	}
 
+	public IDIContextElement getFieldElement(Class<?> cl, Field field)
+	{
+		DISwL annotation = field.getAnnotation(DISwL.class);
+		
+		if (annotation != null)
+		{
+			String name = annotation.name();
+			
+			if (StringUtils.isBlank(name))
+				name = field.getName();
+				
+			IDIContextElement element = this.getContextElement(name, !annotation.usingName(), field.getType());
+			
+			return element;
+		}
+		
+		return null;
+	}
+	
 	public <T extends DIContext> T unlock()
 	{
 		if (isInjectionsLocked())

@@ -183,6 +183,16 @@ public class ReflectionUtils {
 		return getFieldValue(null, cl, names);
 	}
 	
+	public static Field findField(Class<?> cl, String... names)
+	{
+		return findField(cl, null, names);
+	}
+	
+	public static Field findField(Object instance, String... names)
+	{
+		return findField(instance.getClass(), instance, names);
+	}
+	
 	public static Field findField(Class<?> cl, Object instance, String... names)
 	{
 		Map<String, Field> fields = getAccessibleFields(cl);

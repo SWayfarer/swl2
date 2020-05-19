@@ -121,7 +121,14 @@ public class DIManager {
 	{
 		return DIRegistry.getContextElement(contextName, elementName, elementType);
 	}
-
+	
+	public static void injectToFieldSafe(Object instance, String fieldName)
+	{
+		logger.safe(() -> {
+			ReflectionDIInjector.injectToField(instance, fieldName);
+		}, "Error while injectiong context element for field", fieldName, "of", instance);
+	}
+	
 	public static void printContext(String name)
 	{
 		DynamicString str = new DynamicString();

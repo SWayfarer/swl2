@@ -33,6 +33,7 @@ import ru.swayfarer.swl2.markers.Alias;
 import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.resource.rlink.RLUtils;
 import ru.swayfarer.swl2.string.StringUtils;
+import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.Type;
 
 /**
  * Класслоадер, который загружает классы, трансформируя их.
@@ -121,6 +122,17 @@ public class ClassLoaderSWL extends URLClassLoader {
 	public <T extends ClassLoaderSWL> T addDump(String classInternalNameMask, String dumpDir)
 	{
 		return registerDump(classInternalNameMask, dumpDir);
+	}
+	
+	public <T extends ClassLoaderSWL> T addDump(String dumpDir, Class<?>... classes)
+	{
+		if (!CollectionsSWL.isNullOrEmpty(classes))
+		for (Class<?> cl : classes)
+		{
+			registerDump(cl.getName(), dumpDir);
+		}
+		
+		return (T) this;
 	}
 	
 	/** Добавить дамп классов по маске имени в директорию */

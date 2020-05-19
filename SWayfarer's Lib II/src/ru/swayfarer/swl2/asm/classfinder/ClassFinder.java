@@ -52,6 +52,11 @@ public class ClassFinder {
 	@InternalElement
 	public IFunction1<String, IExtendedMap<String, IFunction0<DataInputStreamSWL>>> classSourcesFun;
 	
+	public ClassFinder()
+	{
+		useClasspath();
+	}
+	
 	/** Задать {@link #classSourcesFun}*/
 	@InternalElement
 	public <T extends ClassFinder> T setStreamFun(IFunction1<String, IExtendedMap<String, IFunction0<DataInputStreamSWL>>> fun) 

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import lombok.AllArgsConstructor;
+import ru.swayfarer.swl2.classes.ReflectionUtils;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedMap;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction2;
@@ -59,6 +60,26 @@ public class DIRegistry {
 		return (T) object;
 	}
 	
+	public static String getFieldContext(Field field, Object instance)
+	{
+		return getFieldContext(field, instance.getClass());
+	}
+	
+	public static String getFieldContext(Field field, Class<?> cl)
+	{
+		DISwL annotation = field.getAnnotation(DISwL.class);
+		
+		if (annotation != null)
+		{
+			String context = annotation.context();
+			
+			if (!StringUtils.isBlank(context))
+				return context;
+		}
+		
+		return getClassContextName(cl);
+	}
+	
 	public static DIContext getRegisteredContext(String name)
 	{
 		DIManager manager = registeredManagers.get(name);
@@ -76,6 +97,24 @@ public class DIRegistry {
 			registeredManagers.put("default", manager);
 		
 		return (T) manager;
+	}
+	
+	public static <T> T getContextElementValue(Object instance, String fieldName)
+	{
+		IDIContextElement elem = getContextElement(instance, fieldName);
+		
+		return elem == null ? null : (T) elem.getValue();
+	}
+	
+	public static IDIContextElement getContextElement(Object instance, String fieldName)
+	{
+		return getContextElement(instance, ReflectionUtils.findField(instance, fieldName));
+	}
+	
+	public static IDIContextElement getContextElement(Object instance, Field field)
+	{
+		DIContext context = DIRegistry.getRegisteredContext(DIRegistry.getFieldContext(field, instance));
+		return context == null ? null : context.getFieldElement(instance.getClass(), field);
 	}
 	
 	public static void printContext(String contextName)
