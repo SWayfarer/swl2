@@ -2,11 +2,14 @@ package ru.swayfarer.swl2.ansi;
 
 import java.util.Map;
 
+import lombok.experimental.var;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
+import ru.swayfarer.swl2.logger.SimpleLoggerSWL;
 import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.string.DynamicString;
 import ru.swayfarer.swl2.string.StringUtils;
+import ru.swayfarer.swl2.string.property.SystemProperty;
 
 /**
  * Форматтер ANSI-цветов
@@ -45,6 +48,25 @@ public class AnsiFormatter {
 	public AnsiFormatter()
 	{
 		registerDefaultCodes();
+	}
+	
+	public static AnsiFormatter getInstance()
+	{
+		if (instance == null)
+		{
+			var hideColorsProperty = new SystemProperty("swl2.console.hideColors");
+			
+			if (hideColorsProperty.getBooleanValue())
+			{
+				instance = new SimpleLoggerSWL.ClearAnsiFormatter();
+			}
+			else
+			{
+				instance = new AnsiFormatter();
+			}
+		}
+		
+		return instance;
 	}
 	
 	/** Регистрация стандартных кодов */

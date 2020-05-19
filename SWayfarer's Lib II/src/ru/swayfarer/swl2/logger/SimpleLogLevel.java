@@ -62,8 +62,8 @@ public class SimpleLogLevel implements ILogLevel {
 	/** Получить уровень по заданным параметрам */
 	public static SimpleLogLevel of(String prefix, String logPrefix, Level javaLevel, int weight)
 	{
-		String formattedPrefix = AnsiFormatter.instance.format(prefix);
-		String formattedLogPrefix = AnsiFormatter.instance.format(logPrefix);
+		String formattedPrefix = AnsiFormatter.getInstance().format(prefix);
+		String formattedLogPrefix = AnsiFormatter.getInstance().format(logPrefix);
 		return of(() -> formattedPrefix, () -> formattedLogPrefix, javaLevel, weight);
 	}
 	
