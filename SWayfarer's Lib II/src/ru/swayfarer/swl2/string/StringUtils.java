@@ -65,6 +65,26 @@ public class StringUtils {
 		return target.replaceFirst(regex().text(replacement).build(), newStr);
 	}
 	
+	public static boolean isMatchesByExpression(String expression, @ConcattedString Object... text)
+	{
+		if (isEmpty(expression))
+			return true;
+		
+		if (isEmpty(text))
+			text = new Object[] {""};
+		
+		if (expression.startsWith("regex:"))
+		{
+			return isMatchesByRegex(expression.substring(6), text);
+		}
+		else if (expression.startsWith("mask:"))
+		{
+			return isMatchesByMask(expression.substring(5), text);
+		}
+		
+		return StringUtils.concat(text).startsWith(expression);
+	}
+	
 	/**
 	 * Составить Camel Case строку из слов
 	 * @param lowerCaseToAll Сделать ли заглавные буквы только в начале слов?

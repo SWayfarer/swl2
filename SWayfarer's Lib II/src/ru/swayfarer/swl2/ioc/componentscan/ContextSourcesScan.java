@@ -7,11 +7,14 @@ import ru.swayfarer.swl2.ioc.DIManager;
 import ru.swayfarer.swl2.ioc.DIRegistry;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
+import ru.swayfarer.swl2.string.ExpressionsList;
 import ru.swayfarer.swl2.string.StringUtils;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.Type;
 
 public class ContextSourcesScan {
 
+	public ExpressionsList blackList = new ExpressionsList();
+	
 	public static ILogger logger = LoggingManager.getLogger();
 	
 	public boolean isLoggingScan = false;
@@ -33,6 +36,9 @@ public class ContextSourcesScan {
 	
 	public void scan(ClassInfo classInfo)
 	{
+		if (blackList.isMatches(classInfo.getCanonicalName()))
+			return;
+		
 		if (classInfo.hasAnnotation(contextSourceAnnotationDesc))
 		{
 			Class<?> cl = ReflectionUtils.findClass(classInfo.getCanonicalName());

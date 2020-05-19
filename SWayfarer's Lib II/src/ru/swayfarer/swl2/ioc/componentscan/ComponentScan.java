@@ -21,6 +21,7 @@ import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
 import ru.swayfarer.swl2.observable.IObservable;
 import ru.swayfarer.swl2.observable.Observables;
+import ru.swayfarer.swl2.string.ExpressionsList;
 import ru.swayfarer.swl2.string.StringUtils;
 import ru.swayfarer.swl2.threads.ThreadsUtils;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.Type;
@@ -28,6 +29,8 @@ import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.Type;
 @SuppressWarnings("unchecked")
 public class ComponentScan {
 
+	public ExpressionsList blackList = new ExpressionsList();
+	
 	public ClassFinder classFinder = new ClassFinder();
 	
 	public boolean isLoggingScan = false;
@@ -54,6 +57,10 @@ public class ComponentScan {
 	public void scanSafe(ClassInfo classInfo) throws Throwable
 	{
 		String name = classInfo.getCanonicalName();
+		
+		if (blackList.isMatches(name))
+			return;
+		
 		AnnotationInfo componentAnnotationInfo = classInfo.getFirstAnnotation(componentAnnotationDesc);
 		
 		if (componentAnnotationInfo != null)
