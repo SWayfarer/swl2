@@ -8,10 +8,10 @@ import lombok.AllArgsConstructor;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedMap;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction2;
-import ru.swayfarer.swl2.ioc.DIManager.DIContext;
 import ru.swayfarer.swl2.ioc.DIManager.DISwL;
-import ru.swayfarer.swl2.ioc.DIManager.IDIContextElement;
-import ru.swayfarer.swl2.ioc.DIManager.ReflectionDIInjector;
+import ru.swayfarer.swl2.ioc.context.DIContext;
+import ru.swayfarer.swl2.ioc.context.elements.IDIContextElement;
+import ru.swayfarer.swl2.ioc.context.injector.ReflectionDIInjector;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
 import ru.swayfarer.swl2.markers.ConcattedString;
@@ -134,7 +134,7 @@ public class DIRegistry {
 		if (context == null)
 			return null;
 		
-		IDIContextElement contextElement = context.getContextElement(elementName, elementType);
+		IDIContextElement contextElement = context.getContextElement(elementName, false, elementType);
 		
 		return contextElement == null ? null : (T) contextElement.getValue();
 	}

@@ -3,8 +3,6 @@ package ru.swayfarer.swl2.ioc.componentscan;
 import java.lang.reflect.Method;
 import java.util.Map;
 
-import lombok.Data;
-import lombok.experimental.Accessors;
 import ru.swayfarer.swl2.asm.classfinder.ClassFinder;
 import ru.swayfarer.swl2.asm.informated.AnnotationInfo;
 import ru.swayfarer.swl2.asm.informated.ClassInfo;
@@ -14,11 +12,11 @@ import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction0;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1;
 import ru.swayfarer.swl2.ioc.DIManager;
-import ru.swayfarer.swl2.ioc.DIManager.ContextElementType;
-import ru.swayfarer.swl2.ioc.DIManager.DIContext;
-import ru.swayfarer.swl2.ioc.DIManager.DIContextElementFromFun;
-import ru.swayfarer.swl2.ioc.DIManager.IDIContextElement;
 import ru.swayfarer.swl2.ioc.DIRegistry;
+import ru.swayfarer.swl2.ioc.context.DIContext;
+import ru.swayfarer.swl2.ioc.context.elements.ContextElementType;
+import ru.swayfarer.swl2.ioc.context.elements.DIContextElementFromFun;
+import ru.swayfarer.swl2.ioc.context.elements.IDIContextElement;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
 import ru.swayfarer.swl2.observable.IObservable;
@@ -34,7 +32,7 @@ public class ComponentScan {
 	
 	public boolean isLoggingScan = false;
 	
-	public ScanInfo scanInfo = new ScanInfo();
+	public static String componentAnnotationDesc = Type.getDescriptor(DISwlComponent.class);
 	
 	public static ILogger logger = LoggingManager.getLogger();
 	
@@ -56,7 +54,6 @@ public class ComponentScan {
 	public void scanSafe(ClassInfo classInfo) throws Throwable
 	{
 		String name = classInfo.getCanonicalName();
-		String componentAnnotationDesc = getComponentAnnotationDesc();
 		AnnotationInfo componentAnnotationInfo = classInfo.getFirstAnnotation(componentAnnotationDesc);
 		
 		if (componentAnnotationInfo != null)
@@ -64,35 +61,30 @@ public class ComponentScan {
 			if (isLoggingScan)
 				logger.info("Found class with component annotation:", name);
 			
-			String contextName = componentAnnotationInfo.getParam(getContextNameParameter());
-			String elementName = componentAnnotationInfo.getParam(getElementNameParameter());
-			String elementTypeStr = componentAnnotationInfo.getParam(getElementTypeParameter());
-			ContextElementType elementType = null;
-			
-			if (StringUtils.isEmpty(elementTypeStr))
-			{
-				elementType = ContextElementType.Singleton;
-			}
-			else
-			{
-				elementType = ContextElementType.valueOf(elementTypeStr);
-			}
-			
 			Class<?> cl = ReflectionUtils.findClass(name);
 			
-			scanClass(cl, contextName, elementName, elementType);
+			DISwlComponent annotation = cl.getAnnotation(DISwlComponent.class);
+			
+			String contextName = annotation.context();
+			String elementName = annotation.name();
+			ContextElementType elementType = annotation.type();
+			
+			scanClass(cl, annotation.associated(),  contextName, elementName, elementType);
 		}
 		else
 		{
 			if (isLoggingScan)
 			{
-				logger.warning("Class", classInfo.name, "has not annotation", scanInfo.componentAnnotationDesc);
+				logger.warning("Class", classInfo.name, "has not annotation", componentAnnotationDesc);
 			}
 		}
 	}
 	
-	public void scanClass(Class<?> cl, String contextName, String elementName, ContextElementType elementType) throws Throwable
+	public void scanClass(Class<?> cl, Class<?> assocClass, String contextName, String elementName, ContextElementType elementType) throws Throwable
 	{
+		if (assocClass == Object.class)
+			assocClass = cl;
+		
 		if (isLoggingScan)
 			logger.info("Scanning class", cl);
 		
@@ -149,10 +141,10 @@ public class ComponentScan {
 		DIManager.createIfNotFound(contextName);
 		DIContext context = DIRegistry.getRegisteredContext(contextName);
 		
-		IDIContextElement elementToAdd = DIContextElementFromFun.of(cl, elementName, objectCreationFun);
+		IDIContextElement elementToAdd = DIContextElementFromFun.of(assocClass, elementName, objectCreationFun);
 		
 		Map<Class<?>, IDIContextElement> map = context.getElementsForName(elementName, true);
-		map.put(cl, elementToAdd);
+		map.put(assocClass, elementToAdd);
 	}
 	
 	public Object createNewObject(Class<?> cl, boolean isInject)
@@ -176,26 +168,6 @@ public class ComponentScan {
 			ReflectionUtils.invokeMethods(new EventAnnotatedMethodFilter(ComponentEventType.Init), cl, instance, new Object[0]);
 		
 		return instance;
-	}
-	
-	public String getElementNameParameter()
-	{
-		return scanInfo == null ? null : scanInfo.elementNameParameter;
-	}
-	
-	public String getContextNameParameter()
-	{
-		return scanInfo == null ? null : scanInfo.contextNameParameter;
-	}
-	
-	public String getElementTypeParameter()
-	{
-		return scanInfo == null ? null : scanInfo.elementTypeParameter;
-	}
-	
-	public String getComponentAnnotationDesc()
-	{
-		return scanInfo == null ? null : scanInfo.componentAnnotationDesc;
 	}
 	
 	public <T extends ComponentScan> T scan(String pkg) 
@@ -238,15 +210,5 @@ public class ComponentScan {
 			
 			return false;
 		}
-	}
-	
-	@Data @Accessors(chain = true)
-	public static class ScanInfo {
-		
-		public String componentAnnotationDesc = Type.getDescriptor(DISwlComponent.class);
-		public String contextNameParameter = "context";
-		public String elementNameParameter = "name";
-		public String elementTypeParameter = "type";
-		
 	}
 }
