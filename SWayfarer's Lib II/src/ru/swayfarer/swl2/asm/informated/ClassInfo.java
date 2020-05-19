@@ -36,7 +36,7 @@ public class ClassInfo {
 	public String superName;
 	
 	/** Интерфейсы класса */
-	public List<String> interfaces;
+	public IExtendedList<String> interfaces;
 	
 	/** Лист информации о полях */
 	public IExtendedList<FieldInfo> fields = CollectionsSWL.createExtendedList();

@@ -51,7 +51,7 @@ public abstract class ApplicationSWL {
 	/** Стартер для приложения */
 	public IFunction2NoR<IExtendedList<String>, IFunction1NoR<IExtendedList<String>>> applicationStarter = (args, method) -> method.apply(args);
 
-	public ComponentScan componentScan = new ComponentScan().setStreamFun(ComponentScan.streamFunOfClassSource(getClass()));
+	public ComponentScan componentScan = new ComponentScan();
 
 	/** 
 	 * Настроить класслоадер, который будет грузить приложение 

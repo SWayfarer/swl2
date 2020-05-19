@@ -1,7 +1,5 @@
 package ru.swayfarer.swl2.asm.transformer.informated.visitor;
 
-import java.util.ArrayList;
-
 import ru.swayfarer.swl2.asm.informated.AnnotationInfo;
 import ru.swayfarer.swl2.asm.informated.ClassInfo;
 import ru.swayfarer.swl2.asm.informated.FieldInfo;
@@ -38,7 +36,7 @@ public class ClassScanner extends ClassVisitor{
 		info.name = name;
 		info.signature = signature;
 		info.superName = superName;
-		info.interfaces = new ArrayList<>();
+		info.interfaces = CollectionsSWL.createExtendedList(interfaces);
 		
 		super.visit(version, access, name, signature, superName, interfaces);
 	}

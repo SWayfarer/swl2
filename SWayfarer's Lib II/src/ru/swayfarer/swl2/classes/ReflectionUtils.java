@@ -1,5 +1,6 @@
 package ru.swayfarer.swl2.classes;
 
+import java.io.File;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -27,6 +28,7 @@ import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.resource.file.FileSWL;
 import ru.swayfarer.swl2.resource.rlink.ResourceLink;
 import ru.swayfarer.swl2.string.StringUtils;
+import ru.swayfarer.swl2.string.property.SystemProperty;
 
 /**
  * Утилиты для работы с рефлексией
@@ -70,6 +72,12 @@ public class ReflectionUtils {
 		URL url = ReflectionUtils.class.getClassLoader().getResource(name);
 		
 		return getResourceSource(className, url);
+	}
+	
+	public static IExtendedList<String> getClasspath()
+	{
+		String cp = new SystemProperty("java.class.path").getValue();
+		return CollectionsSWL.createExtendedList(cp.split(File.pathSeparator));
 	}
 	
 	public static String getClassSource(Class<?> cl)
