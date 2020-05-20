@@ -7,12 +7,23 @@ import ru.swayfarer.swl2.asm.informated.MethodInfo;
 import ru.swayfarer.swl2.asm.informated.visitor.InformatedClassVisitor;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
+import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.ClassVisitor;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.MethodVisitor;
 
+/**
+ * Посетитель классов для {@link FieldAccessorsClassTransformer}
+ * @author swayfarer
+ *
+ */
 public class FieldAccessorClassVisitor extends InformatedClassVisitor {
 
+	/** Трансформер, вызвавший этот {@link FieldAccessorClassVisitor}*/
+	@InternalElement
 	public FieldAccessorsClassTransformer classTransformer;
+	
+	/** Имена полей, которые необходимо обработать */
+	@InternalElement
 	public IExtendedList<String> fields;
 	
 	public FieldAccessorClassVisitor(ClassVisitor classVisitor, ClassInfo classInfo, FieldAccessorsClassTransformer classTransformer)

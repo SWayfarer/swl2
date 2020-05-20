@@ -44,6 +44,11 @@ public class DIManager {
 		context = new DIContext();
 	}
 
+	/**
+	 * Создать контекст, если не создан
+	 * @param name Имя создаваемого контекста
+	 * @return {@link DIManager}
+	 */
 	public static DIManager createIfNotFound(String name)
 	{
 		DIManager ret = DIRegistry.getRegisteredManager(name);
@@ -56,6 +61,11 @@ public class DIManager {
 		return ret;
 	}
 
+	/**
+	 * Заблокировать иньекции из контекста <br>
+	 * Может быть использовано для его настройки
+	 * @param contextName Имя блокируемого контекста 
+	 */
 	public static void lockInjections(String contextName)
 	{
 		DIContext context = DIRegistry.getRegisteredContext(contextName);
@@ -70,6 +80,10 @@ public class DIManager {
 		}
 	}
 
+	/**
+	 * Разблокировать иньекции из контекста <br>
+	 * @param contextName Имя разблокируемого контекста 
+	 */
 	public static void unlockInjections(String contextName)
 	{
 		DIContext context = DIRegistry.getRegisteredContext(contextName);
@@ -122,6 +136,11 @@ public class DIManager {
 		return DIRegistry.getContextElement(contextName, elementName, elementType);
 	}
 	
+	/**
+	 * Иньекция в поле контекста
+	 * @param instance Объект, в поле которого происходит иньекция
+	 * @param fieldName Поле, в которое происходит иньекция
+	 */
 	public static void injectToFieldSafe(Object instance, String fieldName)
 	{
 		logger.safe(() -> {
@@ -129,6 +148,10 @@ public class DIManager {
 		}, "Error while injectiong context element for field", fieldName, "of", instance);
 	}
 	
+	/**
+	 * Распечатать контекст
+	 * @param name Имя контекста, который необходимо распечатать
+	 */
 	public static void printContext(String name)
 	{
 		DynamicString str = new DynamicString();
@@ -343,6 +366,12 @@ public class DIManager {
 
 	}
 
+	/**
+	 * Получить аргументы, которые будут переданы из контекста для вызова метода
+	 * @param classOfMethod Возвращаемый тип метода
+	 * @param params Информация о параметрах метода
+	 * @return Лист аргументов
+	 */
 	public static IExtendedList<Object> getArgsFromContext(Class<?> classOfMethod, Parameter[] params)
 	{
 		String contextName = DIRegistry.getClassContextName(classOfMethod);

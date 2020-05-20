@@ -22,8 +22,14 @@ import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.Type;
  */
 public class RenameClassTransformerVisitor extends InformatedClassVisitor{
 
+	/** Дескриптор аннотации {@link RenameAsm}*/
 	public static final String ANNOTATION_DESC = Type.getDescriptor(RenameAsm.class);
 	
+	/**
+	 * Конструктор
+	 * @param classVisitor дочерний {@link ClassVisitor}
+	 * @param classInfo Информация о посещаемом клссе
+	 */
 	public RenameClassTransformerVisitor(ClassVisitor classVisitor, ClassInfo classInfo)
 	{
 		super(classVisitor, classInfo);
@@ -47,6 +53,12 @@ public class RenameClassTransformerVisitor extends InformatedClassVisitor{
 		return super.visitFieldInformated(info, access, getName(name, info.annotations), descriptor, signature, value);
 	}
 
+	/**
+	 * Получить имя метода (переименованный или нет) 
+	 * @param defaultName Стандартное имя, которое будет использовано, если нет переименования
+	 * @param annotationsInfo Информация об аннотации {@link RenameAsm}
+	 * @return Имя метода
+	 */
 	public String getName(String defaultName, List<AnnotationInfo> annotationsInfo)
 	{
 		for (AnnotationInfo annotationInfo : annotationsInfo)

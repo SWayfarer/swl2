@@ -18,7 +18,6 @@ import ru.swayfarer.swl2.reference.AbstractReference;
 import ru.swayfarer.swl2.reference.IReference;
 import ru.swayfarer.swl2.reference.SimpleReference;
 import ru.swayfarer.swl2.resource.file.FileSWL;
-import ru.swayfarer.swl2.resource.pathtransformers.PathTransforms;
 import ru.swayfarer.swl2.resource.rlink.RLUtils;
 import ru.swayfarer.swl2.resource.streams.StreamsUtils;
 
@@ -99,6 +98,12 @@ public class InJarTransformer {
 		return this;
 	}
 	
+	/**
+	 * Трансформировать файл 
+	 * @param filePath Путь до трансформируемого файла
+	 * @param dest Путь, по которому будет сохранен трансформированный файл
+	 * @return Файл, в который будет сохранен результат трансформации
+	 */
 	public FileSWL transform(String filePath, String dest)
 	{
 		return transform(new FileSWL(filePath), dest);

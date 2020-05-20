@@ -18,20 +18,30 @@ import ru.swayfarer.swl2.threads.ThreadsUtils;
 import ru.swayfarer.swl2.threads.lock.SynchronizeLock;
 
 /**
- * 
+ * DI-контекст, хранящий элементы DI
  * @author swayfarer
  *
  */
 @SuppressWarnings("unchecked")
 public class DIContext {
 
+	/** Поток, который заморозил иньекции из этого контекста */
+	@InternalElement
 	public volatile Thread lockedThread;
+	
+	/** Лок, на котором заморожены иньекции из контекста */
+	@InternalElement
 	public volatile SynchronizeLock lock = new SynchronizeLock();
 
 	/** Элементы контекста. Имя -> Класс -> Элемент */
 	@InternalElement
 	public Map<String, Map<Class<?>, IDIContextElement>> contextElements = new HashMap<>();
 
+	/** 
+	 * Пройти блокировку иньекций. <br>
+	 * Если контекст заблокирован, то пройти ее сможет только поток, который поставил блокировку <br> 
+	 * Если не заблокирован, то пройдет дальше
+	 */
 	public void passLock()
 	{
 		if (isInjectionsLocked())
@@ -43,6 +53,12 @@ public class DIContext {
 		}
 	}
 
+	/**
+	 * Получить элемент контекста для поля
+	 * @param cl Класс, для поля которого ищется элемент
+	 * @param field Поле, для которого ищется элемент
+	 * @return Элемент контекста, соответствующий полю, или null, если не найдется
+	 */
 	public IDIContextElement getFieldElement(Class<?> cl, Field field)
 	{
 		DISwL annotation = field.getAnnotation(DISwL.class);
@@ -62,6 +78,10 @@ public class DIContext {
 		return null;
 	}
 	
+	/**
+	 * Разблокировать контекст
+	 * @return Этот объект (this)
+	 */
 	public <T extends DIContext> T unlock()
 	{
 		if (isInjectionsLocked())
@@ -73,6 +93,11 @@ public class DIContext {
 		return (T) this;
 	}
 
+	/**
+	 * Заблокировать иньекции их контекста на потоке
+	 * @param thread Поток, на котором происходит блокировка (только он сможет иметь доступ к контексту на это время)
+	 * @return Этот объект (this)
+	 */
 	public <T extends DIContext> T lockOn(Thread thread)
 	{
 		if (thread == null)
@@ -88,6 +113,7 @@ public class DIContext {
 		return (T) this;
 	}
 
+	/** Заблокированы ли иньекции из контекста? */
 	public boolean isInjectionsLocked()
 	{
 		return lockedThread != null;

@@ -16,6 +16,7 @@ import ru.swayfarer.swl2.ioc.context.DIContext;
 import ru.swayfarer.swl2.ioc.context.elements.IDIContextElement;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
+import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.string.StringUtils;
 
 /**
@@ -198,10 +199,21 @@ public class ReflectionDIInjector {
 		}
 	}
 
+	/**
+	 * Информация о поле
+	 * @author swayfarer
+	 *
+	 */
+	@InternalElement
 	@AllArgsConstructor(staticName = "of")
 	public static class FieldDIInfo {
-
+		
+		/** Поле */
+		@InternalElement
 		public Field field;
+		
+		/** Аннотация {@link DISwL}, которой отмечено поле */
+		@InternalElement
 		public DISwL annotation;
 
 	}

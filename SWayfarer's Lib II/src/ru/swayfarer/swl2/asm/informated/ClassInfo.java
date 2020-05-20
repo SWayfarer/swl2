@@ -157,12 +157,22 @@ public class ClassInfo {
 		return null;
 	}
 	
+	/**
+	 * Получить информацию о методе класса
+	 * @param name Имя метода
+	 * @param desc Дескриптор метода 
+	 * @return Полученная информация или null, если не найдется
+	 */
 	public MethodInfo getMethod(String name, String desc)
 	{
 		return methods.dataStream()
 				.find((method) -> method.name.equals(name) && method.descriptor.equals(desc));
 	}
 	
+	/**
+	 * Получить тип, соответствующий этому классу
+	 * @return Искомый {@link Type}
+	 */
 	public Type getType()
 	{
 		return Type.getType("L" + name + ";");
@@ -174,6 +184,11 @@ public class ClassInfo {
 		return valueOf(cl.getCanonicalName());
 	}
 	
+	/**
+	 * Получить информацию о классе
+	 * @param classCanonicalName Имя класса
+	 * @return Информация об искомом классе
+	 */
 	public static ClassInfo valueOf(String classCanonicalName)
 	{
 		TransformedClassInfo info = new TransformedClassInfo();

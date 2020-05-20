@@ -24,10 +24,8 @@ public class FilteringInfo {
 	/** Игнорируемые уровни логов */
 	public List<String> ignoreLevels;
 	
-	public FilteringInfo()
-	{
-		
-	}
+	/** Конструктор */
+	public FilteringInfo() {}
 	
 	/** Применить на логгер */
 	public void apply(ILogger logger)

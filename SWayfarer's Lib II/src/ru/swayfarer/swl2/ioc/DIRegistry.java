@@ -28,12 +28,16 @@ import ru.swayfarer.swl2.string.StringUtils;
 @SuppressWarnings("unchecked")
 public class DIRegistry {
 
+	/** Логировать ли иньекции внутри байткода (дополнения классов) */
 	public static boolean isLoggingBytecodeInjections = false;
 	
+	/** Логировать ли иньекции в поля? */
 	public static boolean isLoggingFields = false;
 	
+	/** Логировать ли иньекции (глобально) */
 	public static boolean isLoggingInjections = false;
 	
+	/** Логировать ли поиск элементов внутри контекста */
 	public static boolean isLoggingContextSearch = false;
 	
 	/** Загеристрированные паттерны контекстов (по пакетам можно настроить, какой контекст куда пойдет) */
@@ -60,11 +64,23 @@ public class DIRegistry {
 		return (T) object;
 	}
 	
+	/**
+	 * Получить имя контекста, который будет использован для поля
+	 * @param field Поле, для которого ищется контекст
+	 * @param instance Объект, с полем которого работаем
+	 * @return Имя контекста
+	 */
 	public static String getFieldContext(Field field, Object instance)
 	{
 		return getFieldContext(field, instance.getClass());
 	}
 	
+	/**
+	 * Получить имя контекста, который будет использован для поля
+	 * @param field Поле, для которого ищется контекст
+	 * @param cl Класс, с полем которого работаем
+	 * @return Имя контекста
+	 */
 	public static String getFieldContext(Field field, Class<?> cl)
 	{
 		DISwL annotation = field.getAnnotation(DISwL.class);
@@ -80,6 +96,11 @@ public class DIRegistry {
 		return getClassContextName(cl);
 	}
 	
+	/**
+	 * Получить зарегистрированный контекст 
+	 * @param name Имя контекста
+	 * @return Контекст или null, если такого не найдено
+	 */
 	public static DIContext getRegisteredContext(String name)
 	{
 		DIManager manager = registeredManagers.get(name);
@@ -99,6 +120,12 @@ public class DIRegistry {
 		return (T) manager;
 	}
 	
+	/**
+	 * Получить значение элемента контекста для поля объекта
+	 * @param instance Объект, для поля которого ищется контекст
+	 * @param fieldName Поле, для которого ищется контекст
+	 * @return Значение или null, если не найдено (при этом значение тоже может быть null)
+	 */
 	public static <T> T getContextElementValue(Object instance, String fieldName)
 	{
 		IDIContextElement elem = getContextElement(instance, fieldName);
@@ -106,17 +133,33 @@ public class DIRegistry {
 		return elem == null ? null : (T) elem.getValue();
 	}
 	
+	/**
+	 * Получить элемент контекста для поля объекта
+	 * @param instance Объект, для поля которого ищется контекст
+	 * @param fieldName Поле, для которого ищется контекст
+	 * @return Элемент или null, если не найдено
+	 */
 	public static IDIContextElement getContextElement(Object instance, String fieldName)
 	{
 		return getContextElement(instance, ReflectionUtils.findField(instance, fieldName));
 	}
 	
+	/**
+	 * Получить элемент контекста для поля объекта
+	 * @param instance Объект, для поля которого ищется контекст
+	 * @param field Поле, для которого ищется контекст
+	 * @return Элемент или null, если не найдено
+	 */
 	public static IDIContextElement getContextElement(Object instance, Field field)
 	{
 		DIContext context = DIRegistry.getRegisteredContext(DIRegistry.getFieldContext(field, instance));
 		return context == null ? null : context.getFieldElement(instance.getClass(), field);
 	}
 	
+	/**
+	 * Отобразить информацию о контексте
+	 * @param contextName Имя контекста
+	 */
 	public static void printContext(String contextName)
 	{
 		DIManager manager = getRegisteredManager(contextName);
@@ -155,6 +198,13 @@ public class DIRegistry {
 		return (T) registeredManagers.get(s);
 	}
 	
+	/**
+	 * Зарегистрировать паттерн, по которому будет определяться контекст для классов <br>
+	 * Контекст определяется по первому паттерну, с которого начинается его имя.
+	 * 
+	 * @param contextName Имя контекста, соответствующего паттерну
+	 * @param pattern Паттерн.
+	 */
 	public static void registerContextPattern(String contextName, @ConcattedString Object... pattern)
 	{
 		contextPatterns.put(StringUtils.concat(pattern), contextName);
@@ -193,6 +243,11 @@ public class DIRegistry {
 		return (T) manager;
 	}
 	
+	/**
+	 * Получить имя контекста для класса
+	 * @param cl Класс, для которого ищется элемент контекста
+	 * @return Имя контекста
+	 */
 	public static String getClassContextName(Class<?> cl)
 	{
 		String classNormalName = cl.getName();

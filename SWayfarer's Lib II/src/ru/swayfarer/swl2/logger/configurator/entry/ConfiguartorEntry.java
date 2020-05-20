@@ -7,17 +7,26 @@ import ru.swayfarer.swl2.logger.LogInfo;
 import ru.swayfarer.swl2.string.StringUtils;
 import ru.swayfarer.swl2.swconf.serialization.comments.CommentSwconf;
 
+/**
+ * Конфигурация для одного набора пакетов
+ * @author swayfarer
+ *
+ */
 public class ConfiguartorEntry {
 
+	/** Источники, к которым будет применена эта конфигурация */
 	@CommentSwconf("Packages filtering for this configuration")
 	public IExtendedList<String> applySources = CollectionsSWL.createExtendedList();
 	
+	/** Настройки вывода в консоль */
 	@CommentSwconf("Console printing settings")
 	public ConfiguratorPrintingEntry printing = new ConfiguratorPrintingEntry();
 	
+	/** Настройки сохранения логов в файл */
 	@CommentSwconf("Files saving settings")
 	public IExtendedList<ConfiguratorFileEntry> files = CollectionsSWL.createExtendedList();
 	
+	/** Применить на логгер */
 	public void applyToLogger(ILogger logger)
 	{
 		if (printing != null)
@@ -31,6 +40,7 @@ public class ConfiguartorEntry {
 		}
 	}
 	
+	/** Должен ли лог быть обработан при помощи этой конфигурации? */
 	public boolean isAcceptingLog(LogInfo logInfo)
 	{
 		String logSource = logInfo.getCallTrace().getFirstElement().getClassName();
@@ -49,22 +59,14 @@ public class ConfiguartorEntry {
 		return false;
 	}
 	
+	/** 
+	 * Подходит ли источник лога под паттерн?
+	 * @param source Паттерн, источник лога из {@link #applySources}
+	 * @param logSource Источник лога
+	 * @return Подходит ли?
+	 */
 	public boolean isMatchesBy(String source, String logSource)
 	{
-		if (StringUtils.isEmpty(source))
-			return true;
-		
-		if (source.startsWith("regex:"))
-		{
-			source = source.substring(6);
-			return StringUtils.isMatchesByRegex(source, logSource);
-		}
-		else if (source.startsWith("mask:"))
-		{
-			source = source.substring(5);
-			return StringUtils.isMatchesByMask(source, logSource);
-		}
-		
-		return logSource.startsWith(source);
+		return StringUtils.isMatchesByExpression(source, logSource);
 	}
 }

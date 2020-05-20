@@ -21,6 +21,7 @@ public class FileInfo {
 	@InternalElement
 	public ArchivingInfo archivingInfo;
 	
+	/** Конструктор */
 	public FileInfo() {}
 	
 	public void apply(ILogger logger) 

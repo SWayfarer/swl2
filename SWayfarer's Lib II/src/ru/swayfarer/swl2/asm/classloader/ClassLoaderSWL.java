@@ -32,8 +32,8 @@ import ru.swayfarer.swl2.logger.LoggingManager;
 import ru.swayfarer.swl2.markers.Alias;
 import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.resource.rlink.RLUtils;
+import ru.swayfarer.swl2.resource.rlink.ResourceLink;
 import ru.swayfarer.swl2.string.StringUtils;
-import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.Type;
 
 /**
  * Класслоадер, который загружает классы, трансформируя их.
@@ -124,6 +124,12 @@ public class ClassLoaderSWL extends URLClassLoader {
 		return registerDump(classInternalNameMask, dumpDir);
 	}
 	
+	/**
+	 * Добавить классы для дампа
+	 * @param dumpDir Имя директории, в которую будет производиться дамп
+	 * @param classes Классы, которые необходимо дампить
+	 * @return Этот объект (this)
+	 */
 	public <T extends ClassLoaderSWL> T addDump(String dumpDir, Class<?>... classes)
 	{
 		if (!CollectionsSWL.isNullOrEmpty(classes))
@@ -288,11 +294,21 @@ public class ClassLoaderSWL extends URLClassLoader {
 		return (T) this;
 	}
 
+	/**
+	 * Загрузить класс при помощи этого {@link ClassLoader}'а
+	 * @param cl Загружаемый класс
+	 * @return Загруженный класс
+	 * @throws ClassNotFoundException
+	 */
 	public Class<?> loadClass(Class<?> cl) throws ClassNotFoundException
 	{
 		return loadClass(cl.getCanonicalName());
 	}
 	
+	/**
+	 * Использовать адаптивный источник классов, основанный на вытягивании источников класса-родителя
+	 * @return Этот объект (this)
+	 */
 	public <T extends ClassLoaderSWL> T useAdaptiveSource() 
 	{
 		this.classInfoSource = new AdaptiveWrapperClassSource();
@@ -406,6 +422,10 @@ public class ClassLoaderSWL extends URLClassLoader {
 		super.addURL(url);
 	}
 
+	/**
+	 * Закрыть {@link ClassLoader} безопасно
+	 * @return True, если успешно
+	 */
 	public boolean closeSafe()
 	{
 		try
@@ -423,16 +443,38 @@ public class ClassLoaderSWL extends URLClassLoader {
 		return false;
 	}
 
+	/**
+	 * Информация об источнике классов. <br>
+	 * Отдает информацию о контенте класса в байтах и его {@link CodeSource} по имени
+	 * @author swayfarer 
+	 *
+	 */
 	public static interface IClassInfoSource {
 
+		/**
+		 * Получить байты класса 
+		 * @param name Нормальное имя класса
+		 * @return Контент класса или null, если не найдется
+		 */
 		public byte[] getClassBytes(String name);
 
+		/**
+		 * Получить источник кода класса
+		 * @param name Нормальное имя класса
+		 * @return Источник кода класса или null, если не найдется
+		 */
 		public CodeSource getClassCodeSource(String name);
 
 	}
 
+	/**
+	 * Источник информации о классах ({@link IClassInfoSource}), основанный на обращении к {@link ResourceLink} для получения ресурсов
+	 * @author swayfarer
+	 *
+	 */
 	public static class RLinkClassInfoSource implements IClassInfoSource {
 
+		@Override
 		public byte[] getClassBytes(String name)
 		{
 			String bytespath = "/" + name.replace(".", "/") + (".class");
@@ -442,6 +484,7 @@ public class ClassLoaderSWL extends URLClassLoader {
 			return bytes;
 		}
 
+		@Override
 		public CodeSource getClassCodeSource(String name)
 		{
 			String bytespath = "/" + name.replace(".", "/") + (".class");

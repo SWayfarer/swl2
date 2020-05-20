@@ -11,31 +11,63 @@ import ru.swayfarer.swl2.logger.config.files.archiver.EveryDelayType;
 import ru.swayfarer.swl2.logger.config.files.archiver.OverDelayType;
 import ru.swayfarer.swl2.logger.handlers.LogArchiverHandler;
 import ru.swayfarer.swl2.resource.file.FileSWL;
+import ru.swayfarer.swl2.resource.pathtransformers.PathTransforms;
 import ru.swayfarer.swl2.string.StringUtils;
 import ru.swayfarer.swl2.swconf.serialization.comments.CommentSwconf;
 import ru.swayfarer.swl2.swconf.serialization.comments.IgnoreSwconf;
 import ru.swayfarer.swl2.tasks.TaskManager;
 
+/**
+ * Конфигуратор архивации лог. файлов
+ * @author swayfarer
+ *
+ */
 public class ConfiguratorArchivingEntry {
 
+	/** Архивировать ли файл логов, оставшийся с прошлого раза? */
 	@CommentSwconf("Archive already existing logfile on start?")
-	public boolean ifPrefExists = true;
+	public boolean ifPrefExists = false;
 	
+	/** Архивировать ли файл логов при закрытии приложения? */
 	@CommentSwconf("Archive logfile on application close?")
 	public boolean onClose = true;
 	
+	/** Максимальный размер файла с указанием единиц измерения, который будет переведен в число при помощи {@link #getMaxFileBytes()} */
 	@CommentSwconf("File size at which it is archived")
 	public String maxFileSize = "10mb";
 	
+	/** 
+	 * Период архивации <br>
+	 * Состоит из способа подсчета, числа и единиц измерерия <br>
+	 *
+	 * <h1> Способы подсчета: </h1>
+	 * per - абсолютное значение, т.е. per 1 day = раз в 24 часа, а не календарные сутки. Принимает единицы измерения <= неделе <br>
+	 * every - Календарные значение, т.е. every 1 day = каждый календарный день. Принимает единицы измерения >= дню
+	 *
+	 * <h1> Единицы измерения: </h1>
+	 * sec, secs, second, seconds, s - секунды <br>
+	 * min, minute, minutes, mins - минуты <br>
+	 * hour, h, hours - часы
+	 * days, day, d - дни <br>
+	 * week, weeks, w - неделя <br>
+	 * month, months - месяц <br>
+	 * year, years, y - год <br>
+	 */
 	@CommentSwconf("Archiving delay")
-	public String delay = "per 1 days";
+	public String delay = "every 1 days";
 	
+	/**
+	 * Паттерн имени файла, согласно которому он будет назван при создании <br>
+	 * В паттерне могут быть использованы любые ключевые актеры из {@link PathTransforms} + %file% - имя лог. файла до архивации
+	 */
 	@CommentSwconf("Archive file pattern")
 	public String archiveFilePattern = "%date[YYYY.MM.DD-HH.mm.ssss]%.log";
 	
+	/** Путь до директории, в которую будут сохраняться архивы */
 	@CommentSwconf("Directory where arhived logfiles will be located")
 	public String archivesDir = "logs/archives/";
 	
+	/** Кэшированный максимальный размер лог. файла в байтах */
 	@IgnoreSwconf
 	public long maxFileBytes = Short.MIN_VALUE;
 	
@@ -46,6 +78,7 @@ public class ConfiguratorArchivingEntry {
 			"per", new OverDelayType()
 	);
 	
+	/** Применить на логгер */
 	public void applyToLogger(ILogger logger, ConfiguratorFileEntry fileEntry)
 	{
 		FileSWL logFile = fileEntry.getLogFile();
@@ -100,6 +133,10 @@ public class ConfiguratorArchivingEntry {
 		logger.evtPostLogging().subscribe(archiverHandler);
 	}
 	
+	/** 
+	 * Получить директорию, в которую будут сохраняться логи
+	 * @return Директория
+	 */
 	public FileSWL getArchivesDir()
 	{
 		return new FileSWL(archivesDir);

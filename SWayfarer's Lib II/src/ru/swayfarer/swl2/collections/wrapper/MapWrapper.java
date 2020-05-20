@@ -6,12 +6,26 @@ import java.util.Set;
 
 import ru.swayfarer.swl2.collections.extended.IExtendedMap;
 import ru.swayfarer.swl2.exceptions.ExceptionsUtils;
+import ru.swayfarer.swl2.markers.InternalElement;
 
+/**
+ * Обертка на карту
+ * @author swayfarer
+ *
+ * @param <K> Тип Ключа
+ * @param <V> Тип Значения
+ */
 @SuppressWarnings("unchecked")
 public class MapWrapper<K, V> implements IExtendedMap<K, V> {
 
+	/** Обернутая карта */
+	@InternalElement
 	public Map<K, V> wrappedMap;
 	
+	/**
+	 * Конструктор
+	 * @param wrappedMap обернутая карта
+	 */
 	public MapWrapper(Map<K, V> wrappedMap)
 	{
 		super();
@@ -19,6 +33,11 @@ public class MapWrapper<K, V> implements IExtendedMap<K, V> {
 		this.wrappedMap = wrappedMap;
 	}
 
+	/**
+	 * Задать обернутую карту
+	 * @param map Карта, которая будет обернута
+	 * @return Этот лист (this)
+	 */
 	public <T extends MapWrapper<K, V>> T setWrappedMap(Map<K, V> map) 
 	{
 		ExceptionsUtils.IfNullArg(map, "Wrapped map can't be null!");

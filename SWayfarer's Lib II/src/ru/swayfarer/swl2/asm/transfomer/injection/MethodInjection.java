@@ -140,6 +140,15 @@ public class MethodInjection implements IMethodInjection, Opcodes {
 		return false;
 	}
 	
+	/**
+	 * Создание {@link SimpleReference}, хранящей информацию о возыращаемом значении <br>
+	 * Создание ссылки и задание в нее значения
+	 * @param targetClassInfo Класс, в который происходит иньекция
+	 * @param targetMethodInfo Метод, в который происходит иньекция
+	 * @param atEnd В конец ли метода поисходит иньекция
+	 * @param methodVisitor {@link MethodVisitor}, через который происходит иньекция
+	 * @return Информация о ссылке на возвращаемое значение
+	 */
 	public ReturnRefInfo preInjectReturnRef(ClassInfo targetClassInfo, MethodInfo targetMethodInfo, boolean atEnd, AdviceAdapter methodVisitor)
 	{
 		Type methodReturnType = targetMethodInfo.getReturnType();
@@ -171,6 +180,14 @@ public class MethodInjection implements IMethodInjection, Opcodes {
 		return new ReturnRefInfo(refVarId, returnVarId);
 	}
 
+	/**
+	 * Проверка ссылки на результат метода на заданность и возврат ее значения, если успешно.
+	 * @param targetClassInfo Класс, в который происходит иньекция
+	 * @param targetMethodInfo Метод, в который происходит иньекция
+	 * @param atEnd В конец ли метода поисходит иньекция
+	 * @param methodVisitor {@link MethodVisitor}, через который происходит иньекция
+	 * @param refInfo Информация о ссылке
+	 */
 	public void postInjectReturnRef(ClassInfo targetClassInfo, MethodInfo targetMethodInfo, boolean atEnd, AdviceAdapter methodVisitor, ReturnRefInfo refInfo)
 	{
 		Label afterReturnLabel = new Label();
@@ -225,6 +242,11 @@ public class MethodInjection implements IMethodInjection, Opcodes {
 		return injectedMethodInfo.owner.name;
 	}
 	
+	/**
+	 * Найти все методы-иньекции внутри класса
+	 * @param classInfo Информация о классе, в котором происходит поиск
+	 * @return Список методов-иньекций
+	 */
 	public static IExtendedList<MethodInjection> of(ClassInfo classInfo)
 	{
 		IExtendedList<MethodInjection> ret = CollectionsSWL.createExtendedList();
@@ -332,10 +354,18 @@ public class MethodInjection implements IMethodInjection, Opcodes {
 				+ hasReturnRef + ", injectOnExit=" + injectOnExit + "]";
 	}
 	
+	/**
+	 * Информация о ссылке на возвращаемое значение
+	 * @author swayfarer
+	 *
+	 */
 	@AllArgsConstructor @Data
 	public static class ReturnRefInfo {
 		
+		/** Id локальной переменной, в которой находится ссылка */
 		public int returnRefId = -1;
+		
+		/** Id локальной переменной, в которой находится возвращаемое значение */
 		public int returnVarId = -1;
 		
 	}

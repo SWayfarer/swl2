@@ -6,9 +6,19 @@ import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.collections.streams.DataStream;
 import ru.swayfarer.swl2.collections.streams.IDataStream;
 
+/**
+ * Поток информации о классах <br>
+ * {@link IDataStream} для {@link ClassInfo} 
+ * @author swayfarer
+ *
+ */
 @SuppressWarnings("unchecked")
 public class ClassInfoStream extends DataStream<ClassInfo> implements IClassInfoStream {
 
+	/** 
+	 * Конструктор
+	 * @param elements Элементы потока
+	 */
 	public ClassInfoStream(IExtendedList<ClassInfo> elements)
 	{
 		super(elements);

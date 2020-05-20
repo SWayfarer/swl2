@@ -8,8 +8,24 @@ import ru.swayfarer.swl2.logger.decorators.FormattedStacktraceDecorator;
 import ru.swayfarer.swl2.string.StringUtils;
 import ru.swayfarer.swl2.swconf.serialization.comments.CommentSwconf;
 
+/**
+ * Конфигуратор, отвечающий за вывод логов в консоль
+ * @author swayfarer
+ *
+ */
 public class ConfiguratorPrintingEntry {
 
+	/**
+	 * Формат лога.
+	 * <h1> Принимаемые ключевые актеры: </h1>
+	 * %file% - Файл, в котором располагается источник лога (jar или папка) <br>
+	 * %level% - Уровень лога <br>
+	 * %thread% - Имя потока, из которого вызван лог <br>
+	 * %logger% - Имя логгера, который логирует лог <br>
+	 * %text% - Текст лога <br>
+	 * %from% - Ссылка на источник лога в формате файла и строки, например SomeFile.java:123 <br>
+	 * %fromFull% - Ссылка на источник лога в формате полного пути до него, например some.path.to.SomeFile.java:123<br>
+	 */
 	@CommentSwconf
 	(
 			  "\nFormat of logging. Use actors: \n"
@@ -23,18 +39,31 @@ public class ConfiguratorPrintingEntry {
 	)
 	public String format = SimpleLoggerSWL.defaultFormat;
 	
+	/**
+	 * Формат элемента стактрейса <br>
+	 * <h1> Принимаемые ключевые актеры </h1>
+	 * %class% - Имя класса, на который ссылается элемент стактрейса <br>
+	 * %source% - Источник элемента стактрейса <br>
+	 * %lineNumber% - Строка кода, на которую ссылается элемент <br>
+	 * %method% - Метод, на который ссылается элемент <br>
+	 * %file% - Файл, в котором лежит класс, на который ссылается элемент <br>
+	 */
 	@CommentSwconf("Stacktrace element format")
 	public String stacktraceFormat = FormattedStacktraceDecorator.defaultStacktraceFormat;
 	
+	/** Скрывать ли цвета? */
 	@CommentSwconf("If sets to true output colors will be hidden")
 	public boolean hideColors = false;
 
+	/** Декоратор {@link Throwable}'ов */
 	@CommentSwconf("Throwables decorator seq")
 	public String decoratorSeq = "=-";
 	
+	/** Префиксы, элементы стактрейсов начинающиеся с которых будут скрыты из него */
 	@CommentSwconf("All stacktrace elements that starts with element of this list will be not shown")
 	public IExtendedList<String> stacktraceBlocks = CollectionsSWL.createExtendedList();
 	
+	/** Применить на логгер */
 	public void applyToLogger(ILogger logger)
 	{
 		if (!StringUtils.isEmpty(format))

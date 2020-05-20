@@ -6,9 +6,15 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+/**
+ * Автоматически регистрируемый источник контекста 
+ * @author swayfarer
+ *
+ */
 @Retention(RUNTIME)
 @Target(TYPE)
 public @interface DISwlSource
 {
-	public String context();
+	/** Контекст, в который будут добавлены элементы источника */
+	public String context() default "";
 }

@@ -15,7 +15,7 @@ public class OverDelayType extends DelayType {
 		// Секунды
 		registerUnit((unit, delay) -> 
 			(date, actual) -> Math.abs(DateUtils.toSecs(DateUtils.asTime(date)) - DateUtils.toSecs(DateUtils.asTime(actual))) >= delay,
-			"sec", "secs", "s");
+			"sec", "secs", "s", "second", "seconds");
 		
 		// Минуты
 		registerUnit((unit, delay) -> 

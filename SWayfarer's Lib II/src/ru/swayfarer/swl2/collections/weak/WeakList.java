@@ -48,11 +48,13 @@ public class WeakList<Element_Type> implements IExtendedList<Element_Type> {
 		isModified = false;
 	}
 	
+	/** Получить лист, состоящий не из ссылкок на элементы, а из самих элементов*/
 	public IExtendedList<Element_Type> asNonReferenceList()
 	{
 		return referencesList.dataStream().mapped((link) -> link.get()).toList();
 	}
 	
+	/** Создать лист ссылок на элементы коллекции */
 	public IExtendedList<WeakReference<Element_Type>> createRefsList(Collection<?> c)
 	{
 		return ReflectionUtils.forceCast(DataStream.of(c)
@@ -61,6 +63,11 @@ public class WeakList<Element_Type> implements IExtendedList<Element_Type> {
 				
 	}
 
+	/**
+	 * Получить ссылку на элемент
+	 * @param element Элемент, на который создается ссылка
+	 * @return Ссылка на элемент
+	 */
 	public WeakReference<Element_Type> createRef(Object element)
 	{
 		return new WeakReference(element);

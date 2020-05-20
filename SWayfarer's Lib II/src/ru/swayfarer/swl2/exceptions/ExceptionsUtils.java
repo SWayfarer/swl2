@@ -18,12 +18,14 @@ import ru.swayfarer.swl2.string.StringUtils;
 
 public class ExceptionsUtils {
 	
+	/** Регулярка на лямбду внутри стактрейса */
 	public static String LAMBDA_GENERATED_METHOD_REGEX = StringUtils.regex()
 			.text("lambda$")
 			.some()
 			.num()
 	.build();
 	
+	/** Регулярка на лямбду внутри стактрейса */
 	public static String LAMBDA_GENERATED_METHOD_REGEX_2 = StringUtils.regex()
 			.something()
 			.text("$$Lambda$")

@@ -4,13 +4,23 @@ import javafx.application.Application;
 import javafx.scene.control.TableView;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
+import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.string.StringUtils;
 import ru.swayfarer.swl2.threads.ThreadsUtils;
 
+/**
+ * Утилиты для работы с Java (и jvm)
+ * @author swayfarer
+ *
+ */
 public class JavaUtils {
 
+	/** Логгер */
+	@InternalElement
 	public static ILogger logger = LoggingManager.getLogger();
 	
+	/** Прочитанная версия Java. Если -1, то будет прочитана при первом вызове {@link #getJavaVersion()} */
+	@InternalElement
 	public static int javaVersion = -1;
 	
 	/** Есть ли в Jvm Javafx? */
@@ -18,9 +28,7 @@ public class JavaUtils {
 	{
 		try
 		{
-			Class<?> checkedClass = Application.class;
-			checkedClass = TableView.class;
-			
+			Class.forName("javafx.application.Application");
 			return true;
 		}
 		catch (Throwable e)
@@ -31,6 +39,10 @@ public class JavaUtils {
 		return false;
 	}
 	
+	/** 
+	 * Получить версию Java
+	 * @return Целое число, обозначающее версию. Для 7 - 7, для 14 - 14 и т.п.
+	 */
 	public static int getJavaVersion()
 	{
 		if (javaVersion == -1)

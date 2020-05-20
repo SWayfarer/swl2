@@ -78,6 +78,10 @@ public class MethodInfo {
 		return parameters.copy();
 	}
 	
+	/**
+	 * Получить список параметров
+	 * @return Список дескрипторов параметров
+	 */
 	public List<String> getParamsTypes()
 	{
 		if (paramsTypes == null)

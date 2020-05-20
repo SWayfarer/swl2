@@ -8,14 +8,25 @@ import ru.swayfarer.swl2.asm.transformer.informated.InformatedClassTransformer;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1;
+import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.ClassReader;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.ClassVisitor;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.ClassWriter;
 
+/**
+ * Трансформер классов, заменяющий обращения к полям на обращения к их accessor'ам
+ * @author swayfarer
+ *
+ */
 @SuppressWarnings("unchecked")
 public class FieldAccessorsClassTransformer extends InformatedClassTransformer {
 
+	/** Функция, возвращающая имя для сеттера поля */
+	@InternalElement
 	public IFunction1<FieldInfo, String> fieldsSetterNameFun = (field) -> "internal_set" + field.name;
+	
+	/** Функция, возвращающая имя для геттера поля */
+	@InternalElement
 	public IFunction1<FieldInfo, String> fieldsGetterNameFun = (field) -> "internal_get" + field.name;;
 	
 	public Map<String, IExtendedList<String>> registeredFields = CollectionsSWL.createConcurrentHashMap();

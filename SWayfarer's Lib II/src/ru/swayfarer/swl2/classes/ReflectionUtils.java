@@ -65,6 +65,11 @@ public class ReflectionUtils {
 		return null;
 	};
 	
+	/**
+	 * Получить имя источника класса
+	 * @param className Имя искомого класса
+	 * @return Найденное имя или null, если не найдется
+	 */
 	public static String getClassSource(String className)
 	{
 		String name = className.replace(".", "/") + ".class";
@@ -74,12 +79,20 @@ public class ReflectionUtils {
 		return getResourceSource(className, url);
 	}
 	
+	/**
+	 * Получить {@link IExtendedList} с элементами classpath'а
+	 */
 	public static IExtendedList<String> getClasspath()
 	{
 		String cp = new SystemProperty("java.class.path").getValue();
 		return CollectionsSWL.createExtendedList(cp.split(File.pathSeparator));
 	}
 	
+	/**
+	 * Получить имя источника класса
+	 * @param cl Искомый класс
+	 * @return Найденное имя или null, если не найдется
+	 */
 	public static String getClassSource(Class<?> cl)
 	{
 		if (cl == null)
@@ -97,6 +110,10 @@ public class ReflectionUtils {
 		return getResourceSource(cl.getName(), url);
 	}
 	
+	/**
+	 * Зарегистрировать стандартные генераторы имен источников классов
+	 */
+	@InternalElement
 	public static void registerDefaultSourceFuns()
 	{
 		registeredSourcesFun.add((cl, url) -> {
@@ -133,6 +150,12 @@ public class ReflectionUtils {
 		});
 	}
 	
+	/**
+	 * Получить имя источника класса
+	 * @param className Имя искомого класса
+	 * @param url {@link URL}, по которому находится класс
+	 * @return Найденное имя или null, если не найдется
+	 */
 	public static String getResourceSource(String className, URL url)
 	{
 		if (url == null)
@@ -149,6 +172,13 @@ public class ReflectionUtils {
 		return "<unknown>";
 	}
 	
+	/** 
+	 * Вызвать все методы, подходящие под фильтр
+	 * @param filter Фильтр методов
+	 * @param classOfObj Класс, в котором будут искаться методы
+	 * @param obj Объект, в котором будут искаться методы
+	 * @param args Аргументы, с которыми будут вызваны методы 
+	 */
 	public static void invokeMethods(IFunction1<Method, Boolean> filter, Class<?> classOfObj, Object obj, Object... args)
 	{
 		int argsCount = args == null ? 0 : args.length;
@@ -183,6 +213,12 @@ public class ReflectionUtils {
 		return getFieldValue(null, cl, names);
 	}
 	
+	/**
+	 * Найти поле класса
+	 * @param cl Класс, в котором происходит поиск 
+	 * @param names Возможные имена поля
+	 * @return Найденное поле или null, если не найдется
+	 */
 	public static Field findField(Class<?> cl, String... names)
 	{
 		return findField(cl, null, names);

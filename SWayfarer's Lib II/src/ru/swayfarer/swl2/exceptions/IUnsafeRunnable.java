@@ -9,6 +9,10 @@ public interface IUnsafeRunnable {
 
 	public void run() throws Throwable;
 
+	/**
+	 * Версия {@link IUnsafeRunnable}, которая умеет возвращать значения
+	 * @author swayfarer
+	 */
 	public static interface IUnsafeRunnableWithReturn <T> {
 		T run() throws Throwable;
 	}

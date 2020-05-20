@@ -11,9 +11,7 @@ import ru.swayfarer.swl2.exceptions.ExceptionsUtils;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1NoR;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction2NoR;
 import ru.swayfarer.swl2.ioc.DIManager;
-import ru.swayfarer.swl2.ioc.componentscan.ComponentScan;
-import ru.swayfarer.swl2.ioc.componentscan.ContextSourcesScan;
-import ru.swayfarer.swl2.ioc.componentscan.DISwlComponent;
+import ru.swayfarer.swl2.ioc.componentscan.DIScan;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
 import ru.swayfarer.swl2.markers.InternalElement;
@@ -30,14 +28,18 @@ import ru.swayfarer.swl2.options.OptionsParser;
 public abstract class ApplicationSWL {
 	
 	/** Время старта приложения */
+	@InternalElement
 	public long startTime = System.currentTimeMillis();
 	
 	/** Парсер опций */
 	public OptionsParser optionsParser;
 	
+	/** Прочитанные из командной строки опции */
+	@InternalElement
 	public IExtendedList<Option> options;
 	
 	/** Логгер*/
+	@InternalElement
 	public ILogger logger = LoggingManager.getLogger(getClass().getSimpleName());
 	
 	/** Точка для подписки на событие выхода из приложения */
@@ -52,9 +54,13 @@ public abstract class ApplicationSWL {
 	/** Стартер для приложения */
 	public IFunction2NoR<IExtendedList<String>, IFunction1NoR<IExtendedList<String>>> applicationStarter = (args, method) -> method.apply(args);
 
-	public ComponentScan componentScan = new ComponentScan();
-
-	public ContextSourcesScan contextSourcesScan = new ContextSourcesScan();
+	/** Сканнер элементов DI, таких как компоненты и источники контекста */
+	@InternalElement
+	public DIScan diScan = new DIScan();
+	
+	/** Ланучер приложения, дла более гибкого старта (например, для стара с JavaFX) */
+	@InternalElement
+	public IFunction2NoR<List<String>, IFunction1NoR<List<String>>> launcherFun = (args, fun) -> fun.apply(args);
 	
 	/** 
 	 * Настроить класслоадер, который будет грузить приложение 
@@ -65,6 +71,7 @@ public abstract class ApplicationSWL {
 	 */
 	public void configureClassloader(ClassLoaderSWL classLoader) {}
 	
+	/** Настроить {@link #launcherFun} */
 	public void configureLauncher() {};
 	
 	/**
@@ -79,8 +86,18 @@ public abstract class ApplicationSWL {
 	 */
 	public void start(IExtendedList<String> args) {}
 	
+	/**
+	 * Инициализация DI
+	 * @param args Аргументы, переданные в main
+	 * @return True, если DI должен быть заиньекчен в этот объект
+	 */
 	public boolean initDI(IExtendedList<String> args) { return false; }
 	
+	/**
+	 * Безопасная версия метода {@link #start(IExtendedList)}, находящегося под try-catch
+	 * @param args Аргументы, переданные в main
+	 * @throws Throwable
+	 */
 	public void startSafe(IExtendedList<String> args) throws Throwable {}
 	
 	/** 
@@ -89,20 +106,16 @@ public abstract class ApplicationSWL {
 	 */
 	public void postStart(IExtendedList<String> args) {}
 	
-	/** Отсканировать DI-компоненты, отмеченные аннтотацией {@link DISwlComponent}*/
+	/** Отсканировать элементы DI внутри пакета приложения (см {@link #diScan}) */
 	public void scanDIComponents()
 	{
-		componentScan.scan(getClass().getPackage().getName());
+		diScan.scan(getClass().getPackage().getName());
 	}
-	
-	/** Отсканировать источники контекста в пакете приложения и дальше*/
-	public void scanContextSources()
-	{
-		contextSourcesScan.scan(getClass().getPackage().getName());
-	}
-	
-	public IFunction2NoR<List<String>, IFunction1NoR<List<String>>> launcherFun = (args, fun) -> fun.apply(args);
 
+	/**
+	 * Запустить при помощи лаунчера ({@link #launcherFun}) приложение
+	 * @param optionsList Лист аргументов, переданных при старте
+	 */
 	public void launchByLauncher(List<String> optionsList)
 	{
 		configureLauncher();

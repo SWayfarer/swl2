@@ -9,10 +9,19 @@ import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
 import ru.swayfarer.swl2.markers.InternalElement;
 
+/**
+ * Утилиты для работы с криптографией
+ * @author swayfarer
+ *
+ */
 public class CryptoUtils {
 	
+	/** Логгер */
+	@InternalElement
 	public static ILogger logger = LoggingManager.getLogger();
 	
+	/** Стандартные генераторы ключей шифрования */
+	@InternalElement
 	public static Map<String, KeyGenerator> defaultKeyGenerators = CollectionsSWL.createHashMap(
 		"aes", getKeyGenerator("AES")
 	);
