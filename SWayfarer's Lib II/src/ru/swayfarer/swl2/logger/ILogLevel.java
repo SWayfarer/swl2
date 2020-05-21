@@ -19,6 +19,14 @@ public interface ILogLevel {
 				1
 		);
 		
+		public static final ILogLevel LEVEL_DEV = SimpleLogLevel.of
+		(
+				() -> SimpleLogLevel.DEV_PREFIX_TEXT,
+				() -> SimpleLogLevel.DEV_LOG_COLOR_PREFIX,
+				Level.FINE,
+				1
+		);
+		
 		public static final ILogLevel LEVEL_WARNING = SimpleLogLevel.of
 		(
 				() -> SimpleLogLevel.WARNING_PREFIX_TEXT,

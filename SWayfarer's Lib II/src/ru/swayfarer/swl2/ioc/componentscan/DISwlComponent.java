@@ -20,7 +20,7 @@ import ru.swayfarer.swl2.ioc.context.elements.ContextElementType;
 public @interface DISwlComponent
 {
 	/** Имя, под которым элемент будет создан */
-	public String name();
+	public String name() default "";
 	
 	/** Контекст, в котором будет создан элемент */
 	public String context() default "";

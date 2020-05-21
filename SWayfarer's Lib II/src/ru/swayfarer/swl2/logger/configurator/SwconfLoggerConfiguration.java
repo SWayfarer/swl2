@@ -29,6 +29,9 @@ public class SwconfLoggerConfiguration extends AutoSerializableConfig {
 	/** Применить на логгер */
 	public void applyToLogger(ILogger logger)
 	{
+		if (!isEnabled)
+			return;
+		
 		if (CollectionsSWL.isNullOrEmpty(configuration))
 			return;
 		

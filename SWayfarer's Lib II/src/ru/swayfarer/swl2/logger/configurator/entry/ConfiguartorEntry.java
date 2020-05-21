@@ -26,6 +26,9 @@ public class ConfiguartorEntry {
 	@CommentSwconf("Files saving settings")
 	public IExtendedList<ConfiguratorFileEntry> files = CollectionsSWL.createExtendedList();
 	
+	@CommentSwconf("Filtering of logs")
+	public LogFiltering filtering;
+	
 	/** Применить на логгер */
 	public void applyToLogger(ILogger logger)
 	{
@@ -37,6 +40,14 @@ public class ConfiguartorEntry {
 		if (!CollectionsSWL.isNullOrEmpty(files))
 		{
 			files.each((c) -> c.applyToLogger(logger));
+		}
+		
+		if (filtering != null)
+		{
+			logger.evtLogging().subscribe((e) -> {
+				if (!filtering.isAccepts(e))
+					e.setCanceled(true);
+			});
 		}
 	}
 	

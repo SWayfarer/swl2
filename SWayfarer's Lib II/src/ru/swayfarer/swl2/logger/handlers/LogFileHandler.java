@@ -1,6 +1,5 @@
 package ru.swayfarer.swl2.logger.handlers;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NonNull;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1;

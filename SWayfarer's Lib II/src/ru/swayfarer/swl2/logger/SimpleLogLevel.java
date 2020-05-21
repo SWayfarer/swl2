@@ -17,6 +17,14 @@ public class SimpleLogLevel implements ILogLevel {
 
 	/** Название уровня {@link StandartLoggingLevels#LEVEL_INFO}*/
 	@InternalElement
+	public static String DEV_PREFIX_TEXT = "&{45}Dev&{h:1}";
+	
+	/** Цветовой префикс уровня {@link StandartLoggingLevels#LEVEL_FATAL}*/
+	@InternalElement
+	public static String DEV_LOG_COLOR_PREFIX = "&{195}";
+	
+	/** Название уровня {@link StandartLoggingLevels#LEVEL_INFO}*/
+	@InternalElement
 	public static String INFO_PREFIX_TEXT = "&{green}Info&{h:1}";
 	
 	/** Название уровня {@link StandartLoggingLevels#LEVEL_WARNING}*/

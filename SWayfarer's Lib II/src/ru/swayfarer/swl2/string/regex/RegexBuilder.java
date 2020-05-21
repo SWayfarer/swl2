@@ -50,17 +50,18 @@ public class RegexBuilder {
 	/** НЕ указаные символы */
 	public <T extends RegexBuilder> T not(String text)
 	{
-		text = blockRegexSymbols(text);
 		if (text.length() == 1)
 		{
 			builder.append("[^");
-			text(text);
+			text = blockRegexSymbols(text);
+			builder.append(text);
 			builder.append("]");
 			
 			onAppendEnd();
 		}
 		else
 		{
+			text = blockRegexSymbols(text);
 			builder.append("((?!" + text + ").)*");
 		}
 		
@@ -74,7 +75,7 @@ public class RegexBuilder {
 		if (text.length() == 1)
 		{
 			builder.append("[^");
-			text(text);
+			builder.append(text);
 			builder.append("]");
 			
 			onAppendEnd();
@@ -342,8 +343,10 @@ public class RegexBuilder {
 	@InternalElement
 	public <T extends RegexBuilder> T onAppendEnd()
 	{
-		if (countString != null)
+		if (!StringUtils.isBlank(countString))
+		{
 			builder.append(countString);
+		}
 		
 		countString = null;
 		

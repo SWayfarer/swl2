@@ -48,11 +48,11 @@ public class LogArchiverHandler implements IFunction2NoR <ISubscription<LogEvent
 	{
 		if (isNeedsToArchive(logEvent))
 		{
-			save(true);
+			save(true, true);
 		}
 	}
 	
-	public void save(boolean isReCreate)
+	public void save(boolean isRemove, boolean isReCreate)
 	{
 		if (!logsFile.exists())
 			return;
@@ -71,9 +71,14 @@ public class LogArchiverHandler implements IFunction2NoR <ISubscription<LogEvent
 
 		archiveFun.apply(logsFile, archivesDir, archiveName);
 
-		if (isReCreate)
+		
+		if (isRemove)
 		{
 			logsFile.removeIfExists();
+		}
+		
+		if (isReCreate)
+		{
 			logsFile.createIfNotFoundSafe();
 		}
 

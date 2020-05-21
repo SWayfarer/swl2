@@ -25,6 +25,7 @@ import ru.swayfarer.swl2.options.OptionsParser;
  * @author swayfarer
  *
  */
+@SuppressWarnings("unchecked")
 public abstract class ApplicationSWL {
 	
 	/** Время старта приложения */
@@ -120,6 +121,17 @@ public abstract class ApplicationSWL {
 	{
 		configureLauncher();
 		launcherFun.apply(optionsList, this::launch);
+	}
+	
+	/**
+	 * Использовать источник класса приложения для сканирования DI, вместо classpath'а <br>
+	 * Быстрее, чем сканировать classpath(Иногда намного), но требует наличия всех DI элементов в одном источнике
+	 * @return Это приложение (this)
+	 */
+	public <T extends ApplicationSWL> T useApplicationSourceForScan()
+	{
+		this.diScan.classFinder.useClassSource(getClass());
+		return (T) this;
 	}
 	
 	/** 

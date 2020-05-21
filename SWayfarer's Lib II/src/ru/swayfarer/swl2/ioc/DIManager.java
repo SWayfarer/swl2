@@ -76,7 +76,7 @@ public class DIManager {
 		}
 		else
 		{
-			logger.warning("Can't lock context", contextName, "because it not found!\n", DIRegistry.registeredManagers);
+			logger.warning("Can't lock context", contextName, "because it not found!\n| Registered managers:", DIRegistry.registeredManagers);
 		}
 	}
 

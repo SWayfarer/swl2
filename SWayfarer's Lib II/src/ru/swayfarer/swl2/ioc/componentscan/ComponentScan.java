@@ -136,6 +136,11 @@ public class ComponentScan {
 		
 		IFunction0<Object> objectCreationFun = null;
 		
+		if (StringUtils.isEmpty(elementName))
+		{
+			elementName = StringUtils.firstCharToLowerCase(cl.getSimpleName());
+		}
+		
 		if (StringUtils.isEmpty(contextName))
 		{
 			contextName = DIRegistry.getClassContextName(cl);

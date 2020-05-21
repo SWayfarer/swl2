@@ -122,9 +122,9 @@ public class ConfiguratorArchivingEntry {
 		
 		archiverHandler.isForceSave.set(ifPrefExists);
 		
-		if (ifPrefExists)
+		if (onClose)
 		{
-			TaskManager.onClose(() -> archiverHandler.save(false));
+			TaskManager.onClose(() -> archiverHandler.save(true, false));
 		}
 		
 		if (!StringUtils.isEmpty(archiveFilePattern))
