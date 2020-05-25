@@ -4,3 +4,5 @@
 /.settings/
 /.dbeaver/
 /bin/
+/.gradle/
+/build/
