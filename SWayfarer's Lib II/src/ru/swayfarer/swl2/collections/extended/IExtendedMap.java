@@ -32,7 +32,7 @@ public interface IExtendedMap<K, V> extends Map<K, V> {
 	 * @param key Ключ, по которому лежит элемент
 	 * @return Элемент карты или null, если не найдется
 	 */
-	public default <T> T getValue(K key)
+	public default <T> T getValue(Object key)
 	{
 		return (T) get(key);
 	}

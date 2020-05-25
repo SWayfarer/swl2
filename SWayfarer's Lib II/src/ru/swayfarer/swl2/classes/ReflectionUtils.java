@@ -13,6 +13,9 @@ import java.util.Map;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import ru.swayfarer.swl2.classes.reflection.ConstructorsStream;
+import ru.swayfarer.swl2.classes.reflection.FieldsStream;
+import ru.swayfarer.swl2.classes.reflection.MethodsStream;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.collections.streams.DataStream;
@@ -80,12 +83,82 @@ public class ReflectionUtils {
 	}
 	
 	/**
+	 * Получить поток конструкторов объекта
+	 * @param obj Объект, конструкторы класса которого будут помещены в поток
+	 * @return Поток конструкторов
+	 */
+	public static ConstructorsStream constructors(Object obj)
+	{
+		return new ConstructorsStream(obj.getClass());
+	}
+	
+	/**
+	 * Получить поток конструкторов класса
+	 * @param cl Класс, конструкторы которого будут помещены в поток
+	 * @return Поток конструкторов
+	 */
+	public static ConstructorsStream constructors(Class<?> cl)
+	{
+		return new ConstructorsStream(cl);
+	}
+	
+	/**
+	 * Получить поток полей объекта
+	 * @param obj Объект, поля класса которого будут помещены в поток
+	 * @return Поток полкй
+	 */
+	public static FieldsStream fields(Object obj)
+	{
+		return new FieldsStream(obj.getClass());
+	}
+	
+	/**
+	 * Получить поток полей класса
+	 * @param cl Класс, поля которого будут помещены в поток
+	 * @return Поток полкй
+	 */
+	public static FieldsStream fields(Class<?> cl)
+	{
+		return new FieldsStream(cl);
+	}
+	
+	/**
+	 * Получить поток методов класса
+	 * @param obj Объект, методы класса которого будут помещены в поток
+	 * @return Поток методов
+	 */
+	public static MethodsStream methods(Object obj)
+	{
+		return methods(obj.getClass());
+	}
+	
+	/**
+	 * Получить поток методов класса
+	 * @param cl Объект, методы которого будут помещены в поток
+	 * @return Поток методов
+	 */
+	public static MethodsStream methods(Class<?> cl)
+	{
+		return new MethodsStream(cl);
+	}
+	
+	/**
 	 * Получить {@link IExtendedList} с элементами classpath'а
 	 */
 	public static IExtendedList<String> getClasspath()
 	{
 		String cp = new SystemProperty("java.class.path").getValue();
 		return CollectionsSWL.createExtendedList(cp.split(File.pathSeparator));
+	}
+	
+	public static boolean isImplements(Class<?> cl, Class<?> classOfInterface)
+	{
+		return DataStream.of(cl.getInterfaces()).contains(cl);
+	}
+	
+	public static boolean isExtends(Class<?> cl, Class<?> parentClass)
+	{
+		return cl.getSuperclass().equals(parentClass);
 	}
 	
 	/**

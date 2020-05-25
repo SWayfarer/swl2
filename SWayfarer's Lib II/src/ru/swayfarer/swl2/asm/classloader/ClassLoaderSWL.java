@@ -77,6 +77,9 @@ public class ClassLoaderSWL extends URLClassLoader {
 	@InternalElement
 	public IClassInfoSource classInfoSource = URLClassSource.valueOf(this);
 	
+	@InternalElement
+	public IClassInfoSource currentClassloaderInfoSource = URLClassSource.valueOf(this);
+	
 	/** Логгер */
 	@InternalElement
 	public static ILogger logger = LoggingManager.getLogger();

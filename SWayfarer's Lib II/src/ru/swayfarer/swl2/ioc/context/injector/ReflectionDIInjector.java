@@ -41,7 +41,7 @@ public class ReflectionDIInjector {
 
 	/** Использовать ли кэширование */
 	public static boolean isUsingCache = true;
-
+	
 	/**
 	 * Конструктор
 	 * 
@@ -53,7 +53,7 @@ public class ReflectionDIInjector {
 		logger.safe(() -> {
 
 			for (Field field : cl.getDeclaredFields())
-			{
+			{ 
 				DISwL annotation = field.getAnnotation(DISwL.class);
 				DynamicDI dynamicDI = field.getAnnotation(DynamicDI.class);
 				

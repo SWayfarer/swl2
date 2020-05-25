@@ -342,6 +342,12 @@ public class CollectionsSWL {
 		return arr == null || arr.length == 0;
 	}
 	
+	/** Массив пуст или равен null */
+	public static boolean isNullOrEmpty(int[] arr)
+	{
+		return arr == null || arr.length == 0;
+	}
+	
 	/** Буффер пуст или равен null */
 	public static boolean isNullOrEmpty(DynamicByteBuffer buffer)
 	{
