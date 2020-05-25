@@ -79,7 +79,17 @@ public class ContextSourcesScan {
 				logger.info("Found context's", context, "source", source);
 			}
 			
+			ReflectionUtils.methods(source)
+				.argsCount(0)
+				.annotated(DISwlSource.PreInitEvent.class)
+			.invoke(context);
+			
 			DIManager.registerContextSource(context, source);
+			
+			ReflectionUtils.methods(source)
+				.argsCount(0)
+				.annotated(DISwlSource.InitEvent.class)
+			.invoke(context);
 		}
 	}
 	

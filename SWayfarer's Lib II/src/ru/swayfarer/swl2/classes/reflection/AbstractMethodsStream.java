@@ -15,7 +15,7 @@ import ru.swayfarer.swl2.collections.streams.DataStream;
  *
  * @param <Element_Type> Тип элемента
  */
-public abstract class AbstractMethodsStream<Element_Type> extends DataStream<Element_Type> {
+public abstract class AbstractMethodsStream<Return_Type, Element_Type> extends DataStream<Element_Type> {
 
 	public AbstractMethodsStream(IExtendedList<Element_Type> elements)
 	{
@@ -27,7 +27,7 @@ public abstract class AbstractMethodsStream<Element_Type> extends DataStream<Ele
 	 * @param str Строка, с которой будут начинаться оставшиеся методы
 	 * @return Поток с примененными изменениями
 	 */
-	public <T extends AbstractMethodsStream<Element_Type>> T starts(String str)
+	public Return_Type starts(String str)
 	{
 		return filter((method) -> getName(method).startsWith(str));
 	}
@@ -37,9 +37,19 @@ public abstract class AbstractMethodsStream<Element_Type> extends DataStream<Ele
 	 * @param str Строка, с которой будут заканчиваться оставшиеся методы
 	 * @return Поток с примененными изменениями
 	 */
-	public <T extends AbstractMethodsStream<Element_Type>> T ends(String str)
+	public Return_Type ends(String str)
 	{
 		return filter((method) -> getName(method).endsWith(str));
+	}
+	
+	/**
+	 * Оставить только методы, отмеченные аннотацией
+	 * @param cl Класс аннотации
+	 * @return Поток с примененными изменениями
+	 */
+	public Return_Type annotated(Class<?> cl)
+	{
+		return filter((method) -> getFirstAnnotation(method, cl) != null);
 	}
 	
 	/**
@@ -47,7 +57,7 @@ public abstract class AbstractMethodsStream<Element_Type> extends DataStream<Ele
 	 * @param args Классы параметров метода соответственно их позиции. <br> Например, someMethod(Object, String) = {@link Object}, {@link String} 
 	 * @return Поток с примененными изменениями
 	 */
-	public <T extends AbstractMethodsStream<Element_Type>> T args(Class<?>... args)
+	public Return_Type args(Class<?>... args)
 	{
 		return filter((method) -> {
 			Class<?>[] classes = getParameterTypes(method);
@@ -60,7 +70,7 @@ public abstract class AbstractMethodsStream<Element_Type> extends DataStream<Ele
 	 * @param args Аргументы, методы, подходящие для которых, будут оставлены
 	 * @return Поток с примененными изменениями
 	 */
-	public <T extends AbstractMethodsStream<Element_Type>> T forArgs(Object... args)
+	public Return_Type forArgs(Object... args)
 	{
 		return filter((method) -> ReflectionUtils.isParamsAccepted(getParameters(method), false, args));
 	}
@@ -70,7 +80,7 @@ public abstract class AbstractMethodsStream<Element_Type> extends DataStream<Ele
 	 * @param count Кол-во аргументов
 	 * @return Поток с примененными изменениями
 	 */
-	public <T extends AbstractMethodsStream<Element_Type>> T argsCount(int count)
+	public Return_Type argsCount(int count)
 	{
 		return filter((method) -> getParametersCount(method) == count);
 	}
@@ -80,7 +90,7 @@ public abstract class AbstractMethodsStream<Element_Type> extends DataStream<Ele
 	 * @param modifiers Модификаторы, например, {@link Modifier#PUBLIC}
 	 * @return Поток с примененными изменениями
 	 */
-	public <T extends AbstractMethodsStream<Element_Type>> T withModifiers(int... modifiers)
+	public Return_Type withModifiers(int... modifiers)
 	{
 		return filter((method) -> {
 			if (CollectionsSWL.isNullOrEmpty(modifiers))
@@ -104,7 +114,7 @@ public abstract class AbstractMethodsStream<Element_Type> extends DataStream<Ele
 	 * Оставить только final-методы
 	 * @return Поток с примененными изменениями
 	 */
-	public <T extends AbstractMethodsStream<Element_Type>> T finals()
+	public Return_Type finals()
 	{
 		return withModifiers(Modifier.FINAL);
 	}
@@ -113,7 +123,7 @@ public abstract class AbstractMethodsStream<Element_Type> extends DataStream<Ele
 	 * Оставить только public-методы
 	 * @return Поток с примененными изменениями
 	 */
-	public <T extends AbstractMethodsStream<Element_Type>> T publics()
+	public Return_Type publics()
 	{
 		return withModifiers(Modifier.PUBLIC);
 	}
@@ -122,7 +132,7 @@ public abstract class AbstractMethodsStream<Element_Type> extends DataStream<Ele
 	 * Оставить только protected-методы
 	 * @return Поток с примененными изменениями
 	 */
-	public <T extends AbstractMethodsStream<Element_Type>> T protecteds()
+	public Return_Type protecteds()
 	{
 		return withModifiers(Modifier.PROTECTED);
 	}
@@ -131,7 +141,7 @@ public abstract class AbstractMethodsStream<Element_Type> extends DataStream<Ele
 	 * Оставить только private-методы
 	 * @return Поток с примененными изменениями
 	 */
-	public <T extends AbstractMethodsStream<Element_Type>> T privates()
+	public Return_Type privates()
 	{
 		return withModifiers(Modifier.PRIVATE);
 	}
@@ -140,7 +150,7 @@ public abstract class AbstractMethodsStream<Element_Type> extends DataStream<Ele
 	 * Оставить только static-методы
 	 * @return Поток с примененными изменениями
 	 */
-	public <T extends AbstractMethodsStream<Element_Type>> T statics()
+	public Return_Type statics()
 	{
 		return withModifiers(Modifier.STATIC);
 	}
@@ -179,4 +189,12 @@ public abstract class AbstractMethodsStream<Element_Type> extends DataStream<Ele
 	 * @return Кол-во параметров методов
 	 */
 	public abstract int getParametersCount(Object element);
+	
+	/**
+	 * Получить первую аннотацию метода
+	 * @param element Метод, аннотацию которого получаем
+	 * @param classOfAnnotation Класс получаемой аннотации 
+	 * @return Аннотация 
+	 */
+	public abstract <T> T getFirstAnnotation(Object element, Class<T> classOfAnnotation);
 }

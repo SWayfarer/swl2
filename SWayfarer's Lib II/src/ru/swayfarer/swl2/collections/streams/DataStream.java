@@ -375,4 +375,17 @@ public class DataStream<Element_Type> implements IDataStream<Element_Type>{
 		
 		return false;
 	}
+
+	@Override
+	public Element_Type first(IFunction1<Element_Type, Boolean> filter)
+	{
+		for (Element_Type elem : elements)
+		{
+			if (filter.apply(elem))
+			{
+				return elem;
+			}
+		}
+		return null;
+	}
 }

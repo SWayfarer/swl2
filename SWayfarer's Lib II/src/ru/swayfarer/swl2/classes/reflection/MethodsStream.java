@@ -7,6 +7,8 @@ import ru.swayfarer.swl2.classes.ReflectionUtils;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.collections.streams.DataStream;
 import ru.swayfarer.swl2.collections.streams.IDataStream;
+import ru.swayfarer.swl2.logger.ILogger;
+import ru.swayfarer.swl2.logger.LoggingManager;
 
 /**
  * Поток методов
@@ -14,8 +16,10 @@ import ru.swayfarer.swl2.collections.streams.IDataStream;
  *
  */
 @SuppressWarnings("unchecked")
-public class MethodsStream extends AbstractMethodsStream<Method> {
+public class MethodsStream extends AbstractMethodsStream<MethodsStream, Method> {
 
+	public static ILogger logger = LoggingManager.getLogger();
+	
 	/**
 	 * Конструктор
 	 * @param cl Класс, методы которого будут помещены в поток 
@@ -64,6 +68,21 @@ public class MethodsStream extends AbstractMethodsStream<Method> {
 		return filter((method) -> method.getReturnType().getSuperclass().equals(cl));
 	}
 
+	/**
+	 * Вызов всех методов потока
+	 * @param obj Объект, для которого будут вызваны методы
+	 * @param args Аргументы, с которыми будет вызван метод
+	 * @return Поток, после вызова всех методов
+	 */
+	public <T extends MethodsStream> T invoke(Object obj, Object... args)
+	{
+		return each((method) -> {
+			logger.safe(() -> {
+				method.invoke(obj, args);
+			}, "Error while invoking method", method, "from", obj, "with args", args);
+		});
+	}
+	
 	@Override
 	public Class<?>[] getParameterTypes(Object element)
 	{
@@ -98,5 +117,11 @@ public class MethodsStream extends AbstractMethodsStream<Method> {
 	public <E, T extends IDataStream<E>> T wrap(IExtendedList<E> list)
 	{
 		return (T) new MethodsStream(ReflectionUtils.<IExtendedList<Method>>forceCast(list)).setParrallel(true);
+	}
+
+	@Override
+	public <T> T getFirstAnnotation(Object element, Class<T> classOfAnnotation)
+	{
+		return ((Method)element).getAnnotation(ReflectionUtils.forceCast(classOfAnnotation));
 	}
 }

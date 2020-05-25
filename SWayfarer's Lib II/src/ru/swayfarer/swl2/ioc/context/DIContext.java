@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import lombok.Synchronized;
-import lombok.experimental.var;
+import lombok.var;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.ioc.DIManager;
@@ -36,6 +36,8 @@ public class DIContext {
 	/** Элементы контекста. Имя -> Класс -> Элемент */
 	@InternalElement
 	public Map<String, Map<Class<?>, IDIContextElement>> contextElements = new HashMap<>();
+	
+	public IExtendedList<DIContext> parents = CollectionsSWL.createExtendedList();
 
 	/** 
 	 * Пройти блокировку иньекций. <br>
@@ -286,9 +288,37 @@ public class DIContext {
 				assignableElement = contextElement;
 		}
 
+		if (assignableElement != null)
+		{
+			assignableElement = getParentElements(name, skipName, associatedClass);
+		}
+		
 		return assignableElement;
 	}
 
+	public IDIContextElement getParentElements(String name, boolean skipName, Class<?> associatedClass)
+	{
+		IExtendedList<DIContext> visitedContexts = CollectionsSWL.createExtendedList();
+		
+		if (!CollectionsSWL.isNullOrEmpty(parents))
+		{
+			for (DIContext parentContext : parents)
+			{
+				if (!visitedContexts.contains(parentContext))
+				{
+					IDIContextElement element = parentContext.getContextElement(name, skipName, associatedClass);
+					
+					if (element != null)
+						return element;
+					
+					visitedContexts.add(parentContext);
+				}
+			}
+		}
+		
+		return null;
+	}
+	
 	/**
 	 * Получить карту Class -> {@link IDIContextElement} элементов
 	 * 

@@ -64,6 +64,9 @@ public interface IDataStream<Element_Type> {
 		return isEmpty() ? null : get(0);
 	}
 	
+	/** Получить первый элемент */
+	public Element_Type first(IFunction1<Element_Type, Boolean> filter);
+	
 	/**
 	 * Получить размер потока данных (кол-во элементов)
 	 * @return Количество элементов в потоке данных

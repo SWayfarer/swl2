@@ -210,6 +210,16 @@ public class DIRegistry {
 		contextPatterns.put(StringUtils.concat(pattern), contextName);
 	}
 	
+	public static DIContext addContextParent(String targetContextName, String parentContextName)
+	{
+		DIContext parent = DIManager.createIfNotFound(targetContextName).context;
+		DIContext context = DIManager.createIfNotFound(parentContextName).context;
+		
+		context.parents.add(parent);
+		
+		return context;
+	}
+	
 	/** Получить элемент указанного типа с указанным именем из контекста */
 	public static <T> T getContextElement(String contextName, String elementName, String elementType)
 	{

@@ -1,4 +1,6 @@
-/bin/
-/.settings
+# Ignore eclipse ide files
 /.classpath
 /.project
+/.settings/
+/.dbeaver/
+/bin/

@@ -60,6 +60,8 @@ public class DIManager {
 
 		return ret;
 	}
+	
+	
 
 	/**
 	 * Заблокировать иньекции из контекста <br>

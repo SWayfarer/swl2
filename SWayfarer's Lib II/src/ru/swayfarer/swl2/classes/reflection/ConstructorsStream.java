@@ -14,7 +14,7 @@ import ru.swayfarer.swl2.collections.streams.IDataStream;
  *
  */
 @SuppressWarnings( {"rawtypes", "unchecked"} )
-public class ConstructorsStream extends AbstractMethodsStream<Constructor> {
+public class ConstructorsStream extends AbstractMethodsStream<ConstructorsStream, Constructor> {
 
 	/**
 	 * Конструктор
@@ -68,5 +68,11 @@ public class ConstructorsStream extends AbstractMethodsStream<Constructor> {
 	public <E, T extends IDataStream<E>> T wrap(IExtendedList<E> list)
 	{
 		return (T) new ConstructorsStream(ReflectionUtils.<IExtendedList<Constructor>>forceCast(list)).setParrallel(isParallel);
+	}
+
+	@Override
+	public <T> T getFirstAnnotation(Object element, Class<T> classOfAnnotation)
+	{
+		return (T) ((Constructor)element).getAnnotation(ReflectionUtils.forceCast(classOfAnnotation));
 	}
 }
