@@ -290,6 +290,43 @@ public class CollectionsSWL {
 		return (List<T>) list;
 	}
 	
+	/**
+	 * Эквивалентны ли значения двух массивов?
+	 * @param arr1 Первый массив
+	 * @param arr2 Второй массив
+	 * @return True, если эквивалентны
+	 */
+	public static boolean isArraysEquals(Object[] arr1, Object[] arr2) 
+	{
+		if (isNullOrEmpty(arr1))
+			return isNullOrEmpty(arr2);
+		
+		if (isNullOrEmpty(arr2))
+			return isNullOrEmpty(arr1);
+		
+		if (arr1.length != arr2.length)
+			return false;
+		
+		for (int i1 = 0; i1 < arr1.length; i1 ++)
+		{
+			Object elem1 = arr1[i1];
+			Object elem2 = arr2[i1];
+			
+			if (elem1 == null)
+				if (elem2 != null)
+					return false;
+			
+			if (elem2 == null)
+				if (elem1 != null)
+					return false;
+			
+			if (!elem1.equals(elem2))
+				return false;
+		}
+		
+		return true;
+	}
+	
 	/** Коллекция пуста или равна null*/
 	public static boolean isNullOrEmpty(Collection<?> collection)
 	{

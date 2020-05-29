@@ -61,7 +61,7 @@ public abstract class AbstractMethodsStream<Return_Type, Element_Type> extends D
 	{
 		return filter((method) -> {
 			Class<?>[] classes = getParameterTypes(method);
-			return (CollectionsSWL.isNullOrEmpty(classes) && CollectionsSWL.isNullOrEmpty(args)) || classes.equals(args);
+			return CollectionsSWL.isArraysEquals(classes, args);
 		});
 	}
 	
