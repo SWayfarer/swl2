@@ -11,9 +11,11 @@ import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Random;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 import ru.swayfarer.swl2.binary.buffers.DynamicByteBuffer;
 import ru.swayfarer.swl2.classes.ReflectionUtils;
@@ -74,6 +76,12 @@ public class CollectionsSWL {
 	public static <K, V> Map<K, V> createHashMap()
 	{
 		return new LinkedHashMap<>();
+	}
+	
+	/** Создать конкуррентную очередь */
+	public static <T> Queue<T> createConcurrentQueue()
+	{
+		return new ConcurrentLinkedDeque<>();
 	}
 	
 	public static <K, V> Map<K, V> createLinkedMap()

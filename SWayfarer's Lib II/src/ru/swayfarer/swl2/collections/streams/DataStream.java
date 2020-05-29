@@ -6,17 +6,17 @@ import java.util.Enumeration;
 import java.util.LinkedHashSet;
 import java.util.TreeSet;
 
+import ru.swayfarer.swl2.classes.ReflectionUtils;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.ExtendedListWrapper;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
+import ru.swayfarer.swl2.collections.streams.executors.MultiThreadExecutor;
+import ru.swayfarer.swl2.collections.streams.executors.SingleThreadExecutor;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1;
+import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1NoR;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction2;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction2NoR;
 import ru.swayfarer.swl2.markers.InternalElement;
-import ru.swayfarer.swl2.system.SystemUtils;
-import ru.swayfarer.swl2.tasks.ITask;
-import ru.swayfarer.swl2.tasks.factories.ThreadPoolTaskFactory;
-import ru.swayfarer.swl2.threads.lock.CounterLock;
 
 /**
  * Простая реализация {@link IDataStream}
@@ -33,19 +33,19 @@ public class DataStream<Element_Type> implements IDataStream<Element_Type>{
 	@InternalElement
 	public IExtendedList<Element_Type> elements;
 	
+	/** Экъзекьютор для элементов стрима (для кастомной логиики {@link #each(IFunction1NoR)}) */
+	@InternalElement
+	public IFunction2NoR<IFunction2NoR<Integer, ? super Element_Type>, IExtendedList<Element_Type>> forEachExecutor = new SingleThreadExecutor<>();
+	
 	/** Создает ли новый поток при каждой операции? */
 	@InternalElement
 	public boolean isCreatingNewOnWrap = true;
 	
-	/** Обертка над фабрикой тасков, чтобы не сделать дедлока */
-	@InternalElement
-	public static ThreadLocal<ThreadPoolTaskFactory> taskFactoryThreadLocal = new ThreadLocal<ThreadPoolTaskFactory>() {
-		
-		protected ThreadPoolTaskFactory initialValue() 
-		{
-			return new ThreadPoolTaskFactory(1000, SystemUtils.getCpuCoresCount()).setName("DataStreamsPool");
-		}
-	};
+	/** Конструктор */
+	public DataStream()
+	{
+		this(CollectionsSWL.createExtendedList());
+	}
 	
 	/** Конструктор */
 	public DataStream(IExtendedList<Element_Type> elements)
@@ -58,6 +58,22 @@ public class DataStream<Element_Type> implements IDataStream<Element_Type>{
 	public <T extends DataStream<Element_Type>> T setParrallel(boolean isParrallel)
 	{
 		this.isParallel = isParrallel;
+		updateExecutor();
+		
+		return (T) this;
+	}
+	
+	/** Задать парраллельность */
+	public <T extends DataStream<Element_Type>> T updateExecutor()
+	{
+		if (isParallel)
+		{
+			this.forEachExecutor = new MultiThreadExecutor<>();
+		}
+		else
+		{
+			this.forEachExecutor = new SingleThreadExecutor<>();
+		}
 		
 		return (T) this;
 	}
@@ -70,7 +86,7 @@ public class DataStream<Element_Type> implements IDataStream<Element_Type>{
 		set.addAll(elements);
 		IExtendedList<Element_Type> list = new ExtendedListWrapper<>();
 		list.addAll(set);
-		return wrap(list);
+		return wrapOrUpdate(list);
 	}
 	
 	/** Удалить дублирующиеся элементы */
@@ -78,11 +94,23 @@ public class DataStream<Element_Type> implements IDataStream<Element_Type>{
 	public <T extends IDataStream<Element_Type>> T distinct()
 	{
 		IExtendedList<Element_Type> list = new ExtendedListWrapper<>(new ArrayList<>(new LinkedHashSet<>(elements)));
-		return wrap(list);
+		return wrapOrUpdate(list);
 	}
 	
 	/** Создать поток для листа */
 	@InternalElement
+	public <E, T extends IDataStream<E>> T wrapOrUpdate(IExtendedList<E> list)
+	{
+		if (isCreatingNewOnWrap)
+		{
+			return wrap(list);
+		}
+		
+		this.elements = ReflectionUtils.forceCast(list);
+		
+		return (T) this;
+	}
+	
 	public <E, T extends IDataStream<E>> T wrap(IExtendedList<E> list)
 	{
 		return (T) new DataStream<E>(list).setParrallel(isParallel());
@@ -178,7 +206,7 @@ public class DataStream<Element_Type> implements IDataStream<Element_Type>{
 			if (condition.apply(element))
 				list.add(element);
 		
-		return wrap(list);
+		return wrapOrUpdate(list);
 	}
 
 	/** Отремапить поток*/
@@ -190,14 +218,14 @@ public class DataStream<Element_Type> implements IDataStream<Element_Type>{
 		for (Element_Type element : elements)
 			list.add(mapper.apply(element));
 		
-		return wrap(list);
+		return wrapOrUpdate(list);
 	}
 
 	/** Подпоток элементов от и до указанных позиций */
 	@Override
 	public <T extends IDataStream<Element_Type>> T sub(int start, int end)
 	{
-		return wrap(CollectionsSWL.createExtendedList(elements.subList(start, end)));
+		return wrapOrUpdate(CollectionsSWL.createExtendedList(elements.subList(start, end)));
 	}
 
 	/** Хотя бы один элемент удовлетворяет условию */
@@ -226,43 +254,9 @@ public class DataStream<Element_Type> implements IDataStream<Element_Type>{
 	@Override
 	public <T extends IDataStream<Element_Type>> T each(IFunction2NoR<Integer, ? super Element_Type> fun)
 	{
-		int next = 0;
-		
-		IExtendedList<ITask> tasks = CollectionsSWL.createExtendedList();
-		CounterLock lock = new CounterLock();
-		
-		if (isParallel())
-		{
-			for (Element_Type element : elements)
-			{
-				final int id = next ++;
-
-				lock.counter.incrementAndGet();
-				ITask task = getThreadPoolTaskFactory().execute(() -> {
-					fun.apply(id, element);
-					lock.reduce();
-				});
-				
-				tasks.add(task);
-			}
-		}
-		else
-		{
-			for (Element_Type element : elements)
-			{
-				fun.apply(next ++, element);
-			}
-		}
-		 
-		lock.waitFor();
-		
+		if (forEachExecutor != null)
+			forEachExecutor.apply(fun, elements);
 		return (T) this;
-	}
-	
-	/** Получить локальный для этого потока экзекьютор */
-	public ThreadPoolTaskFactory getThreadPoolTaskFactory()
-	{
-		return taskFactoryThreadLocal.get();
 	}
 
 	/** Отсортировать поток, сравнивая элементы по указанному компаратору */
@@ -271,7 +265,7 @@ public class DataStream<Element_Type> implements IDataStream<Element_Type>{
 	{
 		IExtendedList<Element_Type> list = elements.copy();
 		list.sort(comparator.asJavaComparator());
-		return wrap(list);
+		return wrapOrUpdate(list);
 	}
 
 	/** Сортированный поток */
@@ -280,7 +274,7 @@ public class DataStream<Element_Type> implements IDataStream<Element_Type>{
 	{
 		IExtendedList<Element_Type> list = elements.copy();
 		CollectionsSWL.sort(list);
-		return wrap(list);
+		return wrapOrUpdate(list);
 	}
 
 	/** Получить лист элементов потока */
@@ -296,7 +290,7 @@ public class DataStream<Element_Type> implements IDataStream<Element_Type>{
 	{
 		IExtendedList<Element_Type> list = elements.copy();
 		CollectionsSWL.reverse(list);
-		return wrap(list);
+		return wrapOrUpdate(list);
 	}
 
 	/** Пропустить указанное кол-во элементов */
@@ -322,7 +316,7 @@ public class DataStream<Element_Type> implements IDataStream<Element_Type>{
 		if (isFound)
 			list.addAll(elements.subList(index, elements.size()));
 		
-		return wrap(list);
+		return wrapOrUpdate(list);
 	}
 
 	/** Перемешать элементы потока */
@@ -336,7 +330,7 @@ public class DataStream<Element_Type> implements IDataStream<Element_Type>{
 			list.add(element);
 		}
 		
-		return wrap(list);
+		return wrapOrUpdate(list);
 	}
 
 	/** Удалить все элементы */

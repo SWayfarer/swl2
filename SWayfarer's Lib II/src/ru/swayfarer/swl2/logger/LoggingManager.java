@@ -31,21 +31,17 @@ import ru.swayfarer.swl2.swconf.utils.SwconfSerializationHelper;
  * @author swayfarer
  */
 public class LoggingManager {
-
+	
+	/** Созданные логгеры, кэшированные по их именам*/
+	@InternalElement
+	public static Map<String, ILogger> cachedLoggers = new HashMap<>();
 	
 	/** Закончена ли ранняя загрузка */
 	@InternalElement
 	public static AtomicBoolean isLateinitCompleted = new AtomicBoolean(false);
 	
-	/** Событие создания логгера */
-	public static IObservable<ILogger> eventCreation = new SimpleObservable<>();
-	
 	/** Функция, создающая новые логгеры, зная их имена */
 	public static IFunction1<String, ILogger> loggerFactory = (name) -> new SimpleLoggerSWL(name);
-	
-	/** Созданные логгеры, кэшированные по их именам*/
-	@InternalElement
-	public static Map<String, ILogger> cachedLoggers = new HashMap<>();
 	
 	/** Логгеры, которые будут привязаны после инициализации {@link #rootLogger} */
 	@InternalElement
@@ -64,6 +60,9 @@ public class LoggingManager {
 	/** Логгер, в который редиректится {@link System#out}, если вызван */
 	@InternalElement
 	public static ILogger soutLogger;
+	
+	/** Событие создания логгера */
+	public static IObservable<ILogger> eventCreation = new SimpleObservable<>();
 	
 	/** Получить(или создать) настроенный логгер по имени класса, из которого вызван метод */
 	public static ILogger getLogger()

@@ -222,6 +222,9 @@ public interface IExtendedList<Element_Type> extends List<Element_Type>{
 		return (T) this;
 	}
 	
+	/** Синхронизировать лист */
+	public <T extends IExtendedList<Element_Type>> T synchronize();
+	
 	/** Удалить первый элемент */
 	public default <T extends IExtendedList<Element_Type>> T removeFirstElement()
 	{

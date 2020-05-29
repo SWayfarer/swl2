@@ -2,6 +2,7 @@ package ru.swayfarer.swl2.collections.extended;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.List;
@@ -235,6 +236,13 @@ public class ExtendedListWrapper<Element_Type> extends ListWrapper<Element_Type>
 	public int hashCode()
 	{
 		return wrappedList.hashCode();
+	}
+
+	@Override
+	public <T extends IExtendedList<Element_Type>> T synchronize()
+	{
+		this.wrappedList = Collections.synchronizedList(wrappedList);
+		return (T) this;
 	}
 
 }

@@ -7,6 +7,7 @@ import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction2NoR;
 import ru.swayfarer.swl2.markers.Alias;
 import ru.swayfarer.swl2.observable.subscription.ISubscription;
 import ru.swayfarer.swl2.observable.subscription.WeakSubscription;
+import ru.swayfarer.swl2.observable.subscription.listener.ListenerSubsription;
 import ru.swayfarer.swl2.reference.IReference;
 
 /**
@@ -63,6 +64,9 @@ public interface IObservable<Event_Type> {
 	/** Подписаться "слабой" подпиской, см {@link WeakSubscription} */
 	public <T extends ISubscription<Event_Type>> T subscribeWeak(IFunction2NoR<ISubscription<Event_Type>, Event_Type> fun);
 	
+	/** Подписаться "слабой" подпиской, см {@link WeakSubscription} */
+	public <T extends ListenerSubsription<Event_Type>> T subscribeOn(IFunction2NoR<ISubscription<Event_Type>, Event_Type> fun);
+	
 	/** Пуст ли список подписок? */
 	public boolean isEmpty();
 	
@@ -78,4 +82,8 @@ public interface IObservable<Event_Type> {
 	
 	/** Отписать всех подписчиков */
 	public <T extends IObservable<Event_Type>> T clear();
+	
+	public <T extends IObservable<Event_Type>> T onSourceError(IFunction1NoR<Throwable> handler);
+
+	public void handleDataError(Throwable e);
 }

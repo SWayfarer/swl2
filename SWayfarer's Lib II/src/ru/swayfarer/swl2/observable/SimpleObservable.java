@@ -6,11 +6,15 @@ import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.List;
 
+import lombok.var;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
+import ru.swayfarer.swl2.collections.extended.IExtendedList;
+import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1NoR;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction2NoR;
 import ru.swayfarer.swl2.observable.subscription.ISubscription;
 import ru.swayfarer.swl2.observable.subscription.Subscription;
 import ru.swayfarer.swl2.observable.subscription.WeakSubscription;
+import ru.swayfarer.swl2.observable.subscription.listener.ListenerSubsription;
 
 /**
  * Простая реализация "Наблюдаемого" объекта.
@@ -20,6 +24,8 @@ import ru.swayfarer.swl2.observable.subscription.WeakSubscription;
 @SuppressWarnings("unchecked")
 public class SimpleObservable<Event_Type> implements IObservable<Event_Type> {
 
+	public IExtendedList<IFunction1NoR<Throwable>> dataErrorHandlers = CollectionsSWL.createExtendedList();
+	
 	/** Список подписок */
 	public List<ISubscription<Event_Type>> subscriptions = Collections.synchronizedList(new ArrayList<>());
 	
@@ -80,4 +86,36 @@ public class SimpleObservable<Event_Type> implements IObservable<Event_Type> {
 		return (T) this;
 	}
 
+	@Override
+	public <T extends ListenerSubsription<Event_Type>> T subscribeOn(IFunction2NoR<ISubscription<Event_Type>, Event_Type> fun)
+	{
+		ListenerSubsription<Event_Type> sub = new ListenerSubsription<>(fun);
+		subscriptions.add(sub);
+		return (T) sub;
+	}
+
+	@Override
+	public void handleDataError(Throwable e)
+	{
+		for (var handler: dataErrorHandlers)
+		{
+			if (handler != null)
+			{
+				try
+				{
+					handler.apply(e);
+				}
+				catch (Throwable e1)
+				{
+					e1.printStackTrace();
+				}
+			}
+		}
+	}
+	
+	public <T extends IObservable<Event_Type>> T onSourceError(IFunction1NoR<Throwable> handler)
+	{
+		dataErrorHandlers.addExclusive(handler);
+		return (T) this;
+	}
 }

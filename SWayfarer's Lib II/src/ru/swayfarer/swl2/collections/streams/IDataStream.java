@@ -272,6 +272,17 @@ public interface IDataStream<Element_Type> {
 	public <New_Element_Type, T extends IDataStream<New_Element_Type>> T mapped(IFunction1<? super Element_Type, ? extends New_Element_Type> mapper);
 	
 	/**
+	 * Трансформировать элементы через ремаппер
+	 * @param mapper Ремаппер. Функция, которая принимает объект и возвращает его трансформированную версию
+	 * @return Поток данных с проведенными изменениями
+	 */
+	@Alias("mapped")
+	public default <New_Element_Type, T extends IDataStream<New_Element_Type>> T map(IFunction1<? super Element_Type, ? extends New_Element_Type> mapper) 
+	{
+		return mapped(mapper);
+	}
+	
+	/**
 	 * Оставить ограниченное число элементов
 	 * @param max Максимум элементов
 	 * @return Поток данных с проведенными изменениями

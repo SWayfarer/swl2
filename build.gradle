@@ -12,10 +12,6 @@ plugins {
     id 'java-library'
 }
 
-def javaVersion = JavaVersion.VERSION_1_8;
-sourceCompatibility = javaVersion;
-targetCompatibility = javaVersion; // defaults to sourceCompatibility
-
 sourceSets 
 {
 	main 
@@ -38,9 +34,11 @@ repositories {
 
 dependencies {
 
-	annotationProcessor fileTree(dir: 'libs', include: '*.jar')
+	annotationProcessor  fileTree(dir: 'libs', include: '.jar')
 	
-	compile fileTree(dir: 'libs', include: '*.jar')
+	System.out.println(fileTree(dir: 'libs', include: '*.jar'))
+	
+	runtime fileTree(dir: 'libs', include: '*.jar')
 	
 	// https://mvnrepository.com/artifact/org.openjfx/javafx-fxml
 	compile group: 'org.openjfx', name: 'javafx-fxml', version: '11-ea+19'

@@ -31,7 +31,7 @@ public class WeakSubscription<Event_Type> extends AbstractSubscription<Event_Typ
 	}
 
 	@Override
-	public IFunction2NoR<ISubscription<Event_Type>, Event_Type> getFun()
+	public IFunction2NoR<ISubscription<Event_Type>, Event_Type> getSubscribedFun()
 	{
 		return functionRef.get();
 	}

@@ -287,4 +287,11 @@ public class WeakList<Element_Type> implements IExtendedList<Element_Type> {
 		return (T) this;
 	}
 
+	@Override
+	public <T extends IExtendedList<Element_Type>> T synchronize()
+	{
+		referencesList.synchronize();
+		return (T) this;
+	}
+
 }

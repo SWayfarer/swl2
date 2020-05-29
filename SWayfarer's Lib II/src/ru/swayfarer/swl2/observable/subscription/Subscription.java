@@ -10,9 +10,14 @@ import ru.swayfarer.swl2.markers.InternalElement;
  */
 public class Subscription<Event_Type> extends AbstractSubscription<Event_Type> {
 
-	/** Слушаемая функция */
+	/** Функция, выполняющая обработку события ("подписываемая функция")  */
 	@InternalElement
 	public IFunction2NoR<ISubscription<Event_Type>, Event_Type> subscribeFunction;
+	
+	public Subscription()
+	{
+		
+	}
 	
 	public Subscription(IFunction2NoR<ISubscription<Event_Type>, Event_Type> subscribeFunction)
 	{
@@ -22,7 +27,7 @@ public class Subscription<Event_Type> extends AbstractSubscription<Event_Type> {
 	
 	/** Необходимо ли отвязать подписку от слушаемого объекта? */
 	@Override
-	public IFunction2NoR<ISubscription<Event_Type>, Event_Type> getFun()
+	public IFunction2NoR<ISubscription<Event_Type>, Event_Type> getSubscribedFun()
 	{
 		return subscribeFunction;
 	}
