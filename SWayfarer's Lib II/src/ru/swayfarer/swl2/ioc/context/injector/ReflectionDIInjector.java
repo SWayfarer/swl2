@@ -134,6 +134,9 @@ public class ReflectionDIInjector {
 	{
 		Field field = fieldInfo.field;
 
+		if (context == null)
+			return;
+		
 		IDIContextElement element = context.getFieldElement(instance.getClass(), field); //context.getContextElement(name, !fieldInfo.annotation.usingName(), field.getType());
 
 		if (element != null)

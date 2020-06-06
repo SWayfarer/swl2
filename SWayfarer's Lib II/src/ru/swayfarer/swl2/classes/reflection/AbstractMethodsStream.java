@@ -7,6 +7,7 @@ import ru.swayfarer.swl2.classes.ReflectionUtils;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.collections.streams.DataStream;
+import ru.swayfarer.swl2.markers.Alias;
 
 /**
  * Абстрактный поток методов <br>
@@ -83,6 +84,25 @@ public abstract class AbstractMethodsStream<Return_Type, Element_Type> extends D
 	public Return_Type argsCount(int count)
 	{
 		return filter((method) -> getParametersCount(method) == count);
+	}
+	
+	/**
+	 * Оставить только методы без аргументов
+	 * @return Поток с примененными изменениями
+	 */
+	public Return_Type withoutArgs()
+	{
+		return argsCount(0);
+	}
+	
+	/**
+	 * Оставить только методы без аргументов
+	 * @return Поток с примененными изменениями
+	 */
+	@Alias("withoutArgs")
+	public Return_Type noArgs()
+	{
+		return withoutArgs();
 	}
 	
 	/**

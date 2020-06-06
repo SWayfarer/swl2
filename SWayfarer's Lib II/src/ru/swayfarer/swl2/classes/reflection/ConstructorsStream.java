@@ -7,6 +7,8 @@ import ru.swayfarer.swl2.classes.ReflectionUtils;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.collections.streams.IDataStream;
+import ru.swayfarer.swl2.logger.ILogger;
+import ru.swayfarer.swl2.logger.LoggingManager;
 
 /**
  * Поток конструкторов
@@ -16,6 +18,8 @@ import ru.swayfarer.swl2.collections.streams.IDataStream;
 @SuppressWarnings( {"rawtypes", "unchecked"} )
 public class ConstructorsStream extends AbstractMethodsStream<ConstructorsStream, Constructor> {
 
+	public static ILogger logger = LoggingManager.getLogger();
+	
 	/**
 	 * Конструктор
 	 * @param cl Класс, конструкторы которого будут помещены в поток 
@@ -74,5 +78,10 @@ public class ConstructorsStream extends AbstractMethodsStream<ConstructorsStream
 	public <T> T getFirstAnnotation(Object element, Class<T> classOfAnnotation)
 	{
 		return (T) ((Constructor)element).getAnnotation(ReflectionUtils.forceCast(classOfAnnotation));
+	}
+	
+	public <T> IDataStream<T> invoke(Object... args)
+	{
+		return ReflectionUtils.forceCast(map((c) -> logger.safeReturn(() -> c.newInstance(args), null, "")));
 	}
 }
