@@ -1,5 +1,6 @@
 package ru.swayfarer.swl2.ioc.context;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
@@ -8,10 +9,12 @@ import lombok.Synchronized;
 import lombok.var;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
+import ru.swayfarer.swl2.ioc.DIAnnotation;
 import ru.swayfarer.swl2.ioc.DIManager;
-import ru.swayfarer.swl2.ioc.DIManager.DISwL;
 import ru.swayfarer.swl2.ioc.context.elements.DIContextElementSingleton;
 import ru.swayfarer.swl2.ioc.context.elements.IDIContextElement;
+import ru.swayfarer.swl2.logger.ILogger;
+import ru.swayfarer.swl2.logger.LoggingManager;
 import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.string.StringUtils;
 import ru.swayfarer.swl2.threads.ThreadsUtils;
@@ -25,6 +28,8 @@ import ru.swayfarer.swl2.threads.lock.SynchronizeLock;
 @SuppressWarnings("unchecked")
 public class DIContext {
 
+	public static ILogger logger = LoggingManager.getLogger();
+	
 	/** Поток, который заморозил иньекции из этого контекста */
 	@InternalElement
 	public volatile Thread lockedThread;
@@ -63,16 +68,16 @@ public class DIContext {
 	 */
 	public IDIContextElement getFieldElement(Class<?> cl, Field field)
 	{
-		DISwL annotation = field.getAnnotation(DISwL.class);
+		Annotation annotation = DIAnnotation.findDIAnnotation(field); 
 		
 		if (annotation != null)
 		{
-			String name = annotation.name();
+			String name = DIAnnotation.getElementName(annotation);
 			
 			if (StringUtils.isBlank(name))
 				name = field.getName();
 				
-			IDIContextElement element = this.getContextElement(name, !annotation.usingName(), field.getType());
+			IDIContextElement element = this.getContextElement(name, !DIAnnotation.isElementUsingName(annotation), field.getType());
 			
 			return element;
 		}

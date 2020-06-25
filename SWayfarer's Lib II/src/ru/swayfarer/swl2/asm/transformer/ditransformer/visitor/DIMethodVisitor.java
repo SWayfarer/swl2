@@ -116,18 +116,11 @@ public class DIMethodVisitor extends AdviceAdapter {
 	/** Добавить инициализацию всех отмеченных {@link DISwL} полей */
 	public void appendFieldsInits(MethodVisitor mv)
 	{
-		if (injectByReflection && classInfo.fields.stream().anyMatch((field) -> field.hasAnnotation(DI_ANNOTATION_DESC)))
+		if (classInfo.fields.stream().anyMatch((field) -> field.findAnnotationRec(DI_ANNOTATION_DESC) != null))
 		{
 			mv.visitVarInsn(ALOAD, 0);
 			mv.visitMethodInsn(INVOKESTATIC, DIClassVisitor.CONTEXT_GET_CLASS_NAME, "injectContextElements", "(Ljava/lang/Object;)Ljava/lang/Object;", false);
 			mv.visitInsn(POP);
-		}
-		else
-		{
-			for (FieldInfo fieldInfo : classInfo.fields)
-			{
-				appendFieldInit(mv, fieldInfo, true);
-			}
 		}
 	}
 	
@@ -144,9 +137,9 @@ public class DIMethodVisitor extends AdviceAdapter {
 	/** Дописать инициализацию в конкретное поле */
 	public static void appendFieldInit(MethodVisitor mv, FieldInfo fieldInfo, boolean put)
 	{
-		if (!fieldInfo.isStatic() && fieldInfo.hasAnnotation(DI_ANNOTATION_DESC))
+		if (!fieldInfo.isStatic())
 		{
-			AnnotationInfo annotationInfo = fieldInfo.getFirstAnnotation(DI_ANNOTATION_DESC);
+			AnnotationInfo annotationInfo = fieldInfo.findAnnotationRec(DI_ANNOTATION_DESC);
 			
 			if (annotationInfo != null)
 			{
@@ -158,7 +151,7 @@ public class DIMethodVisitor extends AdviceAdapter {
 				
 				if (StringUtils.isEmpty(contextName))
 				{
-					AnnotationInfo classAnnotationInfo = fieldInfo.owner.getFirstAnnotation(DI_ANNOTATION_DESC);
+					AnnotationInfo classAnnotationInfo = fieldInfo.owner.findAnnotationRec(DI_ANNOTATION_DESC);
 					
 					if (classAnnotationInfo != null)
 					{

@@ -50,6 +50,12 @@ public interface ILogger {
 	public void info(@ConcattedString Object... text);
 	
 	/**
+	 * Лог на уровне {@link StandartLoggingLevels#LEVEL_DEV}
+	 * @param text Логируемый текст
+	 */
+	public void dev(@ConcattedString Object... text);
+	
+	/**
 	 * Лог на уровне {@link StandartLoggingLevels#LEVEL_WARNING}
 	 * @param text Логируемый текст
 	 */
@@ -77,6 +83,13 @@ public interface ILogger {
 	/*
 	 * Throwable
 	 */
+	
+	/**
+	 * Лог на уровне {@link StandartLoggingLevels#LEVEL_DEV}
+	 * @param text Логируемый текст
+	 * @param e {@link Throwable}, сопровождающий лог
+	 */
+	public void dev(Throwable e, @ConcattedString Object... text);
 	
 	/**
 	 * Лог на уровне {@link StandartLoggingLevels#LEVEL_INFO}

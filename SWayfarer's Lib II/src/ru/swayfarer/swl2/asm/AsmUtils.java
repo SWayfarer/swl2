@@ -2,6 +2,7 @@ package ru.swayfarer.swl2.asm;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import ru.swayfarer.swl2.asm.informated.AnnotationInfo;
 import ru.swayfarer.swl2.asm.informated.ClassInfo;
 import ru.swayfarer.swl2.asm.informated.FieldInfo;
 import ru.swayfarer.swl2.asm.informated.MethodInfo;
@@ -46,6 +47,103 @@ public class AsmUtils implements Opcodes{
 	public static boolean isProtected(int access)
 	{
 		return (access & ACC_PROTECTED) != 0;
+	}
+	
+	/**
+	 * Содержится аннотация в аннотациях класса или в их дочерних? 
+	 * @param classInfo Информция о классе 
+	 * @param annotationDesc Дескриптор искомой аннотации
+	 * @return True, если содержится
+	 */
+	public static AnnotationInfo findAnnotationRec(MethodInfo methodInfo, String annotationDesc)
+	{
+		AnnotationInfo annotationInfo = methodInfo.getFirstAnnotation(annotationDesc);
+		
+		if (annotationInfo != null)
+			return annotationInfo;
+		
+		for (AnnotationInfo methodAnnotation : methodInfo.annotations)
+		{
+			AnnotationInfo ret = findAnnotationRec(methodAnnotation.getAnnotationClass(), annotationDesc);
+			
+			if (ret != null)
+				return ret;
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Содержится аннотация в аннотациях класса или в их дочерних? 
+	 * @param classInfo Информция о классе 
+	 * @param annotationDesc Дескриптор искомой аннотации
+	 * @return True, если содержится
+	 */
+	public static AnnotationInfo findAnnotationRec(FieldInfo fieldInfo, String annotationDesc)
+	{
+		AnnotationInfo annotationInfo = fieldInfo.getFirstAnnotation(annotationDesc);
+		
+		if (annotationInfo != null)
+			return annotationInfo;
+		
+		for (AnnotationInfo methodAnnotation : fieldInfo.annotations)
+		{
+			AnnotationInfo ret = findAnnotationRec(methodAnnotation.getAnnotationClass(), annotationDesc);
+			
+			if (ret != null)
+				return ret;
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Содержится аннотация в аннотациях класса или в их дочерних? 
+	 * @param classInfo Информция о классе 
+	 * @param annotationDesc Дескриптор искомой аннотации
+	 * @return True, если содержится
+	 */
+	public static AnnotationInfo findAnnotationRec(ClassInfo classInfo, String annotationDesc)
+	{
+		return findAnnotationRec(classInfo, CollectionsSWL.createExtendedList(), annotationDesc);
+	}
+	
+	/**
+	 * Содержится аннотация в аннотациях класса или в их дочерних? 
+	 * @param classInfo Информция о классе 
+	 * @param visitedAnnotationsDescs Уже посещенные аннотации 
+	 * @param annotationDesc Дескриптор искомой аннотации
+	 * @return True, если содержится
+	 */
+	public static AnnotationInfo findAnnotationRec(ClassInfo classInfo, IExtendedList<String> visitedAnnotationsDescs, String annotationDesc)
+	{
+		visitedAnnotationsDescs.addExclusive(annotationDesc);
+		
+		AnnotationInfo annotationInfo = classInfo.getFirstAnnotation(annotationDesc);
+		
+		if (annotationInfo != null)
+		{
+			return annotationInfo;
+		}
+		
+		for (AnnotationInfo classAnnotation : classInfo.annotations)
+		{
+			String desc = classAnnotation.descritor;
+			
+			if (!visitedAnnotationsDescs.contains(desc))
+			{
+				visitedAnnotationsDescs.add(desc);
+				
+				ClassInfo annotationClass = classAnnotation.getAnnotationClass();
+
+				AnnotationInfo ret = findAnnotationRec(annotationClass, visitedAnnotationsDescs, annotationDesc);
+				
+				if (ret != null)
+					return ret;
+			}
+		}
+		
+		return null;
 	}
 	
 	/** 

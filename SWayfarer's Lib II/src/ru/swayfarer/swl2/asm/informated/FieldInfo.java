@@ -77,6 +77,26 @@ public class FieldInfo {
 	}
 	
 	/**
+	 * Найти аннотацию, среди аннотаций поля и их аннотаций рекурсивно. 
+	 * @param annotationDescriptor Дескриптор аннотации 
+	 * @return Найденная аннотация или null
+	 */
+	public AnnotationInfo findAnnotationRec(String annotationDescriptor)
+	{
+		return AsmUtils.findAnnotationRec(this, annotationDescriptor);
+	}
+	
+	/**
+	 * Найти аннотацию, среди аннотаций поля и их аннотаций рекурсивно. 
+	 * @param annotationDescriptor Дескриптор аннотации 
+	 * @return Найденная аннотация или null
+	 */
+	public AnnotationInfo findAnnotationRec(Class<?> annotationDescriptor)
+	{
+		return findAnnotationRec(Type.getDescriptor(annotationDescriptor));
+	}
+	
+	/**
 	 * Получить первую аннотацию по дескриптору
 	 * @param desc Дескриптор аннотации
 	 * @return Первая аннотация. Null, если таковой нет

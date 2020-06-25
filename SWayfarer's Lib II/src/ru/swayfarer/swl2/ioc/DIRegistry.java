@@ -1,6 +1,9 @@
 package ru.swayfarer.swl2.ioc;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -267,11 +270,11 @@ public class DIRegistry {
 		if (isLoggingContextSearch)
 			logger.info("Getting context name for class", classNormalName, contextPatterns);
 		
-		DISwL annotation = cl.getAnnotation(DISwL.class);
+		Annotation annotation = DIAnnotation.findDIAnnotation(cl); 
 		
 		if (annotation != null)
 		{
-			current = annotation.context();
+			current = DIAnnotation.getElementContextName(annotation);
 		}
 		
 		if (StringUtils.isEmpty(current))

@@ -309,5 +309,20 @@ public class SimpleLoggerSWL implements ILogger, StandartLoggingLevels, Stacktra
 			return "";
 		}
 	}
+
+	@Override
+	public void dev(Object... text)
+	{
+		log(LogInfo.of(this, LEVEL_DEV, OFFSET_CALLER, text));
+	}
+
+	@Override
+	public void dev(Throwable e, Object... text)
+	{
+		log(LogInfo.of(this, LEVEL_DEV, OFFSET_CALLER, text)
+				.setAttachedThrowable(e)
+				.setDecorated(true)
+		);
+	}
 }
 

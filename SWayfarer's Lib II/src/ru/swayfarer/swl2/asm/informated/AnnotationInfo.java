@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import lombok.Data;
+import ru.swayfarer.swl2.asm.AsmUtils;
 
 /**
  * Информация об аннотации
@@ -49,5 +50,10 @@ public class AnnotationInfo {
 		Param_Type param = getParam(name);
 		
 		return param == null ? defaultValue : param;
+	}
+	
+	public ClassInfo getAnnotationClass()
+	{
+		return ClassInfo.valueOf(AsmUtils.toCanonicalName(getDescritor()));
 	}
 }

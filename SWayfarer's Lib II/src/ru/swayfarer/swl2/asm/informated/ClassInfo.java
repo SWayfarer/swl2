@@ -2,13 +2,17 @@ package ru.swayfarer.swl2.asm.informated;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import lombok.Data;
 import lombok.ToString;
+import ru.swayfarer.swl2.asm.AsmUtils;
 import ru.swayfarer.swl2.asm.TransformedClassInfo;
 import ru.swayfarer.swl2.asm.transformer.informated.ClassScannerTransformer;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
+import ru.swayfarer.swl2.exceptions.ExceptionsUtils;
+import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.resource.rlink.RLUtils;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.Type;
 
@@ -20,6 +24,10 @@ import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.Type;
 @ToString
 public class ClassInfo {
 
+	/** Кэш полученных по именам классов, чтобы каждый раз не обращаться к файлам */
+	@InternalElement
+	public static Map<String, ClassInfo> cachedClassInfos = CollectionsSWL.createHashMap();
+	
 	/** Версия класса. На какой Java скомпилирован */
 	public int version; 
 	
@@ -87,6 +95,26 @@ public class ClassInfo {
 	}
 	
 	/**
+	 * Найти аннотацию, среди аннотаций класса и их аннотаций рекурсивно. 
+	 * @param annotationDescriptor Дескриптор аннотации 
+	 * @return Найденная аннотация или null
+	 */
+	public AnnotationInfo findAnnotationRec(String annotationDescriptor)
+	{
+		return AsmUtils.findAnnotationRec(this, annotationDescriptor);
+	}
+	
+	/**
+	 * Найти аннотацию, среди аннотаций класса и их аннотаций рекурсивно. 
+	 * @param annotationDescriptor Дескриптор аннотации 
+	 * @return Найденная аннотация или null
+	 */
+	public AnnotationInfo findAnnotationRec(Class<?> annotationDescriptor)
+	{
+		return findAnnotationRec(Type.getDescriptor(annotationDescriptor));
+	}
+	
+	/**
 	 * Получить информацию о поле по его имени
 	 */
 	public FieldInfo getField(String name)
@@ -104,6 +132,7 @@ public class ClassInfo {
 		TransformedClassInfo info = new TransformedClassInfo();
 		ClassScannerTransformer tr = new ClassScannerTransformer();
 		tr.transform("", bytes, info);
+		
 		return tr.info;
 	}
 	
@@ -191,9 +220,23 @@ public class ClassInfo {
 	 */
 	public static ClassInfo valueOf(String classCanonicalName)
 	{
-		TransformedClassInfo info = new TransformedClassInfo();
-		ClassScannerTransformer transformer = new ClassScannerTransformer();
-		transformer.transform(classCanonicalName, RLUtils.toBytes("/"+classCanonicalName.replace(".", "/")+".class"), info);
-		return transformer.info;
+		ClassInfo ret = cachedClassInfos.get(classCanonicalName);
+		
+		if (ret != null)
+			return ret;
+		
+		ret = valueOf(RLUtils.toBytes("/"+classCanonicalName.replace(".", "/")+".class"));
+		
+		if (ret != null)
+		{
+			cachedClassInfos.put(classCanonicalName, ret);
+		}
+		
+		return ret;
+	}
+	
+	public static ClassInfo current()
+	{
+		return valueOf(ExceptionsUtils.getStacktraceClassAt(1));
 	}
 }

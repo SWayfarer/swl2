@@ -34,6 +34,16 @@ public abstract class AbstractMethodsStream<Return_Type, Element_Type> extends D
 	}
 	
 	/**
+	 * Оставить только методы, имена которых совпадают с указанной строкой
+	 * @param str Искомое имя
+	 * @return Поток с примененными изменениями
+	 */
+	public Return_Type named(String str)
+	{
+		return filter((method) -> getName(method).equals(str));
+	}
+	
+	/**
 	 * Оставить только методы, имена которых заканчиваются на указанную строку
 	 * @param str Строка, с которой будут заканчиваться оставшиеся методы
 	 * @return Поток с примененными изменениями

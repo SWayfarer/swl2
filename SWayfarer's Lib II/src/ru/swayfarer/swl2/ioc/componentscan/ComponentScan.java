@@ -1,5 +1,6 @@
 package ru.swayfarer.swl2.ioc.componentscan;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Map;
 
@@ -12,6 +13,7 @@ import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.exceptions.ExceptionsUtils;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction0;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1;
+import ru.swayfarer.swl2.ioc.DIAnnotation;
 import ru.swayfarer.swl2.ioc.DIManager;
 import ru.swayfarer.swl2.ioc.DIRegistry;
 import ru.swayfarer.swl2.ioc.context.DIContext;
@@ -91,7 +93,7 @@ public class ComponentScan {
 		if (blackList.isMatches(name))
 			return;
 		
-		AnnotationInfo componentAnnotationInfo = classInfo.getFirstAnnotation(componentAnnotationDesc);
+		AnnotationInfo componentAnnotationInfo = classInfo.findAnnotationRec(componentAnnotationDesc);
 		
 		if (componentAnnotationInfo != null)
 		{
@@ -100,13 +102,30 @@ public class ComponentScan {
 			
 			Class<?> cl = ReflectionUtils.findClass(name);
 			
-			DISwlComponent annotation = cl.getAnnotation(DISwlComponent.class);
+			if (cl.isInterface() || cl.isAnonymousClass())
+			{
+				if (isLoggingScan)
+				{
+					logger.warning("Class", classInfo.name, "has annotation", componentAnnotationDesc, "but it's anonymous class!");
+				}
+				
+				return;
+			}
 			
-			String contextName = annotation.context();
-			String elementName = annotation.name();
-			ContextElementType elementType = annotation.type();
+			Annotation annotation = DIAnnotation.findDIComponentAnnotation(cl);
 			
-			createContextElement(cl, annotation.associated(),  contextName, elementName, elementType);
+			if (annotation != null)
+			{
+				String contextName = DIAnnotation.getComponentContextName(annotation);
+				String elementName = DIAnnotation.getComponentName(annotation);
+				ContextElementType elementType = DIAnnotation.getComponentType(annotation);
+				
+				createContextElement(cl, DIAnnotation.getComponentAssociatedClass(annotation),  contextName, elementName, elementType);
+			}
+			else
+			{
+				logger.warning("Class", classInfo.name, "has annotation", componentAnnotationDesc, "but it's not accessible by reflection!");
+			}
 		}
 		else
 		{
@@ -206,11 +225,32 @@ public class ComponentScan {
 	 */
 	public Object createNewObject(Class<?> cl, boolean isInject)
 	{
-		Object instance = ReflectionUtils.newInstanceOf(cl);
+		Object instance = null;
+		
+		Method factoryMethod = ReflectionUtils.methods(cl)
+			.statics()
+			.publics()
+			.returnType(cl)
+		.first();
+		
+		if (factoryMethod != null)
+		{
+			instance = logger.safeReturn(() -> {
+				
+				IExtendedList<Object> args = DIManager.getArgsFromContext(cl, factoryMethod.getParameters());
+				return factoryMethod.invoke(null, args.toArray());
+			
+			}, "Error while creating component of class", cl, "by factory method", factoryMethod);
+		}
 		
 		if (instance == null)
 		{
-			logger.error("Can't create new instance of class", cl, "Maybe constructor without args is not exists?");
+			instance = ReflectionUtils.newInstanceOf(cl);
+		}
+		
+		if (instance == null)
+		{
+			logger.error("Can't create new instance of class", cl, "Maybe constructor without args or factory method is not exists?");
 			return null;
 		}
 		
@@ -219,10 +259,10 @@ public class ComponentScan {
 		ReflectionUtils.invokeMethods(new EventAnnotatedMethodFilter(ComponentEventType.PreInit), cl, instance, new Object[0]);
 		
 		if (isInject)
+		{
 			DIManager.injectContextElements(instance);
-		
-		if (isInject)
 			ReflectionUtils.invokeMethods(new EventAnnotatedMethodFilter(ComponentEventType.Init), cl, instance, new Object[0]);
+		}
 		
 		return instance;
 	}

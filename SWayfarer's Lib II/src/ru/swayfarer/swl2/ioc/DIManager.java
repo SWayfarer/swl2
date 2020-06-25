@@ -1,5 +1,6 @@
 package ru.swayfarer.swl2.ioc;
 
+import java.lang.annotation.Annotation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Method;
@@ -249,11 +250,11 @@ public class DIManager {
 				
 				for (Method method : methods)
 				{
-					DISwL annotation = method.getDeclaredAnnotation(DISwL.class);
+					Annotation annotation = DIAnnotation.findDIAnnotation(method); 
 
 					if (annotation != null)
 					{
-						String name = annotation.name();
+						String name = DIAnnotation.getElementName(annotation);
 
 						if (StringUtils.isEmpty(name))
 							name = method.getName();
@@ -277,7 +278,9 @@ public class DIManager {
 							}
 						}
 
-						switch (annotation.type())
+						ContextElementType annotationElementType = DIAnnotation.getElementType(annotation);
+						
+						switch (annotationElementType)
 						{
 							case Singleton:
 							{
@@ -299,7 +302,7 @@ public class DIManager {
 	
 								contextElement = element = new DIContextElementFromMethod().setMethodClass(obj.getClass()).setAssociatedClass(method.getReturnType()).setMethod(method).setSourceInstance(obj).setName(name);
 	
-								if (annotation.type() == ContextElementType.ThreadLocalPrototype)
+								if (annotationElementType == ContextElementType.ThreadLocalPrototype)
 									element.methodInvokationFun = new ThreadLocalMethodInvokationFun();
 	
 								break;
@@ -361,6 +364,7 @@ public class DIManager {
 		/** Имя контекста */
 		public String context() default "";
 		
+		/** Использовать ли имя, или определять элемент только по типу? */
 		public boolean usingName() default true;
 
 		/** Тип элемента контекста (см {@link ContextElementType} ) */
@@ -393,18 +397,23 @@ public class DIManager {
 			{
 				String name = param.getName();
 				
-				DISwL annotation = param.getAnnotation(DISwL.class);
+				Annotation annotation = DIAnnotation.findDIAnnotation(param); //ReflectionUtils.findAnnotationRec(param, DISwL.class); //param.getAnnotation(DISwL.class);
 				
 				if (annotation != null)
 				{
-					if (!StringUtils.isEmpty(annotation.name()))
+					// Кэш для хранения полученных через DIAnnotation значений
+					String s = DIAnnotation.getElementName(annotation);
+					
+					if (!StringUtils.isEmpty(s))
 					{
-						name = annotation.name();
+						name = s;
 					}
 					
-					if (!StringUtils.isEmpty(annotation.context()))
+					s = DIAnnotation.getElementContextName(annotation);
+					
+					if (!StringUtils.isEmpty(s))
 					{
-						contextName = annotation.context();
+						contextName = s;
 					}
 				}
 				

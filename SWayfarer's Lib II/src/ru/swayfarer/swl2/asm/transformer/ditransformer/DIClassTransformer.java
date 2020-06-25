@@ -28,7 +28,7 @@ public class DIClassTransformer extends InformatedClassTransformer {
 	{
 		ClassVisitor cv = writer;
 		
-		if (info.fields.stream().anyMatch((field) -> field.hasAnnotation(DI_ANNOTATION_DESC)))
+		if (info.fields.stream().anyMatch((field) -> field.findAnnotationRec(DI_ANNOTATION_DESC) != null))
 		{
 			cv = new DIClassVisitor(cv, info);
 		}

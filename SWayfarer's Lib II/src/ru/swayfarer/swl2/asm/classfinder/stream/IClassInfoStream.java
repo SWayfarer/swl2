@@ -2,6 +2,7 @@ package ru.swayfarer.swl2.asm.classfinder.stream;
 
 import java.lang.reflect.Modifier;
 
+import ru.swayfarer.swl2.asm.AsmUtils;
 import ru.swayfarer.swl2.asm.informated.ClassInfo;
 import ru.swayfarer.swl2.classes.ReflectionUtils;
 import ru.swayfarer.swl2.collections.streams.IDataStream;
@@ -34,6 +35,26 @@ public interface IClassInfoStream extends IDataStream<ClassInfo> {
 	default <T extends IClassInfoStream> T annotated(Class<?> annotationClass)
 	{
 		return annotated(Type.getDescriptor(annotationClass));
+	}
+	
+	/**
+	 * Оставить только классы, отмеченные аннотацией
+	 * @param desc Дескриптор искомой аннотации
+	 * @return Отфильтрованный поток
+	 */
+	default <T extends IClassInfoStream> T annotatedRec(String desc)
+	{
+		return (T) filter((info) -> AsmUtils.findAnnotationRec(info, desc) != null);
+	}
+	
+	/**
+	 * Оставить только классы, отмеченные аннотацией
+	 * @param annotationClass Искомая аннотация
+	 * @return Отфильтрованный поток
+	 */
+	default <T extends IClassInfoStream> T annotatedRec(Class<?> annotationClass)
+	{
+		return annotatedRec(Type.getDescriptor(annotationClass));
 	}
 	
 	/**

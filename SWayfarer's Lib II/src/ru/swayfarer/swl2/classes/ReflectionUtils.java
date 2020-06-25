@@ -1,6 +1,7 @@
 package ru.swayfarer.swl2.classes;
 
 import java.io.File;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -149,6 +150,126 @@ public class ReflectionUtils {
 	{
 		String cp = new SystemProperty("java.class.path").getValue();
 		return CollectionsSWL.createExtendedList(cp.split(File.pathSeparator));
+	}
+	
+	public static <T extends Annotation> T findAnnotationRec(Class<?> cl, Class<? extends Annotation> annotationClass)
+	{
+		return findAnnotationRec(cl, CollectionsSWL.createExtendedList(), annotationClass);
+	}
+	
+	public static <T extends Annotation> T findAnnotationRec(Field field, Class<? extends Annotation> annotationClass)
+	{
+		T annnotation = (T) field.getAnnotation(annotationClass);
+		
+		if (annnotation != null)
+			return annnotation;
+		
+		IExtendedList<? extends Annotation> annotations = CollectionsSWL.createExtendedList(field.getAnnotations());
+		
+		for (Annotation annotation : annotations)
+		{
+			T ret = findAnnotationRec(annotation.annotationType(), annotationClass);
+			
+			if (ret != null)
+			{
+				return ret;
+			}
+		}
+		
+		return null;
+	}
+	
+	public static <T extends Annotation> T findAnnotationRec(Method method, Class<? extends Annotation> annotationClass)
+	{
+		T annnotation = (T) method.getAnnotation(annotationClass);
+		
+		if (annnotation != null)
+			return annnotation;
+		
+		IExtendedList<? extends Annotation> annotations = CollectionsSWL.createExtendedList(method.getAnnotations());
+		
+		for (Annotation annotation : annotations)
+		{
+			T ret = findAnnotationRec(annotation.annotationType(), annotationClass);
+			
+			if (ret != null)
+			{
+				return ret;
+			}
+		}
+		
+		return null;
+	}
+	
+	public static <T extends Annotation> T findAnnotationRec(Parameter method, Class<? extends Annotation> annotationClass)
+	{
+		T annnotation = (T) method.getAnnotation(annotationClass);
+		
+		if (annnotation != null)
+			return annnotation;
+		
+		IExtendedList<? extends Annotation> annotations = CollectionsSWL.createExtendedList(method.getAnnotations());
+		
+		for (Annotation annotation : annotations)
+		{
+			T ret = findAnnotationRec(annotation.annotationType(), annotationClass);
+			
+			if (ret != null)
+			{
+				return ret;
+			}
+		}
+		
+		return null;
+	}
+	
+	public static <T extends Annotation> T findAnnotationRec(Constructor<?> method, Class<? extends Annotation> annotationClass)
+	{
+		T annnotation = (T) method.getAnnotation(annotationClass);
+		
+		if (annnotation != null)
+			return annnotation;
+		
+		IExtendedList<? extends Annotation> annotations = CollectionsSWL.createExtendedList(method.getAnnotations());
+		
+		for (Annotation annotation : annotations)
+		{
+			T ret = findAnnotationRec(annotation.annotationType(), annotationClass);
+			
+			if (ret != null)
+			{
+				return ret;
+			}
+		}
+		
+		return null;
+	}
+	
+	public static <T extends Annotation> T findAnnotationRec(Class<?> cl, IExtendedList<Class<?>> visitedAnnotations, Class<? extends Annotation> annotationClass)
+	{
+		T annnotation = (T) cl.getAnnotation(annotationClass);
+		
+		if (annnotation != null)
+			return annnotation;
+		
+		IExtendedList<? extends Annotation> annotations = CollectionsSWL.createExtendedList(cl.getAnnotations());
+		
+		for (Annotation annotation : annotations)
+		{
+			if (!visitedAnnotations.contains(annotationClass))
+			{
+				visitedAnnotations.add(annotationClass);
+				
+				T ret = findAnnotationRec(annotation.annotationType(), visitedAnnotations, annotationClass);
+				
+				if (ret != null)
+				{
+					return ret;
+				}
+			}
+		}
+		
+		return null;
 	}
 	
 	public static boolean isImplements(Class<?> cl, Class<?> classOfInterface)

@@ -1,9 +1,12 @@
 package ru.swayfarer.swl2.ioc.componentscan;
 
+import java.lang.annotation.Annotation;
+
 import ru.swayfarer.swl2.asm.classfinder.ClassFinder;
 import ru.swayfarer.swl2.asm.informated.ClassInfo;
 import ru.swayfarer.swl2.classes.ReflectionUtils;
 import ru.swayfarer.swl2.exceptions.ExceptionsUtils;
+import ru.swayfarer.swl2.ioc.DIAnnotation;
 import ru.swayfarer.swl2.ioc.DIManager;
 import ru.swayfarer.swl2.ioc.DIRegistry;
 import ru.swayfarer.swl2.logger.ILogger;
@@ -60,12 +63,24 @@ public class ContextSourcesScan {
 		if (blackList.isMatches(classInfo.getCanonicalName()))
 			return;
 		
-		if (classInfo.hasAnnotation(contextSourceAnnotationDesc))
+		if (classInfo.findAnnotationRec(contextSourceAnnotationDesc) != null)
 		{
 			Class<?> cl = ReflectionUtils.findClass(classInfo.getCanonicalName());
 			
-			DISwlSource annotation = cl.getAnnotation(DISwlSource.class);
-			String context = annotation.context();
+			if (cl.isAnonymousClass() || cl.isInterface())
+			{
+				if (isLoggingScan)
+				{
+					logger.warning("Class", cl, "has", contextSourceAnnotationDesc, "annotation, but it's anonymous class. Skiping...");
+				}
+				
+				return;
+			}
+			
+			Annotation annotation = DIAnnotation.findDISourceAnnotation(cl);
+			
+			logger.info(cl, annotation);
+			String context = DIAnnotation.getSourceContextName(annotation);
 			
 			if (StringUtils.isBlank(context))
 			{

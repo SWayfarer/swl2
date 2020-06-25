@@ -54,7 +54,7 @@ public class ReflectionDIInjector {
 
 			for (Field field : cl.getDeclaredFields())
 			{ 
-				DISwL annotation = field.getAnnotation(DISwL.class);
+				DISwL annotation = ReflectionUtils.findAnnotationRec(field, DISwL.class); // field.getAnnotation(DISwL.class);
 				DynamicDI dynamicDI = field.getAnnotation(DynamicDI.class);
 				
 				if (dynamicDI == null && annotation != null)
@@ -114,7 +114,7 @@ public class ReflectionDIInjector {
 	
 	public static void injectToField(Object instance, Field field) throws IllegalArgumentException, IllegalAccessException 
 	{
-		DISwL annotation = field.getAnnotation(DISwL.class);
+		DISwL annotation = ReflectionUtils.findAnnotationRec(field, DISwL.class); //field.getAnnotation(DISwL.class);
 		Class<?> cl = instance.getClass();
 		
 		if (annotation != null)

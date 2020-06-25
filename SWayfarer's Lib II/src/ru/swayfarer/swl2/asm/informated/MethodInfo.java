@@ -5,6 +5,7 @@ import java.util.Map;
 
 import lombok.Data;
 import lombok.ToString;
+import ru.swayfarer.swl2.asm.AsmUtils;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.Opcodes;
@@ -100,6 +101,26 @@ public class MethodInfo {
 	public boolean isHasNoParameters()
 	{
 		return getParametersCount() == 0;
+	}
+	
+	/**
+	 * Найти аннотацию, среди аннотаций метода и их аннотаций рекурсивно. 
+	 * @param annotationDescriptor Дескриптор аннотации 
+	 * @return Найденная аннотация или null
+	 */
+	public AnnotationInfo findAnnotationRec(String annotationDescriptor)
+	{
+		return AsmUtils.findAnnotationRec(this, annotationDescriptor);
+	}
+	
+	/**
+	 * Найти аннотацию, среди аннотаций метода и их аннотаций рекурсивно. 
+	 * @param annotationDescriptor Дескриптор аннотации 
+	 * @return Найденная аннотация или null
+	 */
+	public AnnotationInfo findAnnotationRec(Class<?> annotationDescriptor)
+	{
+		return findAnnotationRec(Type.getDescriptor(annotationDescriptor));
 	}
 	
 	/** Является ли метод void'ом? */
