@@ -169,6 +169,22 @@ public interface IExtendedList<Element_Type> extends List<Element_Type>{
 		return false;
 	}
 	
+	/**
+	 * Содержится ли хотя бы один элемент?
+	 * @param elements Элементы, с которыми сверяем
+	 * @return True, если содержится
+	 */
+	public default boolean containsSome(Iterable<Element_Type> elements)
+	{
+		for (Element_Type e : elements)
+		{
+			if (contains(e))
+				return true;
+		}
+		
+		return false;
+	}
+	
 	/** Добавить все элементы */
 	public default boolean containsAll(Element_Type... elements)
 	{
