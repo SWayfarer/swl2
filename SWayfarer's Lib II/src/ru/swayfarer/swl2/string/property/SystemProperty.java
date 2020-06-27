@@ -40,4 +40,10 @@ public class SystemProperty extends StringProperty {
 		return (T) this;
 	}
 	
+	@Override
+	public String toString()
+	{
+		return "'" + name + "' = " + rawValue;
+	}
+	
 }

@@ -1,6 +1,7 @@
 package ru.swayfarer.swl2.swconf.serialization.providers;
 
 import ru.swayfarer.swl2.equals.EqualsUtils;
+import ru.swayfarer.swl2.swconf.primitives.SwconfPrimitive;
 import ru.swayfarer.swl2.swconf.primitives.SwconfString;
 import ru.swayfarer.swl2.swconf.serialization.ISwconfSerializationProvider;
 
@@ -9,7 +10,7 @@ import ru.swayfarer.swl2.swconf.serialization.ISwconfSerializationProvider;
  * @author swayfarer
  *
  */
-public class StringSwconfSerializationProvider implements ISwconfSerializationProvider<SwconfString, Object> {
+public class StringSwconfSerializationProvider implements ISwconfSerializationProvider<SwconfPrimitive, Object> {
 
 	@Override
 	public boolean isAccetps(Class<?> type)
@@ -18,9 +19,9 @@ public class StringSwconfSerializationProvider implements ISwconfSerializationPr
 	}
 
 	@Override
-	public Object deserialize(Class<?> cl, Object obj, SwconfString swconfObject)
+	public Object deserialize(Class<?> cl, Object obj, SwconfPrimitive swconfObject)
 	{
-		String ret = swconfObject.getValue();
+		String ret = swconfObject.rawValue + "";
 		return EqualsUtils.objectEqualsSome(cl, Character.class, char.class) ? ret.charAt(0) : ret;
 	}
 
@@ -31,7 +32,7 @@ public class StringSwconfSerializationProvider implements ISwconfSerializationPr
 	}
 
 	@Override
-	public String createNewInstance(Class<?> classOfObject, SwconfString swconfObject)
+	public String createNewInstance(Class<?> classOfObject, SwconfPrimitive swconfObject)
 	{
 		return null;
 	}

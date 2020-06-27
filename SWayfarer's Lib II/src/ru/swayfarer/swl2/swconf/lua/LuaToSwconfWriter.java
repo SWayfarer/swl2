@@ -181,6 +181,7 @@ public class LuaToSwconfWriter extends SwconfWriter {
 		}
 		
 		indent ++;
+		isPlacingSplitters ++;
 		
 		for (SwconfPrimitive prim : array.elements)
 		{
@@ -191,6 +192,7 @@ public class LuaToSwconfWriter extends SwconfWriter {
 		}
 		
 		indent --;
+		isPlacingSplitters --;
 		
 		if (!StringUtils.isBlank(array.name))
 		{

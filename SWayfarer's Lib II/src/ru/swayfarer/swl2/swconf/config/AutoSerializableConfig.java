@@ -26,6 +26,7 @@ import ru.swayfarer.swl2.swconf.serialization.SwconfSerialization;
 import ru.swayfarer.swl2.swconf.serialization.comments.IgnoreSwconf;
 import ru.swayfarer.swl2.swconf.serialization.comments.TextContainerSwconf;
 import ru.swayfarer.swl2.swconf.serialization.writer.ISwconfWriter;
+import ru.swayfarer.swl2.swconf.utils.SwconfSerializationHelper;
 import ru.swayfarer.swl2.threads.ThreadsUtils;
 
 /**
@@ -252,6 +253,21 @@ public class AutoSerializableConfig {
 		ConfigurationSaveThread thread = new ConfigurationSaveThread(this);
 		thread.start();
 		return (T) this;
+	}
+	
+	public static <T extends AutoSerializableConfig> T ofRLink(ResourceLink rlink, Class<T> classOfConfig)
+	{
+		T ret = ReflectionUtils.newInstanceOf(classOfConfig);
+		
+		if (ret == null)
+			return null;
+		
+		ret.configInfo.configurationFormat = SwconfSerializationHelper.forRlink(rlink).swconfFormat;
+		ret.setResourceLink(rlink);
+		ret.createIfNotFound();
+		ret.init();
+		
+		return ret;
 	}
 	
 	/** Задать ссылку на конфиг */
