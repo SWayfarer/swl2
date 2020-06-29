@@ -52,6 +52,18 @@ public static interface IFunction0<Ret_Type> {
 	}
 	
 	/**
+	 * Выполнить функцию, запомнить результат и возвращать всегда его
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction0<Ret_Type> memorized()
+	{
+		Ret_Type ret = apply();
+	
+		return () -> ret;
+	}
+	
+	/**
 	 * Применить функцию
 	 * 
 	 * @return Возвращаемое значение функции
@@ -230,6 +242,18 @@ public static interface IFunction1<Arg1, Ret_Type> {
 	public default Ret_Type process(Arg1 arg1)
 	{
 		return apply(arg1);
+	}
+	
+	/**
+	 * Выполнить функцию, запомнить результат и возвращать всегда его
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction1<Arg1, Ret_Type> memorized(Arg1 arg1)
+	{
+		Ret_Type ret = apply(arg1);
+	
+		return (a1) -> ret;
 	}
 	
 	/**
@@ -442,6 +466,18 @@ public static interface IFunction2<Arg1, Arg2, Ret_Type> {
 	}
 	
 	/**
+	 * Выполнить функцию, запомнить результат и возвращать всегда его
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction2<Arg1, Arg2, Ret_Type> memorized(Arg1 arg1, Arg2 arg2)
+	{
+		Ret_Type ret = apply(arg1, arg2);
+	
+		return (a1, a2) -> ret;
+	}
+	
+	/**
 	 * Применить функцию
 	 * 
 	 * @return Возвращаемое значение функции
@@ -624,6 +660,18 @@ public static interface IFunction3<Arg1, Arg2, Arg3, Ret_Type> {
 	}
 	
 	/**
+	 * Выполнить функцию, запомнить результат и возвращать всегда его
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction3<Arg1, Arg2, Arg3, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3)
+	{
+		Ret_Type ret = apply(arg1, arg2, arg3);
+	
+		return (a1, a2, a3) -> ret;
+	}
+	
+	/**
 	 * Применить функцию
 	 * 
 	 * @return Возвращаемое значение функции
@@ -784,6 +832,18 @@ public static interface IFunction4<Arg1, Arg2, Arg3, Arg4, Ret_Type> {
 	public default Ret_Type process(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4)
 	{
 		return apply(arg1, arg2, arg3, arg4);
+	}
+	
+	/**
+	 * Выполнить функцию, запомнить результат и возвращать всегда его
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction4<Arg1, Arg2, Arg3, Arg4, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4)
+	{
+		Ret_Type ret = apply(arg1, arg2, arg3, arg4);
+	
+		return (a1, a2, a3, a4) -> ret;
 	}
 	
 	/**
@@ -950,6 +1010,18 @@ public static interface IFunction5<Arg1, Arg2, Arg3, Arg4, Arg5, Ret_Type> {
 	}
 	
 	/**
+	 * Выполнить функцию, запомнить результат и возвращать всегда его
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction5<Arg1, Arg2, Arg3, Arg4, Arg5, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5)
+	{
+		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5);
+	
+		return (a1, a2, a3, a4, a5) -> ret;
+	}
+	
+	/**
 	 * Применить функцию
 	 * 
 	 * @return Возвращаемое значение функции
@@ -1110,6 +1182,18 @@ public static interface IFunction6<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Ret_Type>
 	public default Ret_Type process(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6)
 	{
 		return apply(arg1, arg2, arg3, arg4, arg5, arg6);
+	}
+	
+	/**
+	 * Выполнить функцию, запомнить результат и возвращать всегда его
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction6<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6)
+	{
+		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5, arg6);
+	
+		return (a1, a2, a3, a4, a5, a6) -> ret;
 	}
 	
 	/**
@@ -1276,6 +1360,18 @@ public static interface IFunction7<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ret
 	}
 	
 	/**
+	 * Выполнить функцию, запомнить результат и возвращать всегда его
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction7<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7)
+	{
+		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+	
+		return (a1, a2, a3, a4, a5, a6, a7) -> ret;
+	}
+	
+	/**
 	 * Применить функцию
 	 * 
 	 * @return Возвращаемое значение функции
@@ -1436,6 +1532,18 @@ public static interface IFunction8<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg
 	public default Ret_Type process(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8)
 	{
 		return apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+	}
+	
+	/**
+	 * Выполнить функцию, запомнить результат и возвращать всегда его
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction8<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8)
+	{
+		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+	
+		return (a1, a2, a3, a4, a5, a6, a7, a8) -> ret;
 	}
 	
 	/**
@@ -1602,6 +1710,18 @@ public static interface IFunction9<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg
 	}
 	
 	/**
+	 * Выполнить функцию, запомнить результат и возвращать всегда его
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction9<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9)
+	{
+		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9);
+	
+		return (a1, a2, a3, a4, a5, a6, a7, a8, a9) -> ret;
+	}
+	
+	/**
 	 * Применить функцию
 	 * 
 	 * @return Возвращаемое значение функции
@@ -1762,6 +1882,18 @@ public static interface IFunction10<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	public default Ret_Type process(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10)
 	{
 		return apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
+	}
+	
+	/**
+	 * Выполнить функцию, запомнить результат и возвращать всегда его
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction10<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10)
+	{
+		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
+	
+		return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10) -> ret;
 	}
 	
 	/**
@@ -1928,6 +2060,18 @@ public static interface IFunction11<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	}
 	
 	/**
+	 * Выполнить функцию, запомнить результат и возвращать всегда его
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction11<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11)
+	{
+		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11);
+	
+		return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11) -> ret;
+	}
+	
+	/**
 	 * Применить функцию
 	 * 
 	 * @return Возвращаемое значение функции
@@ -2088,6 +2232,18 @@ public static interface IFunction12<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	public default Ret_Type process(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12)
 	{
 		return apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12);
+	}
+	
+	/**
+	 * Выполнить функцию, запомнить результат и возвращать всегда его
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction12<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12)
+	{
+		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12);
+	
+		return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12) -> ret;
 	}
 	
 	/**
@@ -2254,6 +2410,18 @@ public static interface IFunction13<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	}
 	
 	/**
+	 * Выполнить функцию, запомнить результат и возвращать всегда его
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction13<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13)
+	{
+		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13);
+	
+		return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13) -> ret;
+	}
+	
+	/**
 	 * Применить функцию
 	 * 
 	 * @return Возвращаемое значение функции
@@ -2414,6 +2582,18 @@ public static interface IFunction14<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	public default Ret_Type process(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14)
 	{
 		return apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14);
+	}
+	
+	/**
+	 * Выполнить функцию, запомнить результат и возвращать всегда его
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction14<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14)
+	{
+		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14);
+	
+		return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14) -> ret;
 	}
 	
 	/**
@@ -2580,6 +2760,18 @@ public static interface IFunction15<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	}
 	
 	/**
+	 * Выполнить функцию, запомнить результат и возвращать всегда его
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction15<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15)
+	{
+		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15);
+	
+		return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15) -> ret;
+	}
+	
+	/**
 	 * Применить функцию
 	 * 
 	 * @return Возвращаемое значение функции
@@ -2740,6 +2932,18 @@ public static interface IFunction16<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	public default Ret_Type process(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16)
 	{
 		return apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16);
+	}
+	
+	/**
+	 * Выполнить функцию, запомнить результат и возвращать всегда его
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction16<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16)
+	{
+		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16);
+	
+		return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16) -> ret;
 	}
 	
 	/**
@@ -2906,6 +3110,18 @@ public static interface IFunction17<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	}
 	
 	/**
+	 * Выполнить функцию, запомнить результат и возвращать всегда его
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction17<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17)
+	{
+		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17);
+	
+		return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17) -> ret;
+	}
+	
+	/**
 	 * Применить функцию
 	 * 
 	 * @return Возвращаемое значение функции
@@ -3066,6 +3282,18 @@ public static interface IFunction18<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	public default Ret_Type process(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18)
 	{
 		return apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18);
+	}
+	
+	/**
+	 * Выполнить функцию, запомнить результат и возвращать всегда его
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction18<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18)
+	{
+		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18);
+	
+		return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18) -> ret;
 	}
 	
 	/**
@@ -3232,6 +3460,18 @@ public static interface IFunction19<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	}
 	
 	/**
+	 * Выполнить функцию, запомнить результат и возвращать всегда его
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction19<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19)
+	{
+		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19);
+	
+		return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19) -> ret;
+	}
+	
+	/**
 	 * Применить функцию
 	 * 
 	 * @return Возвращаемое значение функции
@@ -3392,6 +3632,18 @@ public static interface IFunction20<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	public default Ret_Type process(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20)
 	{
 		return apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20);
+	}
+	
+	/**
+	 * Выполнить функцию, запомнить результат и возвращать всегда его
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction20<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20)
+	{
+		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20);
+	
+		return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20) -> ret;
 	}
 	
 	/**
@@ -3558,6 +3810,18 @@ public static interface IFunction21<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	}
 	
 	/**
+	 * Выполнить функцию, запомнить результат и возвращать всегда его
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction21<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21)
+	{
+		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21);
+	
+		return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21) -> ret;
+	}
+	
+	/**
 	 * Применить функцию
 	 * 
 	 * @return Возвращаемое значение функции
@@ -3718,6 +3982,18 @@ public static interface IFunction22<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	public default Ret_Type process(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22)
 	{
 		return apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22);
+	}
+	
+	/**
+	 * Выполнить функцию, запомнить результат и возвращать всегда его
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction22<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22)
+	{
+		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22);
+	
+		return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22) -> ret;
 	}
 	
 	/**
@@ -3884,6 +4160,18 @@ public static interface IFunction23<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	}
 	
 	/**
+	 * Выполнить функцию, запомнить результат и возвращать всегда его
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction23<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23)
+	{
+		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23);
+	
+		return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23) -> ret;
+	}
+	
+	/**
 	 * Применить функцию
 	 * 
 	 * @return Возвращаемое значение функции
@@ -4044,6 +4332,18 @@ public static interface IFunction24<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	public default Ret_Type process(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24)
 	{
 		return apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24);
+	}
+	
+	/**
+	 * Выполнить функцию, запомнить результат и возвращать всегда его
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction24<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Arg24, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24)
+	{
+		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24);
+	
+		return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24) -> ret;
 	}
 	
 	/**
@@ -4210,6 +4510,18 @@ public static interface IFunction25<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	}
 	
 	/**
+	 * Выполнить функцию, запомнить результат и возвращать всегда его
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction25<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Arg24, Arg25, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24, Arg25 arg25)
+	{
+		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24, arg25);
+	
+		return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25) -> ret;
+	}
+	
+	/**
 	 * Применить функцию
 	 * 
 	 * @return Возвращаемое значение функции
@@ -4370,6 +4682,18 @@ public static interface IFunction26<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	public default Ret_Type process(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24, Arg25 arg25, Arg26 arg26)
 	{
 		return apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24, arg25, arg26);
+	}
+	
+	/**
+	 * Выполнить функцию, запомнить результат и возвращать всегда его
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction26<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Arg24, Arg25, Arg26, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24, Arg25 arg25, Arg26 arg26)
+	{
+		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24, arg25, arg26);
+	
+		return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, a26) -> ret;
 	}
 	
 	/**
@@ -4536,6 +4860,18 @@ public static interface IFunction27<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	}
 	
 	/**
+	 * Выполнить функцию, запомнить результат и возвращать всегда его
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction27<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Arg24, Arg25, Arg26, Arg27, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24, Arg25 arg25, Arg26 arg26, Arg27 arg27)
+	{
+		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24, arg25, arg26, arg27);
+	
+		return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, a26, a27) -> ret;
+	}
+	
+	/**
 	 * Применить функцию
 	 * 
 	 * @return Возвращаемое значение функции
@@ -4696,6 +5032,18 @@ public static interface IFunction28<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	public default Ret_Type process(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24, Arg25 arg25, Arg26 arg26, Arg27 arg27, Arg28 arg28)
 	{
 		return apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24, arg25, arg26, arg27, arg28);
+	}
+	
+	/**
+	 * Выполнить функцию, запомнить результат и возвращать всегда его
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction28<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Arg24, Arg25, Arg26, Arg27, Arg28, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24, Arg25 arg25, Arg26 arg26, Arg27 arg27, Arg28 arg28)
+	{
+		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24, arg25, arg26, arg27, arg28);
+	
+		return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, a26, a27, a28) -> ret;
 	}
 	
 	/**
@@ -4862,6 +5210,18 @@ public static interface IFunction29<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	}
 	
 	/**
+	 * Выполнить функцию, запомнить результат и возвращать всегда его
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction29<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Arg24, Arg25, Arg26, Arg27, Arg28, Arg29, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24, Arg25 arg25, Arg26 arg26, Arg27 arg27, Arg28 arg28, Arg29 arg29)
+	{
+		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24, arg25, arg26, arg27, arg28, arg29);
+	
+		return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, a26, a27, a28, a29) -> ret;
+	}
+	
+	/**
 	 * Применить функцию
 	 * 
 	 * @return Возвращаемое значение функции
@@ -5022,6 +5382,18 @@ public static interface IFunction30<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	public default Ret_Type process(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24, Arg25 arg25, Arg26 arg26, Arg27 arg27, Arg28 arg28, Arg29 arg29, Arg30 arg30)
 	{
 		return apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24, arg25, arg26, arg27, arg28, arg29, arg30);
+	}
+	
+	/**
+	 * Выполнить функцию, запомнить результат и возвращать всегда его
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction30<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Arg24, Arg25, Arg26, Arg27, Arg28, Arg29, Arg30, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24, Arg25 arg25, Arg26 arg26, Arg27 arg27, Arg28 arg28, Arg29 arg29, Arg30 arg30)
+	{
+		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24, arg25, arg26, arg27, arg28, arg29, arg30);
+	
+		return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, a26, a27, a28, a29, a30) -> ret;
 	}
 	
 	/**
@@ -5188,6 +5560,18 @@ public static interface IFunction31<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	}
 	
 	/**
+	 * Выполнить функцию, запомнить результат и возвращать всегда его
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction31<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Arg24, Arg25, Arg26, Arg27, Arg28, Arg29, Arg30, Arg31, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24, Arg25 arg25, Arg26 arg26, Arg27 arg27, Arg28 arg28, Arg29 arg29, Arg30 arg30, Arg31 arg31)
+	{
+		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24, arg25, arg26, arg27, arg28, arg29, arg30, arg31);
+	
+		return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, a26, a27, a28, a29, a30, a31) -> ret;
+	}
+	
+	/**
 	 * Применить функцию
 	 * 
 	 * @return Возвращаемое значение функции
@@ -5348,6 +5732,18 @@ public static interface IFunction32<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	public default Ret_Type process(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24, Arg25 arg25, Arg26 arg26, Arg27 arg27, Arg28 arg28, Arg29 arg29, Arg30 arg30, Arg31 arg31, Arg32 arg32)
 	{
 		return apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24, arg25, arg26, arg27, arg28, arg29, arg30, arg31, arg32);
+	}
+	
+	/**
+	 * Выполнить функцию, запомнить результат и возвращать всегда его
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction32<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Arg24, Arg25, Arg26, Arg27, Arg28, Arg29, Arg30, Arg31, Arg32, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24, Arg25 arg25, Arg26 arg26, Arg27 arg27, Arg28 arg28, Arg29 arg29, Arg30 arg30, Arg31 arg31, Arg32 arg32)
+	{
+		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24, arg25, arg26, arg27, arg28, arg29, arg30, arg31, arg32);
+	
+		return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, a26, a27, a28, a29, a30, a31, a32) -> ret;
 	}
 	
 	/**

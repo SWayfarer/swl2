@@ -52,6 +52,18 @@ public static interface ${classType} {
 	}
 	
 	/**
+	 * Выполнить функцию, запомнить результат и возвращать всегда его
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default ${classType} memorized(${declareArgs})
+	{
+		${returnType} ret = apply(${invokeArgs});
+	
+		return (${invokeArgs2}) -> ret;
+	}
+	
+	/**
 	 * Применить функцию
 	 * 
 	 * @return Возвращаемое значение функции
