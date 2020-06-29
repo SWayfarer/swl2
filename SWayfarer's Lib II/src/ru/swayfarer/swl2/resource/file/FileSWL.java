@@ -9,6 +9,7 @@ import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.net.URI;
 import java.net.URL;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
@@ -39,7 +40,7 @@ import ru.swayfarer.swl2.string.StringUtils;
  * @author swayfarer
  */
 @SuppressWarnings( {"serial", "unchecked"} )
-public class FileSWL extends File implements IHasSubfiles {
+public class FileSWL extends File implements IHasSubfiles, Iterable<FileSWL> {
 
 	/** Локи по файлам ({@link FileSWL} можно залочить, чтоьы не случилось параллельной записи)*/
 	public static ConcurrentHashMap<String, ReentrantLock> filesLocks = new ConcurrentHashMap<>();
@@ -687,6 +688,12 @@ public class FileSWL extends File implements IHasSubfiles {
 			return (FileSWL) file;
 		
 		return new FileSWL(PathTransforms.fixSlashes(file.getAbsolutePath()));
+	}
+
+	@Override
+	public Iterator<FileSWL> iterator()
+	{
+		return getSubfiles().iterator();
 	}
 
 }
