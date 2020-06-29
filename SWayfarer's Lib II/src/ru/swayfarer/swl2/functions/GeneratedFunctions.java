@@ -5,6 +5,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Функции для удобства использования функционального подхода 
@@ -56,11 +57,38 @@ public static interface IFunction0<Ret_Type> {
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default IFunction0<Ret_Type> memorized()
+	public default IFunction0<Ret_Type> memorize()
 	{
 		Ret_Type ret = apply();
 	
 		return () -> ret;
+	}
+	
+	/**
+	 * При первом выполнении функция запомнит результат и будет всегда его возвращать
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction0<Ret_Type> memorized()
+	{
+		IFunction0<Ret_Type> fun = this;
+	
+		return new IFunction0<Ret_Type> () 
+		{
+			public AtomicBoolean isProcessed = new AtomicBoolean();
+			public volatile Ret_Type retValue;
+		
+			public Ret_Type apply()
+			{
+				if (!isProcessed.get())
+				{
+					retValue = fun.apply();
+					isProcessed.set(true);
+				}
+				
+				return retValue;
+			}
+		};
 	}
 	
 	/**
@@ -249,11 +277,38 @@ public static interface IFunction1<Arg1, Ret_Type> {
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default IFunction1<Arg1, Ret_Type> memorized(Arg1 arg1)
+	public default IFunction1<Arg1, Ret_Type> memorize(Arg1 arg1)
 	{
 		Ret_Type ret = apply(arg1);
 	
 		return (a1) -> ret;
+	}
+	
+	/**
+	 * При первом выполнении функция запомнит результат и будет всегда его возвращать
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction1<Arg1, Ret_Type> memorized()
+	{
+		IFunction1<Arg1, Ret_Type> fun = this;
+	
+		return new IFunction1<Arg1, Ret_Type> () 
+		{
+			public AtomicBoolean isProcessed = new AtomicBoolean();
+			public volatile Ret_Type retValue;
+		
+			public Ret_Type apply(Arg1 arg1)
+			{
+				if (!isProcessed.get())
+				{
+					retValue = fun.apply(arg1);
+					isProcessed.set(true);
+				}
+				
+				return retValue;
+			}
+		};
 	}
 	
 	/**
@@ -470,11 +525,38 @@ public static interface IFunction2<Arg1, Arg2, Ret_Type> {
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default IFunction2<Arg1, Arg2, Ret_Type> memorized(Arg1 arg1, Arg2 arg2)
+	public default IFunction2<Arg1, Arg2, Ret_Type> memorize(Arg1 arg1, Arg2 arg2)
 	{
 		Ret_Type ret = apply(arg1, arg2);
 	
 		return (a1, a2) -> ret;
+	}
+	
+	/**
+	 * При первом выполнении функция запомнит результат и будет всегда его возвращать
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction2<Arg1, Arg2, Ret_Type> memorized()
+	{
+		IFunction2<Arg1, Arg2, Ret_Type> fun = this;
+	
+		return new IFunction2<Arg1, Arg2, Ret_Type> () 
+		{
+			public AtomicBoolean isProcessed = new AtomicBoolean();
+			public volatile Ret_Type retValue;
+		
+			public Ret_Type apply(Arg1 arg1, Arg2 arg2)
+			{
+				if (!isProcessed.get())
+				{
+					retValue = fun.apply(arg1, arg2);
+					isProcessed.set(true);
+				}
+				
+				return retValue;
+			}
+		};
 	}
 	
 	/**
@@ -664,11 +746,38 @@ public static interface IFunction3<Arg1, Arg2, Arg3, Ret_Type> {
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default IFunction3<Arg1, Arg2, Arg3, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3)
+	public default IFunction3<Arg1, Arg2, Arg3, Ret_Type> memorize(Arg1 arg1, Arg2 arg2, Arg3 arg3)
 	{
 		Ret_Type ret = apply(arg1, arg2, arg3);
 	
 		return (a1, a2, a3) -> ret;
+	}
+	
+	/**
+	 * При первом выполнении функция запомнит результат и будет всегда его возвращать
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction3<Arg1, Arg2, Arg3, Ret_Type> memorized()
+	{
+		IFunction3<Arg1, Arg2, Arg3, Ret_Type> fun = this;
+	
+		return new IFunction3<Arg1, Arg2, Arg3, Ret_Type> () 
+		{
+			public AtomicBoolean isProcessed = new AtomicBoolean();
+			public volatile Ret_Type retValue;
+		
+			public Ret_Type apply(Arg1 arg1, Arg2 arg2, Arg3 arg3)
+			{
+				if (!isProcessed.get())
+				{
+					retValue = fun.apply(arg1, arg2, arg3);
+					isProcessed.set(true);
+				}
+				
+				return retValue;
+			}
+		};
 	}
 	
 	/**
@@ -839,11 +948,38 @@ public static interface IFunction4<Arg1, Arg2, Arg3, Arg4, Ret_Type> {
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default IFunction4<Arg1, Arg2, Arg3, Arg4, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4)
+	public default IFunction4<Arg1, Arg2, Arg3, Arg4, Ret_Type> memorize(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4)
 	{
 		Ret_Type ret = apply(arg1, arg2, arg3, arg4);
 	
 		return (a1, a2, a3, a4) -> ret;
+	}
+	
+	/**
+	 * При первом выполнении функция запомнит результат и будет всегда его возвращать
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction4<Arg1, Arg2, Arg3, Arg4, Ret_Type> memorized()
+	{
+		IFunction4<Arg1, Arg2, Arg3, Arg4, Ret_Type> fun = this;
+	
+		return new IFunction4<Arg1, Arg2, Arg3, Arg4, Ret_Type> () 
+		{
+			public AtomicBoolean isProcessed = new AtomicBoolean();
+			public volatile Ret_Type retValue;
+		
+			public Ret_Type apply(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4)
+			{
+				if (!isProcessed.get())
+				{
+					retValue = fun.apply(arg1, arg2, arg3, arg4);
+					isProcessed.set(true);
+				}
+				
+				return retValue;
+			}
+		};
 	}
 	
 	/**
@@ -1014,11 +1150,38 @@ public static interface IFunction5<Arg1, Arg2, Arg3, Arg4, Arg5, Ret_Type> {
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default IFunction5<Arg1, Arg2, Arg3, Arg4, Arg5, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5)
+	public default IFunction5<Arg1, Arg2, Arg3, Arg4, Arg5, Ret_Type> memorize(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5)
 	{
 		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5);
 	
 		return (a1, a2, a3, a4, a5) -> ret;
+	}
+	
+	/**
+	 * При первом выполнении функция запомнит результат и будет всегда его возвращать
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction5<Arg1, Arg2, Arg3, Arg4, Arg5, Ret_Type> memorized()
+	{
+		IFunction5<Arg1, Arg2, Arg3, Arg4, Arg5, Ret_Type> fun = this;
+	
+		return new IFunction5<Arg1, Arg2, Arg3, Arg4, Arg5, Ret_Type> () 
+		{
+			public AtomicBoolean isProcessed = new AtomicBoolean();
+			public volatile Ret_Type retValue;
+		
+			public Ret_Type apply(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5)
+			{
+				if (!isProcessed.get())
+				{
+					retValue = fun.apply(arg1, arg2, arg3, arg4, arg5);
+					isProcessed.set(true);
+				}
+				
+				return retValue;
+			}
+		};
 	}
 	
 	/**
@@ -1189,11 +1352,38 @@ public static interface IFunction6<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Ret_Type>
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default IFunction6<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6)
+	public default IFunction6<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Ret_Type> memorize(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6)
 	{
 		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5, arg6);
 	
 		return (a1, a2, a3, a4, a5, a6) -> ret;
+	}
+	
+	/**
+	 * При первом выполнении функция запомнит результат и будет всегда его возвращать
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction6<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Ret_Type> memorized()
+	{
+		IFunction6<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Ret_Type> fun = this;
+	
+		return new IFunction6<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Ret_Type> () 
+		{
+			public AtomicBoolean isProcessed = new AtomicBoolean();
+			public volatile Ret_Type retValue;
+		
+			public Ret_Type apply(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6)
+			{
+				if (!isProcessed.get())
+				{
+					retValue = fun.apply(arg1, arg2, arg3, arg4, arg5, arg6);
+					isProcessed.set(true);
+				}
+				
+				return retValue;
+			}
+		};
 	}
 	
 	/**
@@ -1364,11 +1554,38 @@ public static interface IFunction7<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ret
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default IFunction7<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7)
+	public default IFunction7<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ret_Type> memorize(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7)
 	{
 		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7);
 	
 		return (a1, a2, a3, a4, a5, a6, a7) -> ret;
+	}
+	
+	/**
+	 * При первом выполнении функция запомнит результат и будет всегда его возвращать
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction7<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ret_Type> memorized()
+	{
+		IFunction7<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ret_Type> fun = this;
+	
+		return new IFunction7<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ret_Type> () 
+		{
+			public AtomicBoolean isProcessed = new AtomicBoolean();
+			public volatile Ret_Type retValue;
+		
+			public Ret_Type apply(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7)
+			{
+				if (!isProcessed.get())
+				{
+					retValue = fun.apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+					isProcessed.set(true);
+				}
+				
+				return retValue;
+			}
+		};
 	}
 	
 	/**
@@ -1539,11 +1756,38 @@ public static interface IFunction8<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default IFunction8<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8)
+	public default IFunction8<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Ret_Type> memorize(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8)
 	{
 		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
 	
 		return (a1, a2, a3, a4, a5, a6, a7, a8) -> ret;
+	}
+	
+	/**
+	 * При первом выполнении функция запомнит результат и будет всегда его возвращать
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction8<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Ret_Type> memorized()
+	{
+		IFunction8<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Ret_Type> fun = this;
+	
+		return new IFunction8<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Ret_Type> () 
+		{
+			public AtomicBoolean isProcessed = new AtomicBoolean();
+			public volatile Ret_Type retValue;
+		
+			public Ret_Type apply(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8)
+			{
+				if (!isProcessed.get())
+				{
+					retValue = fun.apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+					isProcessed.set(true);
+				}
+				
+				return retValue;
+			}
+		};
 	}
 	
 	/**
@@ -1714,11 +1958,38 @@ public static interface IFunction9<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default IFunction9<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9)
+	public default IFunction9<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Ret_Type> memorize(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9)
 	{
 		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9);
 	
 		return (a1, a2, a3, a4, a5, a6, a7, a8, a9) -> ret;
+	}
+	
+	/**
+	 * При первом выполнении функция запомнит результат и будет всегда его возвращать
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction9<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Ret_Type> memorized()
+	{
+		IFunction9<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Ret_Type> fun = this;
+	
+		return new IFunction9<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Ret_Type> () 
+		{
+			public AtomicBoolean isProcessed = new AtomicBoolean();
+			public volatile Ret_Type retValue;
+		
+			public Ret_Type apply(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9)
+			{
+				if (!isProcessed.get())
+				{
+					retValue = fun.apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9);
+					isProcessed.set(true);
+				}
+				
+				return retValue;
+			}
+		};
 	}
 	
 	/**
@@ -1889,11 +2160,38 @@ public static interface IFunction10<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default IFunction10<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10)
+	public default IFunction10<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Ret_Type> memorize(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10)
 	{
 		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
 	
 		return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10) -> ret;
+	}
+	
+	/**
+	 * При первом выполнении функция запомнит результат и будет всегда его возвращать
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction10<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Ret_Type> memorized()
+	{
+		IFunction10<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Ret_Type> fun = this;
+	
+		return new IFunction10<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Ret_Type> () 
+		{
+			public AtomicBoolean isProcessed = new AtomicBoolean();
+			public volatile Ret_Type retValue;
+		
+			public Ret_Type apply(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10)
+			{
+				if (!isProcessed.get())
+				{
+					retValue = fun.apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
+					isProcessed.set(true);
+				}
+				
+				return retValue;
+			}
+		};
 	}
 	
 	/**
@@ -2064,11 +2362,38 @@ public static interface IFunction11<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default IFunction11<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11)
+	public default IFunction11<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Ret_Type> memorize(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11)
 	{
 		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11);
 	
 		return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11) -> ret;
+	}
+	
+	/**
+	 * При первом выполнении функция запомнит результат и будет всегда его возвращать
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction11<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Ret_Type> memorized()
+	{
+		IFunction11<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Ret_Type> fun = this;
+	
+		return new IFunction11<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Ret_Type> () 
+		{
+			public AtomicBoolean isProcessed = new AtomicBoolean();
+			public volatile Ret_Type retValue;
+		
+			public Ret_Type apply(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11)
+			{
+				if (!isProcessed.get())
+				{
+					retValue = fun.apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11);
+					isProcessed.set(true);
+				}
+				
+				return retValue;
+			}
+		};
 	}
 	
 	/**
@@ -2239,11 +2564,38 @@ public static interface IFunction12<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default IFunction12<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12)
+	public default IFunction12<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Ret_Type> memorize(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12)
 	{
 		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12);
 	
 		return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12) -> ret;
+	}
+	
+	/**
+	 * При первом выполнении функция запомнит результат и будет всегда его возвращать
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction12<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Ret_Type> memorized()
+	{
+		IFunction12<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Ret_Type> fun = this;
+	
+		return new IFunction12<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Ret_Type> () 
+		{
+			public AtomicBoolean isProcessed = new AtomicBoolean();
+			public volatile Ret_Type retValue;
+		
+			public Ret_Type apply(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12)
+			{
+				if (!isProcessed.get())
+				{
+					retValue = fun.apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12);
+					isProcessed.set(true);
+				}
+				
+				return retValue;
+			}
+		};
 	}
 	
 	/**
@@ -2414,11 +2766,38 @@ public static interface IFunction13<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default IFunction13<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13)
+	public default IFunction13<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Ret_Type> memorize(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13)
 	{
 		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13);
 	
 		return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13) -> ret;
+	}
+	
+	/**
+	 * При первом выполнении функция запомнит результат и будет всегда его возвращать
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction13<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Ret_Type> memorized()
+	{
+		IFunction13<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Ret_Type> fun = this;
+	
+		return new IFunction13<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Ret_Type> () 
+		{
+			public AtomicBoolean isProcessed = new AtomicBoolean();
+			public volatile Ret_Type retValue;
+		
+			public Ret_Type apply(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13)
+			{
+				if (!isProcessed.get())
+				{
+					retValue = fun.apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13);
+					isProcessed.set(true);
+				}
+				
+				return retValue;
+			}
+		};
 	}
 	
 	/**
@@ -2589,11 +2968,38 @@ public static interface IFunction14<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default IFunction14<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14)
+	public default IFunction14<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Ret_Type> memorize(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14)
 	{
 		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14);
 	
 		return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14) -> ret;
+	}
+	
+	/**
+	 * При первом выполнении функция запомнит результат и будет всегда его возвращать
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction14<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Ret_Type> memorized()
+	{
+		IFunction14<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Ret_Type> fun = this;
+	
+		return new IFunction14<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Ret_Type> () 
+		{
+			public AtomicBoolean isProcessed = new AtomicBoolean();
+			public volatile Ret_Type retValue;
+		
+			public Ret_Type apply(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14)
+			{
+				if (!isProcessed.get())
+				{
+					retValue = fun.apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14);
+					isProcessed.set(true);
+				}
+				
+				return retValue;
+			}
+		};
 	}
 	
 	/**
@@ -2764,11 +3170,38 @@ public static interface IFunction15<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default IFunction15<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15)
+	public default IFunction15<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Ret_Type> memorize(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15)
 	{
 		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15);
 	
 		return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15) -> ret;
+	}
+	
+	/**
+	 * При первом выполнении функция запомнит результат и будет всегда его возвращать
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction15<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Ret_Type> memorized()
+	{
+		IFunction15<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Ret_Type> fun = this;
+	
+		return new IFunction15<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Ret_Type> () 
+		{
+			public AtomicBoolean isProcessed = new AtomicBoolean();
+			public volatile Ret_Type retValue;
+		
+			public Ret_Type apply(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15)
+			{
+				if (!isProcessed.get())
+				{
+					retValue = fun.apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15);
+					isProcessed.set(true);
+				}
+				
+				return retValue;
+			}
+		};
 	}
 	
 	/**
@@ -2939,11 +3372,38 @@ public static interface IFunction16<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default IFunction16<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16)
+	public default IFunction16<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Ret_Type> memorize(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16)
 	{
 		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16);
 	
 		return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16) -> ret;
+	}
+	
+	/**
+	 * При первом выполнении функция запомнит результат и будет всегда его возвращать
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction16<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Ret_Type> memorized()
+	{
+		IFunction16<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Ret_Type> fun = this;
+	
+		return new IFunction16<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Ret_Type> () 
+		{
+			public AtomicBoolean isProcessed = new AtomicBoolean();
+			public volatile Ret_Type retValue;
+		
+			public Ret_Type apply(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16)
+			{
+				if (!isProcessed.get())
+				{
+					retValue = fun.apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16);
+					isProcessed.set(true);
+				}
+				
+				return retValue;
+			}
+		};
 	}
 	
 	/**
@@ -3114,11 +3574,38 @@ public static interface IFunction17<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default IFunction17<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17)
+	public default IFunction17<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Ret_Type> memorize(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17)
 	{
 		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17);
 	
 		return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17) -> ret;
+	}
+	
+	/**
+	 * При первом выполнении функция запомнит результат и будет всегда его возвращать
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction17<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Ret_Type> memorized()
+	{
+		IFunction17<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Ret_Type> fun = this;
+	
+		return new IFunction17<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Ret_Type> () 
+		{
+			public AtomicBoolean isProcessed = new AtomicBoolean();
+			public volatile Ret_Type retValue;
+		
+			public Ret_Type apply(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17)
+			{
+				if (!isProcessed.get())
+				{
+					retValue = fun.apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17);
+					isProcessed.set(true);
+				}
+				
+				return retValue;
+			}
+		};
 	}
 	
 	/**
@@ -3289,11 +3776,38 @@ public static interface IFunction18<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default IFunction18<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18)
+	public default IFunction18<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Ret_Type> memorize(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18)
 	{
 		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18);
 	
 		return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18) -> ret;
+	}
+	
+	/**
+	 * При первом выполнении функция запомнит результат и будет всегда его возвращать
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction18<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Ret_Type> memorized()
+	{
+		IFunction18<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Ret_Type> fun = this;
+	
+		return new IFunction18<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Ret_Type> () 
+		{
+			public AtomicBoolean isProcessed = new AtomicBoolean();
+			public volatile Ret_Type retValue;
+		
+			public Ret_Type apply(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18)
+			{
+				if (!isProcessed.get())
+				{
+					retValue = fun.apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18);
+					isProcessed.set(true);
+				}
+				
+				return retValue;
+			}
+		};
 	}
 	
 	/**
@@ -3464,11 +3978,38 @@ public static interface IFunction19<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default IFunction19<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19)
+	public default IFunction19<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Ret_Type> memorize(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19)
 	{
 		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19);
 	
 		return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19) -> ret;
+	}
+	
+	/**
+	 * При первом выполнении функция запомнит результат и будет всегда его возвращать
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction19<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Ret_Type> memorized()
+	{
+		IFunction19<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Ret_Type> fun = this;
+	
+		return new IFunction19<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Ret_Type> () 
+		{
+			public AtomicBoolean isProcessed = new AtomicBoolean();
+			public volatile Ret_Type retValue;
+		
+			public Ret_Type apply(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19)
+			{
+				if (!isProcessed.get())
+				{
+					retValue = fun.apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19);
+					isProcessed.set(true);
+				}
+				
+				return retValue;
+			}
+		};
 	}
 	
 	/**
@@ -3639,11 +4180,38 @@ public static interface IFunction20<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default IFunction20<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20)
+	public default IFunction20<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Ret_Type> memorize(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20)
 	{
 		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20);
 	
 		return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20) -> ret;
+	}
+	
+	/**
+	 * При первом выполнении функция запомнит результат и будет всегда его возвращать
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction20<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Ret_Type> memorized()
+	{
+		IFunction20<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Ret_Type> fun = this;
+	
+		return new IFunction20<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Ret_Type> () 
+		{
+			public AtomicBoolean isProcessed = new AtomicBoolean();
+			public volatile Ret_Type retValue;
+		
+			public Ret_Type apply(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20)
+			{
+				if (!isProcessed.get())
+				{
+					retValue = fun.apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20);
+					isProcessed.set(true);
+				}
+				
+				return retValue;
+			}
+		};
 	}
 	
 	/**
@@ -3814,11 +4382,38 @@ public static interface IFunction21<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default IFunction21<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21)
+	public default IFunction21<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Ret_Type> memorize(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21)
 	{
 		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21);
 	
 		return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21) -> ret;
+	}
+	
+	/**
+	 * При первом выполнении функция запомнит результат и будет всегда его возвращать
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction21<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Ret_Type> memorized()
+	{
+		IFunction21<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Ret_Type> fun = this;
+	
+		return new IFunction21<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Ret_Type> () 
+		{
+			public AtomicBoolean isProcessed = new AtomicBoolean();
+			public volatile Ret_Type retValue;
+		
+			public Ret_Type apply(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21)
+			{
+				if (!isProcessed.get())
+				{
+					retValue = fun.apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21);
+					isProcessed.set(true);
+				}
+				
+				return retValue;
+			}
+		};
 	}
 	
 	/**
@@ -3989,11 +4584,38 @@ public static interface IFunction22<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default IFunction22<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22)
+	public default IFunction22<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Ret_Type> memorize(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22)
 	{
 		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22);
 	
 		return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22) -> ret;
+	}
+	
+	/**
+	 * При первом выполнении функция запомнит результат и будет всегда его возвращать
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction22<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Ret_Type> memorized()
+	{
+		IFunction22<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Ret_Type> fun = this;
+	
+		return new IFunction22<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Ret_Type> () 
+		{
+			public AtomicBoolean isProcessed = new AtomicBoolean();
+			public volatile Ret_Type retValue;
+		
+			public Ret_Type apply(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22)
+			{
+				if (!isProcessed.get())
+				{
+					retValue = fun.apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22);
+					isProcessed.set(true);
+				}
+				
+				return retValue;
+			}
+		};
 	}
 	
 	/**
@@ -4164,11 +4786,38 @@ public static interface IFunction23<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default IFunction23<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23)
+	public default IFunction23<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Ret_Type> memorize(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23)
 	{
 		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23);
 	
 		return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23) -> ret;
+	}
+	
+	/**
+	 * При первом выполнении функция запомнит результат и будет всегда его возвращать
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction23<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Ret_Type> memorized()
+	{
+		IFunction23<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Ret_Type> fun = this;
+	
+		return new IFunction23<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Ret_Type> () 
+		{
+			public AtomicBoolean isProcessed = new AtomicBoolean();
+			public volatile Ret_Type retValue;
+		
+			public Ret_Type apply(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23)
+			{
+				if (!isProcessed.get())
+				{
+					retValue = fun.apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23);
+					isProcessed.set(true);
+				}
+				
+				return retValue;
+			}
+		};
 	}
 	
 	/**
@@ -4339,11 +4988,38 @@ public static interface IFunction24<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default IFunction24<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Arg24, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24)
+	public default IFunction24<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Arg24, Ret_Type> memorize(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24)
 	{
 		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24);
 	
 		return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24) -> ret;
+	}
+	
+	/**
+	 * При первом выполнении функция запомнит результат и будет всегда его возвращать
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction24<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Arg24, Ret_Type> memorized()
+	{
+		IFunction24<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Arg24, Ret_Type> fun = this;
+	
+		return new IFunction24<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Arg24, Ret_Type> () 
+		{
+			public AtomicBoolean isProcessed = new AtomicBoolean();
+			public volatile Ret_Type retValue;
+		
+			public Ret_Type apply(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24)
+			{
+				if (!isProcessed.get())
+				{
+					retValue = fun.apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24);
+					isProcessed.set(true);
+				}
+				
+				return retValue;
+			}
+		};
 	}
 	
 	/**
@@ -4514,11 +5190,38 @@ public static interface IFunction25<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default IFunction25<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Arg24, Arg25, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24, Arg25 arg25)
+	public default IFunction25<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Arg24, Arg25, Ret_Type> memorize(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24, Arg25 arg25)
 	{
 		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24, arg25);
 	
 		return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25) -> ret;
+	}
+	
+	/**
+	 * При первом выполнении функция запомнит результат и будет всегда его возвращать
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction25<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Arg24, Arg25, Ret_Type> memorized()
+	{
+		IFunction25<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Arg24, Arg25, Ret_Type> fun = this;
+	
+		return new IFunction25<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Arg24, Arg25, Ret_Type> () 
+		{
+			public AtomicBoolean isProcessed = new AtomicBoolean();
+			public volatile Ret_Type retValue;
+		
+			public Ret_Type apply(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24, Arg25 arg25)
+			{
+				if (!isProcessed.get())
+				{
+					retValue = fun.apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24, arg25);
+					isProcessed.set(true);
+				}
+				
+				return retValue;
+			}
+		};
 	}
 	
 	/**
@@ -4689,11 +5392,38 @@ public static interface IFunction26<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default IFunction26<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Arg24, Arg25, Arg26, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24, Arg25 arg25, Arg26 arg26)
+	public default IFunction26<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Arg24, Arg25, Arg26, Ret_Type> memorize(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24, Arg25 arg25, Arg26 arg26)
 	{
 		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24, arg25, arg26);
 	
 		return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, a26) -> ret;
+	}
+	
+	/**
+	 * При первом выполнении функция запомнит результат и будет всегда его возвращать
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction26<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Arg24, Arg25, Arg26, Ret_Type> memorized()
+	{
+		IFunction26<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Arg24, Arg25, Arg26, Ret_Type> fun = this;
+	
+		return new IFunction26<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Arg24, Arg25, Arg26, Ret_Type> () 
+		{
+			public AtomicBoolean isProcessed = new AtomicBoolean();
+			public volatile Ret_Type retValue;
+		
+			public Ret_Type apply(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24, Arg25 arg25, Arg26 arg26)
+			{
+				if (!isProcessed.get())
+				{
+					retValue = fun.apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24, arg25, arg26);
+					isProcessed.set(true);
+				}
+				
+				return retValue;
+			}
+		};
 	}
 	
 	/**
@@ -4864,11 +5594,38 @@ public static interface IFunction27<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default IFunction27<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Arg24, Arg25, Arg26, Arg27, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24, Arg25 arg25, Arg26 arg26, Arg27 arg27)
+	public default IFunction27<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Arg24, Arg25, Arg26, Arg27, Ret_Type> memorize(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24, Arg25 arg25, Arg26 arg26, Arg27 arg27)
 	{
 		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24, arg25, arg26, arg27);
 	
 		return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, a26, a27) -> ret;
+	}
+	
+	/**
+	 * При первом выполнении функция запомнит результат и будет всегда его возвращать
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction27<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Arg24, Arg25, Arg26, Arg27, Ret_Type> memorized()
+	{
+		IFunction27<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Arg24, Arg25, Arg26, Arg27, Ret_Type> fun = this;
+	
+		return new IFunction27<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Arg24, Arg25, Arg26, Arg27, Ret_Type> () 
+		{
+			public AtomicBoolean isProcessed = new AtomicBoolean();
+			public volatile Ret_Type retValue;
+		
+			public Ret_Type apply(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24, Arg25 arg25, Arg26 arg26, Arg27 arg27)
+			{
+				if (!isProcessed.get())
+				{
+					retValue = fun.apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24, arg25, arg26, arg27);
+					isProcessed.set(true);
+				}
+				
+				return retValue;
+			}
+		};
 	}
 	
 	/**
@@ -5039,11 +5796,38 @@ public static interface IFunction28<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default IFunction28<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Arg24, Arg25, Arg26, Arg27, Arg28, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24, Arg25 arg25, Arg26 arg26, Arg27 arg27, Arg28 arg28)
+	public default IFunction28<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Arg24, Arg25, Arg26, Arg27, Arg28, Ret_Type> memorize(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24, Arg25 arg25, Arg26 arg26, Arg27 arg27, Arg28 arg28)
 	{
 		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24, arg25, arg26, arg27, arg28);
 	
 		return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, a26, a27, a28) -> ret;
+	}
+	
+	/**
+	 * При первом выполнении функция запомнит результат и будет всегда его возвращать
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction28<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Arg24, Arg25, Arg26, Arg27, Arg28, Ret_Type> memorized()
+	{
+		IFunction28<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Arg24, Arg25, Arg26, Arg27, Arg28, Ret_Type> fun = this;
+	
+		return new IFunction28<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Arg24, Arg25, Arg26, Arg27, Arg28, Ret_Type> () 
+		{
+			public AtomicBoolean isProcessed = new AtomicBoolean();
+			public volatile Ret_Type retValue;
+		
+			public Ret_Type apply(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24, Arg25 arg25, Arg26 arg26, Arg27 arg27, Arg28 arg28)
+			{
+				if (!isProcessed.get())
+				{
+					retValue = fun.apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24, arg25, arg26, arg27, arg28);
+					isProcessed.set(true);
+				}
+				
+				return retValue;
+			}
+		};
 	}
 	
 	/**
@@ -5214,11 +5998,38 @@ public static interface IFunction29<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default IFunction29<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Arg24, Arg25, Arg26, Arg27, Arg28, Arg29, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24, Arg25 arg25, Arg26 arg26, Arg27 arg27, Arg28 arg28, Arg29 arg29)
+	public default IFunction29<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Arg24, Arg25, Arg26, Arg27, Arg28, Arg29, Ret_Type> memorize(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24, Arg25 arg25, Arg26 arg26, Arg27 arg27, Arg28 arg28, Arg29 arg29)
 	{
 		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24, arg25, arg26, arg27, arg28, arg29);
 	
 		return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, a26, a27, a28, a29) -> ret;
+	}
+	
+	/**
+	 * При первом выполнении функция запомнит результат и будет всегда его возвращать
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction29<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Arg24, Arg25, Arg26, Arg27, Arg28, Arg29, Ret_Type> memorized()
+	{
+		IFunction29<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Arg24, Arg25, Arg26, Arg27, Arg28, Arg29, Ret_Type> fun = this;
+	
+		return new IFunction29<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Arg24, Arg25, Arg26, Arg27, Arg28, Arg29, Ret_Type> () 
+		{
+			public AtomicBoolean isProcessed = new AtomicBoolean();
+			public volatile Ret_Type retValue;
+		
+			public Ret_Type apply(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24, Arg25 arg25, Arg26 arg26, Arg27 arg27, Arg28 arg28, Arg29 arg29)
+			{
+				if (!isProcessed.get())
+				{
+					retValue = fun.apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24, arg25, arg26, arg27, arg28, arg29);
+					isProcessed.set(true);
+				}
+				
+				return retValue;
+			}
+		};
 	}
 	
 	/**
@@ -5389,11 +6200,38 @@ public static interface IFunction30<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default IFunction30<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Arg24, Arg25, Arg26, Arg27, Arg28, Arg29, Arg30, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24, Arg25 arg25, Arg26 arg26, Arg27 arg27, Arg28 arg28, Arg29 arg29, Arg30 arg30)
+	public default IFunction30<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Arg24, Arg25, Arg26, Arg27, Arg28, Arg29, Arg30, Ret_Type> memorize(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24, Arg25 arg25, Arg26 arg26, Arg27 arg27, Arg28 arg28, Arg29 arg29, Arg30 arg30)
 	{
 		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24, arg25, arg26, arg27, arg28, arg29, arg30);
 	
 		return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, a26, a27, a28, a29, a30) -> ret;
+	}
+	
+	/**
+	 * При первом выполнении функция запомнит результат и будет всегда его возвращать
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction30<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Arg24, Arg25, Arg26, Arg27, Arg28, Arg29, Arg30, Ret_Type> memorized()
+	{
+		IFunction30<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Arg24, Arg25, Arg26, Arg27, Arg28, Arg29, Arg30, Ret_Type> fun = this;
+	
+		return new IFunction30<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Arg24, Arg25, Arg26, Arg27, Arg28, Arg29, Arg30, Ret_Type> () 
+		{
+			public AtomicBoolean isProcessed = new AtomicBoolean();
+			public volatile Ret_Type retValue;
+		
+			public Ret_Type apply(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24, Arg25 arg25, Arg26 arg26, Arg27 arg27, Arg28 arg28, Arg29 arg29, Arg30 arg30)
+			{
+				if (!isProcessed.get())
+				{
+					retValue = fun.apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24, arg25, arg26, arg27, arg28, arg29, arg30);
+					isProcessed.set(true);
+				}
+				
+				return retValue;
+			}
+		};
 	}
 	
 	/**
@@ -5564,11 +6402,38 @@ public static interface IFunction31<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default IFunction31<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Arg24, Arg25, Arg26, Arg27, Arg28, Arg29, Arg30, Arg31, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24, Arg25 arg25, Arg26 arg26, Arg27 arg27, Arg28 arg28, Arg29 arg29, Arg30 arg30, Arg31 arg31)
+	public default IFunction31<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Arg24, Arg25, Arg26, Arg27, Arg28, Arg29, Arg30, Arg31, Ret_Type> memorize(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24, Arg25 arg25, Arg26 arg26, Arg27 arg27, Arg28 arg28, Arg29 arg29, Arg30 arg30, Arg31 arg31)
 	{
 		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24, arg25, arg26, arg27, arg28, arg29, arg30, arg31);
 	
 		return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, a26, a27, a28, a29, a30, a31) -> ret;
+	}
+	
+	/**
+	 * При первом выполнении функция запомнит результат и будет всегда его возвращать
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction31<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Arg24, Arg25, Arg26, Arg27, Arg28, Arg29, Arg30, Arg31, Ret_Type> memorized()
+	{
+		IFunction31<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Arg24, Arg25, Arg26, Arg27, Arg28, Arg29, Arg30, Arg31, Ret_Type> fun = this;
+	
+		return new IFunction31<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Arg24, Arg25, Arg26, Arg27, Arg28, Arg29, Arg30, Arg31, Ret_Type> () 
+		{
+			public AtomicBoolean isProcessed = new AtomicBoolean();
+			public volatile Ret_Type retValue;
+		
+			public Ret_Type apply(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24, Arg25 arg25, Arg26 arg26, Arg27 arg27, Arg28 arg28, Arg29 arg29, Arg30 arg30, Arg31 arg31)
+			{
+				if (!isProcessed.get())
+				{
+					retValue = fun.apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24, arg25, arg26, arg27, arg28, arg29, arg30, arg31);
+					isProcessed.set(true);
+				}
+				
+				return retValue;
+			}
+		};
 	}
 	
 	/**
@@ -5739,11 +6604,38 @@ public static interface IFunction32<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Ar
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default IFunction32<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Arg24, Arg25, Arg26, Arg27, Arg28, Arg29, Arg30, Arg31, Arg32, Ret_Type> memorized(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24, Arg25 arg25, Arg26 arg26, Arg27 arg27, Arg28 arg28, Arg29 arg29, Arg30 arg30, Arg31 arg31, Arg32 arg32)
+	public default IFunction32<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Arg24, Arg25, Arg26, Arg27, Arg28, Arg29, Arg30, Arg31, Arg32, Ret_Type> memorize(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24, Arg25 arg25, Arg26 arg26, Arg27 arg27, Arg28 arg28, Arg29 arg29, Arg30 arg30, Arg31 arg31, Arg32 arg32)
 	{
 		Ret_Type ret = apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24, arg25, arg26, arg27, arg28, arg29, arg30, arg31, arg32);
 	
 		return (a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20, a21, a22, a23, a24, a25, a26, a27, a28, a29, a30, a31, a32) -> ret;
+	}
+	
+	/**
+	 * При первом выполнении функция запомнит результат и будет всегда его возвращать
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default IFunction32<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Arg24, Arg25, Arg26, Arg27, Arg28, Arg29, Arg30, Arg31, Arg32, Ret_Type> memorized()
+	{
+		IFunction32<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Arg24, Arg25, Arg26, Arg27, Arg28, Arg29, Arg30, Arg31, Arg32, Ret_Type> fun = this;
+	
+		return new IFunction32<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, Arg11, Arg12, Arg13, Arg14, Arg15, Arg16, Arg17, Arg18, Arg19, Arg20, Arg21, Arg22, Arg23, Arg24, Arg25, Arg26, Arg27, Arg28, Arg29, Arg30, Arg31, Arg32, Ret_Type> () 
+		{
+			public AtomicBoolean isProcessed = new AtomicBoolean();
+			public volatile Ret_Type retValue;
+		
+			public Ret_Type apply(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5, Arg6 arg6, Arg7 arg7, Arg8 arg8, Arg9 arg9, Arg10 arg10, Arg11 arg11, Arg12 arg12, Arg13 arg13, Arg14 arg14, Arg15 arg15, Arg16 arg16, Arg17 arg17, Arg18 arg18, Arg19 arg19, Arg20 arg20, Arg21 arg21, Arg22 arg22, Arg23 arg23, Arg24 arg24, Arg25 arg25, Arg26 arg26, Arg27 arg27, Arg28 arg28, Arg29 arg29, Arg30 arg30, Arg31 arg31, Arg32 arg32)
+			{
+				if (!isProcessed.get())
+				{
+					retValue = fun.apply(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24, arg25, arg26, arg27, arg28, arg29, arg30, arg31, arg32);
+					isProcessed.set(true);
+				}
+				
+				return retValue;
+			}
+		};
 	}
 	
 	/**

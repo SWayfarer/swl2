@@ -56,11 +56,38 @@ public static interface ${classType} {
 	 * 
 	 * @return Возвращаемое значение функции
 	 */
-	public default ${classType} memorized(${declareArgs})
+	public default ${classType} memorize(${declareArgs})
 	{
 		${returnType} ret = apply(${invokeArgs});
 	
 		return (${invokeArgs2}) -> ret;
+	}
+	
+	/**
+	 * При первом выполнении функция запомнит результат и будет всегда его возвращать
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default ${classType} memorized()
+	{
+		${classType} fun = this;
+	
+		return new ${classType} () 
+		{
+			public AtomicBoolean isProcessed = new AtomicBoolean();
+			public volatile ${returnType} retValue;
+		
+			public ${returnType} apply(${declareArgs})
+			{
+				if (!isProcessed.get())
+				{
+					retValue = fun.apply(${invokeArgs});
+					isProcessed.set(true);
+				}
+				
+				return retValue;
+			}
+		};
 	}
 	
 	/**
