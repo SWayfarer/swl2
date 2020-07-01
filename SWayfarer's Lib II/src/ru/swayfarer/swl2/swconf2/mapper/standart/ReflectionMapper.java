@@ -86,7 +86,9 @@ public class ReflectionMapper implements ISwconfMapper<SwconfObject, Object> {
 					
 					if (!mappingEvent.isCanceled())
 					{
-						field.set(instace, mappingInfo.getSerialization().deserialize(mapping, swconfValue));
+						Object deserialize = mappingInfo.getSerialization().deserialize(mapping, swconfValue);
+						logger.info(deserialize);
+						field.set(instace, deserialize);
 					}
 				}
 			

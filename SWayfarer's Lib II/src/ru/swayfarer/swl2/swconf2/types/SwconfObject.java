@@ -76,7 +76,7 @@ public abstract class SwconfObject {
 		{
 			SwconfTable table = new SwconfTable();
 			
-			var elements = (Map<String, Object>) obj;
+			var elements = (Map<Object, Object>) obj;
 			
 			for (var entry : elements.entrySet())
 			{
@@ -84,8 +84,9 @@ public abstract class SwconfObject {
 				
 				if (element != null)
 				{
-					element.name = entry.getKey();
-					table.put(entry.getKey(), element);
+					String name = String.valueOf(entry.getKey());
+					element.name = name;
+					table.put(name, element);
 				}
 			}
 			

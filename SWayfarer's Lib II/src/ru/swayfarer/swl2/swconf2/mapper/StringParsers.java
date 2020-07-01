@@ -69,10 +69,10 @@ public class StringParsers {
 		// Enum'ки 
 		registerProvider(
 			(str, cl) -> {
-				return cl.isEnum() && ReflectionUtils.invokeMethod(cl, null, "valueOf", new Object[0]) != null;
+				return cl.isEnum() && ReflectionUtils.invokeMethod(cl, null, "valueOf", new Object[] {str}).getResult() != null;
 			}, 
 			(str, cl) -> {
-				return ReflectionUtils.invokeMethod(cl, null, "valueOf", new Object[0]);
+				return ReflectionUtils.invokeMethod(cl, null, "valueOf", new Object[] {str}).getResult();
 			}
 		);
 		

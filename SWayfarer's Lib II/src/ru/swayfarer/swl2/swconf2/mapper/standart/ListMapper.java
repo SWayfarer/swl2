@@ -126,12 +126,13 @@ public class ListMapper implements ISwconfMapper<SwconfTable, List>{
 
 	public <T extends ListMapper> T registerDefaultCreationFuns()
 	{
+
 		registerCreationFun((info) -> {
 			
 			var type = info.getObjType();
 			
-			if (List.class.isAssignableFrom(type))
-				return new ArrayList<>();
+			if (IObservableList.class.isAssignableFrom(type))
+				return CollectionsSWL.createObservableList();
 			
 			return null;
 		});
@@ -150,11 +151,13 @@ public class ListMapper implements ISwconfMapper<SwconfTable, List>{
 			
 			var type = info.getObjType();
 			
-			if (IObservableList.class.isAssignableFrom(type))
-				return CollectionsSWL.createObservableList();
+			if (List.class.isAssignableFrom(type))
+				return new ArrayList<>();
 			
 			return null;
 		});
+		
+		
 		
 		return (T) this;
 	}

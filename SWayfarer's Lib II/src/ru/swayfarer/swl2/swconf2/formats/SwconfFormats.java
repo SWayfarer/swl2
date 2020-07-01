@@ -5,6 +5,7 @@ import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.resource.rlink.ResourceLink;
 import ru.swayfarer.swl2.resource.streams.DataInputStreamSWL;
+import ru.swayfarer.swl2.resource.streams.DataOutputStreamSWL;
 import ru.swayfarer.swl2.swconf.lua.Lua2SwconfProvider;
 import ru.swayfarer.swl2.swconf2.types.SwconfTable;
 import ru.swayfarer.swl2.swconf2.yaml.Yaml2SwconfProvider;
@@ -31,29 +32,28 @@ public class SwconfFormats {
 		return ret;
 	}
 	
-	public SwconfTable readResource(ResourceLink rlink)
+	public SwconfTable readResource(DataInputStreamSWL stream, String resourceName)
 	{
-		var provider = findProviderForResource(rlink.content);
+		var provider = findProviderForResource(resourceName);
 		
 		if (provider == null)
 		{
 			return null;
 		}
 		
-		DataInputStreamSWL stream = rlink.toStream();
-		
 		return stream == null ? null : provider.readSwconf(stream);
 	}
 	
-	public void writeResource(SwconfTable swconfTable, ResourceLink rlink)
+	public void writeResource(SwconfTable swconfTable, DataOutputStreamSWL os, String resourceName)
 	{
-		var provider = findProviderForResource(rlink.content);
+		var provider = findProviderForResource(resourceName);
 		
 		if (provider == null)
 		{
 			return;
 		}
 		
-		provider.writeSwconf(swconfTable, rlink.toOutStream());
+		provider.writeSwconf(swconfTable, os);
+		os.closeSafe();
 	}
 }

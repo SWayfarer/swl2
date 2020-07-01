@@ -19,6 +19,7 @@ import ru.swayfarer.swl2.resource.file.FileSWL;
 import ru.swayfarer.swl2.resource.pathtransformers.PathTransforms;
 import ru.swayfarer.swl2.resource.rlink.types.ClassPathResourceType;
 import ru.swayfarer.swl2.resource.rlink.types.FileResourceType;
+import ru.swayfarer.swl2.resource.rlink.types.InMemoryResourceType;
 import ru.swayfarer.swl2.resource.rlink.types.UrlResourceType;
 import ru.swayfarer.swl2.resource.streams.DataInputStreamSWL;
 import ru.swayfarer.swl2.string.StringUtils;
@@ -54,6 +55,11 @@ public class RLUtils {
 	{
 		ResourceLink rlink = createLink(StringUtils.concat(path));
 		return rlink == null ? null : rlink.toSingleString();
+	}
+	
+	public static ResourceLink inMemory(String resName)
+	{
+		return new ResourceLink(new InMemoryResourceType(), "<inMemory>" + resName);
 	}
 	
 	public static ResourceLink findSome(String postfix, String... prefixes)
