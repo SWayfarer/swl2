@@ -22,9 +22,9 @@ public class LoggingConfiguration {
 	
 	public static IExtendedList<String> loggingConfigurationsExt = CollectionsSWL.createExtendedList(
 			"lua",
-			"swconf",
 			"json",
-			"properties"
+			"yaml",
+			"yml"
 	);
 	
 	/** Системная проперти, отвечающая за расположение(в формате {@link ResourceLink}) файла конфигурации логгера */

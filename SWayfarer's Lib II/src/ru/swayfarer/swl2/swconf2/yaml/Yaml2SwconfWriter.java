@@ -29,6 +29,9 @@ public class Yaml2SwconfWriter {
 			
 			var value = entry.value;
 			
+			if (value.isTable() && value.asTable().entries.isEmpty())
+				continue;
+			
 			var comment = value.getComment();
 			
 			if (!StringUtils.isBlank(comment))
@@ -44,8 +47,6 @@ public class Yaml2SwconfWriter {
 					ret.indent(currentIndent);
 				}
 			}
-			
-			boolean isListElement = false;
 			
 			if (table.hasKeys)
 			{

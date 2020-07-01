@@ -5,13 +5,15 @@ import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.resource.rlink.ResourceLink;
 import ru.swayfarer.swl2.resource.streams.DataInputStreamSWL;
+import ru.swayfarer.swl2.swconf.lua.Lua2SwconfProvider;
 import ru.swayfarer.swl2.swconf2.types.SwconfTable;
 import ru.swayfarer.swl2.swconf2.yaml.Yaml2SwconfProvider;
 
 public class SwconfFormats {
 
-	public IExtendedList<IFormatProvider> defaultFormatProviders = CollectionsSWL.createExtendedList(
-			new Yaml2SwconfProvider()
+	public static IExtendedList<IFormatProvider> defaultFormatProviders = CollectionsSWL.createExtendedList(
+			new Yaml2SwconfProvider(),
+			new Lua2SwconfProvider()
 	);
 	
 	public IExtendedList<IFormatProvider> registeredFormatProviders = CollectionsSWL.createExtendedList();

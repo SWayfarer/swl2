@@ -17,7 +17,7 @@ public class DIScan {
 	
 	/** Сканнер компонентов ({@link DISwlComponent}) */
 	@InternalElement
-	public ComponentScan componentScan = new ComponentScan(classFinder);
+	public ComponentScan componentScan = new ComponentScan(classFinder).registerDefaultCreationFuns();
 	
 	/** Сканнер источников контекста ({@link DISwlSource})*/
 	@InternalElement

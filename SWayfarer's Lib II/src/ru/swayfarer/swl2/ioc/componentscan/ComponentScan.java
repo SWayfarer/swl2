@@ -4,6 +4,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Map;
 
+import lombok.var;
 import ru.swayfarer.swl2.asm.classfinder.ClassFinder;
 import ru.swayfarer.swl2.asm.informated.AnnotationInfo;
 import ru.swayfarer.swl2.asm.informated.ClassInfo;
@@ -35,8 +36,13 @@ import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.Type;
  * @author swayfarer
  *
  */
+@SuppressWarnings( {"unchecked"} )
 public class ComponentScan {
 
+	/** Функции, создающие компоненты, зная класс */
+	@InternalElement
+	public IExtendedList<IFunction1<Class<?>, Object>> componentCreationFuns = CollectionsSWL.createExtendedList();
+	
 	/** Список выражений, классы соответствующие которым будут пропущены*/
 	@InternalElement
 	public ExpressionsList blackList = new ExpressionsList();
@@ -217,6 +223,67 @@ public class ComponentScan {
 		map.put(assocClass, elementToAdd);
 	}
 	
+	public <T extends ComponentScan> T registerComponentCreationFun(IFunction1<Class<?>, Object> fun)
+	{
+		this.componentCreationFuns.addExclusive(fun);
+		return (T) this;
+	}
+	
+	public <T extends ComponentScan> T registerDefaultCreationFuns()
+	{
+		// Создание компонента через метод 
+		registerComponentCreationFun((cl) -> {
+			
+			Method factoryMethod = ReflectionUtils.methods(cl)
+				.statics()
+				.publics()
+				.returnType(cl)
+			.first();
+			
+			if (factoryMethod != null)
+			{
+				return logger.safeReturn(() -> {
+					
+					IExtendedList<Object> args = DIManager.getArgsFromContext(cl, factoryMethod.getParameters());
+					return factoryMethod.invoke(null, args.toArray());
+				
+				}, "Error while creating component of class", cl, "by factory method", factoryMethod);
+			}
+			
+			return null;
+		});
+		
+		// Через конструкторы 
+		registerComponentCreationFun((cl) -> {
+			
+			var defaultConstructor = ReflectionUtils.findConstructor(cl);
+			
+			if (defaultConstructor != null)
+			{
+				return logger.safeReturn(() -> defaultConstructor.newInstance(), null, "Error while creating component", cl, "with default consntructor!");
+			}
+			else
+			{
+				var constructorsStream = ReflectionUtils.constructors(cl).publics();
+				
+				if (constructorsStream.size() == 1)
+				{
+					var firstConstructor = constructorsStream.first();
+					
+					if (firstConstructor != null)
+					{
+						var args = DIManager.getArgsFromContext(cl, firstConstructor.getParameters());
+						return logger.safeReturn(() -> firstConstructor.newInstance(args.toArray()), null, "Error while creating component", cl, "with default consntructor!");
+					}
+				}
+			}
+			
+			return null;
+		});
+		
+		return (T) this;
+	}
+	
 	/**
 	 * Создать новый объект указанного класса
 	 * @param cl Класс, элемент которого создается
@@ -227,25 +294,12 @@ public class ComponentScan {
 	{
 		Object instance = null;
 		
-		Method factoryMethod = ReflectionUtils.methods(cl)
-			.statics()
-			.publics()
-			.returnType(cl)
-		.first();
-		
-		if (factoryMethod != null)
+		for (var factoryFun : componentCreationFuns)
 		{
-			instance = logger.safeReturn(() -> {
-				
-				IExtendedList<Object> args = DIManager.getArgsFromContext(cl, factoryMethod.getParameters());
-				return factoryMethod.invoke(null, args.toArray());
+			instance = factoryFun.apply(cl);
 			
-			}, "Error while creating component of class", cl, "by factory method", factoryMethod);
-		}
-		
-		if (instance == null)
-		{
-			instance = ReflectionUtils.newInstanceOf(cl);
+			if (instance != null)
+				break;
 		}
 		
 		if (instance == null)
