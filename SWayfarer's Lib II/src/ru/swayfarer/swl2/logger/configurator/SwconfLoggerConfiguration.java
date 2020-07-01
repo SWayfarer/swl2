@@ -2,14 +2,13 @@ package ru.swayfarer.swl2.logger.configurator;
 
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
+import ru.swayfarer.swl2.config.AutoSerializableConfig;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.SimpleLoggerSWL;
 import ru.swayfarer.swl2.logger.configurator.entry.ConfiguartorEntry;
 import ru.swayfarer.swl2.logger.handlers.LogMultiloggerHandler;
 import ru.swayfarer.swl2.resource.rlink.ResourceLink;
-import ru.swayfarer.swl2.swconf.config.AutoSerializableConfig;
-import ru.swayfarer.swl2.swconf.format.StandartSwconfFormats;
-import ru.swayfarer.swl2.swconf.serialization.comments.CommentSwconf;
+import ru.swayfarer.swl2.swconf2.mapper.annotations.CommentedSwconf;
 
 /**
  * Конфигуратор логгеров v2
@@ -19,11 +18,11 @@ import ru.swayfarer.swl2.swconf.serialization.comments.CommentSwconf;
 public class SwconfLoggerConfiguration extends AutoSerializableConfig {
 
 	/** Если задано в false, конфигуратор не будет работать */
-	@CommentSwconf("If set to false confirurations will be skipped")
+	@CommentedSwconf("If set to false confirurations will be skipped")
 	public boolean isEnabled = true;
 
 	/** Список конфигураций для логгера */
-	@CommentSwconf("Configurations for some packages")
+	@CommentedSwconf("Configurations for some packages")
 	public IExtendedList<ConfiguartorEntry> configuration = CollectionsSWL.createExtendedList();
 	
 	/** Применить на логгер */
@@ -55,7 +54,6 @@ public class SwconfLoggerConfiguration extends AutoSerializableConfig {
 	public static SwconfLoggerConfiguration of(String rlink)
 	{
 		SwconfLoggerConfiguration ret = new SwconfLoggerConfiguration();
-		ret.configInfo.configurationFormat = StandartSwconfFormats.LUA_FORMAT;
 		ret.setResourceLink(rlink);
 		ret.init();
 		return ret;

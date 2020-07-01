@@ -85,6 +85,7 @@ public class SimpleLoggerSWL implements ILogger, StandartLoggingLevels, Stacktra
 		else
 		{
 			System.out.println("Colors formatter is null!");
+			new Throwable().printStackTrace();
 		}
 		
 		if (printer != null)

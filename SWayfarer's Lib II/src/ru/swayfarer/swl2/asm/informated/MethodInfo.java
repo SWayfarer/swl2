@@ -3,11 +3,17 @@ package ru.swayfarer.swl2.asm.informated;
 import java.util.List;
 import java.util.Map;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import lombok.ToString;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import ru.swayfarer.swl2.asm.AsmUtils;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
+import ru.swayfarer.swl2.swconf2.mapper.annotations.IgnoreSwconf;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.Opcodes;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.Type;
 
@@ -15,14 +21,15 @@ import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.Type;
  * Информация о методе
  * @author swayfarer
  */
-@Data
-@ToString
+@Accessors(chain = true)
+@Getter @Setter
 public class MethodInfo {
 
 	/** Доступ к методу через опкоды */
 	public int access;
 	
 	/** Класс, в котором находится метод */
+	@IgnoreSwconf
 	public ClassInfo owner;
 	
 	public int paramsCount;
@@ -46,7 +53,7 @@ public class MethodInfo {
 	public IExtendedList<VariableInfo> parameters = CollectionsSWL.createExtendedList();
 	
 	/** Карта, переводящая id переменной в ее имя */
-	public Map<Integer, String> localIdToName = CollectionsSWL.createHashMap();
+	public IExtendedList<LocalVarEntry> localIdToName = CollectionsSWL.createExtendedList();
 	
 	/** Локальные переменные метода */
 	public IExtendedList<VariableInfo> localVars = CollectionsSWL.createExtendedList();
@@ -259,5 +266,14 @@ public class MethodInfo {
 	public boolean isStatic()
 	{
 		return (access & Opcodes.ACC_STATIC) != 0;
+	}
+	
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	@Builder
+	public static class LocalVarEntry {
+		public int id;
+		public String name;
 	}
 }

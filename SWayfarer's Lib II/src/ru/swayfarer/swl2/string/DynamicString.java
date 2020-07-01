@@ -7,6 +7,8 @@ import ru.swayfarer.swl2.markers.ConcattedString;
 
 public class DynamicString implements CharSequence {
 	
+	public int indentSpacesCount = 4;
+	
 	public StringBuilder sb = new StringBuilder();
 
 	public DynamicString() {
@@ -56,6 +58,12 @@ public class DynamicString implements CharSequence {
 	public DynamicString append(String str)
 	{
 		sb.append(str);
+		return this;
+	}
+	
+	public DynamicString indent(int indent)
+	{
+		append(StringUtils.createSpacesSeq(indentSpacesCount * indent));
 		return this;
 	}
 

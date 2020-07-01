@@ -23,7 +23,7 @@ import ru.swayfarer.swl2.resource.rlink.RLUtils;
 import ru.swayfarer.swl2.resource.rlink.ResourceLink;
 import ru.swayfarer.swl2.resource.streams.DataInputStreamSWL;
 import ru.swayfarer.swl2.string.StringUtils;
-import ru.swayfarer.swl2.swconf.utils.SwconfSerializationHelper;
+import ru.swayfarer.swl2.swconf2.helper.SwconfIO;
 
 /**
  * Менеджер логирования
@@ -63,6 +63,8 @@ public class LoggingManager {
 	
 	/** Событие создания логгера */
 	public static IObservable<ILogger> eventCreation = new SimpleObservable<>();
+	
+	public static SwconfIO swconfIO = new SwconfIO();
 	
 	/** Получить(или создать) настроенный логгер по имени класса, из которого вызван метод */
 	public static ILogger getLogger()
@@ -199,7 +201,7 @@ public class LoggingManager {
 		
 		if (link != null && link.isExists())
 		{
-			return SwconfSerializationHelper.forRlink(link).readFromSwconf(link.toSingleString(), SimpleLoggerConfigutaror.class);
+//			return SwconfSerializationHelper.forRlink(link).readFromSwconf(link.toSingleString(), SimpleLoggerConfigutaror.class);
 		}
 		else
 		{
@@ -228,7 +230,7 @@ public class LoggingManager {
 		
 		logger.info("Loading logging configutaion: '\n", json, "\n'...");
 		
-		SimpleLoggerConfigutaror rootConfigutaror = SwconfSerializationHelper.json.readFromSwconf(json, SimpleLoggerConfigutaror.class);
+		SimpleLoggerConfigutaror rootConfigutaror = swconfIO.deserialize(SimpleLoggerConfigutaror.class, rlink); //SwconfSerializationHelper.json.readFromSwconf(json, SimpleLoggerConfigutaror.class);
 		eventCreation.subscribe(rootConfigutaror);
 	}
 	

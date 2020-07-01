@@ -2,6 +2,7 @@ package ru.swayfarer.swl2.asm.transformer.informated.visitor;
 
 import ru.swayfarer.swl2.asm.informated.AnnotationInfo;
 import ru.swayfarer.swl2.asm.informated.MethodInfo;
+import ru.swayfarer.swl2.asm.informated.MethodInfo.LocalVarEntry;
 import ru.swayfarer.swl2.asm.informated.VariableInfo;
 import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.AnnotationVisitor;
@@ -43,7 +44,7 @@ public class VarsScanner extends MethodVisitor{
 	{
 		VariableInfo info = new VariableInfo(index, name, descriptor, signature);
 		
-		this.info.localIdToName.put(index, name);
+		this.info.localIdToName.add(new LocalVarEntry(index, name)); 
 		
 		if (isThisVar())
 		{

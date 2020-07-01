@@ -5,7 +5,7 @@ import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LogInfo;
 import ru.swayfarer.swl2.string.StringUtils;
-import ru.swayfarer.swl2.swconf.serialization.comments.CommentSwconf;
+import ru.swayfarer.swl2.swconf2.mapper.annotations.CommentedSwconf;
 
 /**
  * Конфигурация для одного набора пакетов
@@ -15,18 +15,18 @@ import ru.swayfarer.swl2.swconf.serialization.comments.CommentSwconf;
 public class ConfiguartorEntry {
 
 	/** Источники, к которым будет применена эта конфигурация */
-	@CommentSwconf("Packages filtering for this configuration")
+	@CommentedSwconf("Packages filtering for this configuration")
 	public IExtendedList<String> applySources = CollectionsSWL.createExtendedList();
 	
 	/** Настройки вывода в консоль */
-	@CommentSwconf("Console printing settings")
+	@CommentedSwconf("Console printing settings")
 	public ConfiguratorPrintingEntry printing = new ConfiguratorPrintingEntry();
 	
 	/** Настройки сохранения логов в файл */
-	@CommentSwconf("Files saving settings")
+	@CommentedSwconf("Files saving settings")
 	public IExtendedList<ConfiguratorFileEntry> files = CollectionsSWL.createExtendedList();
 	
-	@CommentSwconf("Filtering of logs")
+	@CommentedSwconf("Filtering of logs")
 	public LogFiltering filtering;
 	
 	/** Применить на логгер */

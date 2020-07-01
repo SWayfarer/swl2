@@ -6,7 +6,7 @@ import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.SimpleLoggerSWL;
 import ru.swayfarer.swl2.logger.decorators.FormattedStacktraceDecorator;
 import ru.swayfarer.swl2.string.StringUtils;
-import ru.swayfarer.swl2.swconf.serialization.comments.CommentSwconf;
+import ru.swayfarer.swl2.swconf2.mapper.annotations.CommentedSwconf;
 
 /**
  * Конфигуратор, отвечающий за вывод логов в консоль
@@ -26,7 +26,7 @@ public class ConfiguratorPrintingEntry {
 	 * %from% - Ссылка на источник лога в формате файла и строки, например SomeFile.java:123 <br>
 	 * %fromFull% - Ссылка на источник лога в формате полного пути до него, например some.path.to.SomeFile.java:123<br>
 	 */
-	@CommentSwconf
+	@CommentedSwconf
 	(
 			  "\nFormat of logging. Use actors: \n"
 			+ "%file% - file where logging source located\n"
@@ -48,19 +48,19 @@ public class ConfiguratorPrintingEntry {
 	 * %method% - Метод, на который ссылается элемент <br>
 	 * %file% - Файл, в котором лежит класс, на который ссылается элемент <br>
 	 */
-	@CommentSwconf("Stacktrace element format")
+	@CommentedSwconf("Stacktrace element format")
 	public String stacktraceFormat = FormattedStacktraceDecorator.defaultStacktraceFormat;
 	
 	/** Скрывать ли цвета? */
-	@CommentSwconf("If sets to true output colors will be hidden")
+	@CommentedSwconf("If sets to true output colors will be hidden")
 	public boolean hideColors = false;
 
 	/** Декоратор {@link Throwable}'ов */
-	@CommentSwconf("Throwables decorator seq")
+	@CommentedSwconf("Throwables decorator seq")
 	public String decoratorSeq = "=-";
 	
 	/** Префиксы, элементы стактрейсов начинающиеся с которых будут скрыты из него */
-	@CommentSwconf("All stacktrace elements that starts with element of this list will be not shown")
+	@CommentedSwconf("All stacktrace elements that starts with element of this list will be not shown")
 	public IExtendedList<String> stacktraceBlocks = CollectionsSWL.createExtendedList();
 	
 	/** Применить на логгер */

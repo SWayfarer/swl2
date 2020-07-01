@@ -9,13 +9,16 @@ import ru.swayfarer.swl2.logger.configurator.entry.ConfiguartorEntry;
 import ru.swayfarer.swl2.logger.configurator.entry.ConfiguratorArchivingEntry;
 import ru.swayfarer.swl2.logger.configurator.entry.ConfiguratorFileEntry;
 import ru.swayfarer.swl2.resource.rlink.RLUtils;
-import ru.swayfarer.swl2.swconf.utils.SwconfSerializationHelper;
+import ru.swayfarer.swl2.resource.rlink.ResourceLink;
+import ru.swayfarer.swl2.swconf2.helper.SwconfIO;
 
 public class LoggerTesting {
 
+	public static SwconfIO swconfIO = new SwconfIO();
+	
 	public static void main(String[] args)
 	{
-		readDefaultConfig();
+		showExample();
 	}
 	
 	public static void readDefaultConfig()
@@ -54,9 +57,9 @@ public class LoggerTesting {
 		
 		configuration.configuration.add(entry);
 		
-		String str = SwconfSerializationHelper.standart.saveToSwconf(configuration);
+		ResourceLink rlink = RLUtils.createLink("f:output.yaml");
 		
-		System.out.println(str);
+		swconfIO.serialize(configuration, rlink);
 	}
 	
 }

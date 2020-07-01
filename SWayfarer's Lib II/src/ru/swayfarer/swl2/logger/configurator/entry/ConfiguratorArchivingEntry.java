@@ -13,8 +13,8 @@ import ru.swayfarer.swl2.logger.handlers.LogArchiverHandler;
 import ru.swayfarer.swl2.resource.file.FileSWL;
 import ru.swayfarer.swl2.resource.pathtransformers.PathTransforms;
 import ru.swayfarer.swl2.string.StringUtils;
-import ru.swayfarer.swl2.swconf.serialization.comments.CommentSwconf;
-import ru.swayfarer.swl2.swconf.serialization.comments.IgnoreSwconf;
+import ru.swayfarer.swl2.swconf2.mapper.annotations.CommentedSwconf;
+import ru.swayfarer.swl2.swconf2.mapper.annotations.IgnoreSwconf;
 import ru.swayfarer.swl2.tasks.TaskManager;
 
 /**
@@ -25,15 +25,15 @@ import ru.swayfarer.swl2.tasks.TaskManager;
 public class ConfiguratorArchivingEntry {
 
 	/** Архивировать ли файл логов, оставшийся с прошлого раза? */
-	@CommentSwconf("Archive already existing logfile on start?")
+	@CommentedSwconf("Archive already existing logfile on start?")
 	public boolean ifPrefExists = false;
 	
 	/** Архивировать ли файл логов при закрытии приложения? */
-	@CommentSwconf("Archive logfile on application close?")
+	@CommentedSwconf("Archive logfile on application close?")
 	public boolean onClose = true;
 	
 	/** Максимальный размер файла с указанием единиц измерения, который будет переведен в число при помощи {@link #getMaxFileBytes()} */
-	@CommentSwconf("File size at which it is archived")
+	@CommentedSwconf("File size at which it is archived")
 	public String maxFileSize = "10mb";
 	
 	/** 
@@ -53,18 +53,18 @@ public class ConfiguratorArchivingEntry {
 	 * month, months - месяц <br>
 	 * year, years, y - год <br>
 	 */
-	@CommentSwconf("Archiving delay")
+	@CommentedSwconf("Archiving delay")
 	public String delay = "every 1 days";
 	
 	/**
 	 * Паттерн имени файла, согласно которому он будет назван при создании <br>
 	 * В паттерне могут быть использованы любые ключевые актеры из {@link PathTransforms} + %file% - имя лог. файла до архивации
 	 */
-	@CommentSwconf("Archive file pattern")
+	@CommentedSwconf("Archive file pattern")
 	public String archiveFilePattern = "%date[YYYY.MM.DD-HH.mm.ssss]%.log";
 	
 	/** Путь до директории, в которую будут сохраняться архивы */
-	@CommentSwconf("Directory where arhived logfiles will be located")
+	@CommentedSwconf("Directory where arhived logfiles will be located")
 	public String archivesDir = "logs/archives/";
 	
 	/** Кэшированный максимальный размер лог. файла в байтах */

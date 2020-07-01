@@ -6,7 +6,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.collections.extended.IExtendedMap;
-import ru.swayfarer.swl2.equals.EqualsUtils;
+import ru.swayfarer.swl2.config.AutoSerializableConfig;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction2;
 import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.math.MathUtils;
@@ -15,9 +15,8 @@ import ru.swayfarer.swl2.resource.file.FilesUtils;
 import ru.swayfarer.swl2.resource.rlink.RLUtils;
 import ru.swayfarer.swl2.resource.rlink.ResourceLink;
 import ru.swayfarer.swl2.string.StringUtils;
-import ru.swayfarer.swl2.swconf.config.AutoSerializableConfig;
-import ru.swayfarer.swl2.swconf.serialization.comments.CommentSwconf;
-import ru.swayfarer.swl2.swconf.utils.SwconfSerializationHelper;
+import ru.swayfarer.swl2.swconf2.helper.SwconfIO;
+import ru.swayfarer.swl2.swconf2.mapper.annotations.CommentedSwconf;
 import ru.swayfarer.swl2.updater.UpdateContent.FileInfo;
 
 /**
@@ -27,21 +26,23 @@ import ru.swayfarer.swl2.updater.UpdateContent.FileInfo;
  */
 public class UpdaterInfo extends AutoSerializableConfig implements IUpdaterInfo {
 
+	public SwconfIO swconfIO = new SwconfIO();
+	
 	/** Маски, имена соответствующие которым будут игнорироваться */
 	@InternalElement
-	@CommentSwconf("If file local path starts with exlusion it will be not touched by updating")
+	@CommentedSwconf("If file local path starts with exlusion it will be not touched by updating")
 	public IExtendedList<String> exlusions = CollectionsSWL.createExtendedList();
 	
 	@InternalElement
-	@CommentSwconf("If not empty, update will be tounch only files which local names starts with inclusions")
+	@CommentedSwconf("If not empty, update will be tounch only files which local names starts with inclusions")
 	public IExtendedList<String> inclusions = CollectionsSWL.createExtendedList();
 	
 	/** Контент обновления */
 	@InternalElement
-	@CommentSwconf("Update content")
+	@CommentedSwconf("Update content")
 	public UpdateContent content;
 	
-	@CommentSwconf("Parent imports of update. This configuration will override imports if it's needed.")
+	@CommentedSwconf("Parent imports of update. This configuration will override imports if it's needed.")
 	public IExtendedList<String> imports = CollectionsSWL.createExtendedList();
 	
 	public AtomicBoolean isImportsLoaded = new AtomicBoolean(false);
@@ -66,23 +67,10 @@ public class UpdaterInfo extends AutoSerializableConfig implements IUpdaterInfo 
 		{
 			ResourceLink rlink = RLUtils.createLink(importInfo);
 			
-			if (rlink != null)
-			{
-				SwconfSerializationHelper helper = SwconfSerializationHelper.forRlink(rlink);
-				
-				if (helper != null)
-				{
-					String singleString = rlink.toSingleString();
-					
-					if (!StringUtils.isEmpty(singleString))
-					{
-						UpdaterInfo info = helper.readFromSwconf(singleString, UpdaterInfo.class);
-						
-						if (info != null)
-							importInfo(info);
-					}
-				}
-			}
+			UpdaterInfo info = swconfIO.deserialize(UpdaterInfo.class, rlink); 
+			
+			if (info != null)
+				importInfo(info);
 		}
 		
 		this.content.files.putAll(files);

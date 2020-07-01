@@ -941,8 +941,6 @@ public class ReflectionUtils {
 		
 		if (cl1.isAssignableFrom(cl2))
 			return true;
-		else
-			logger.info(cl1, "is not assignable from", cl2);
 		
 		return false;
 	}

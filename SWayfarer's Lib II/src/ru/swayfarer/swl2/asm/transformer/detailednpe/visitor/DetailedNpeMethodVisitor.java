@@ -42,7 +42,7 @@ public class DetailedNpeMethodVisitor extends AdviceAdapter{
 	{
 		if (AsmUtils.isObjectLoadOpcode(opcode))
 		{
-			lastLoadedName = methodInfo.localIdToName.get(opcode);
+//			lastLoadedName = methodInfo.localIdToName.get(opcode);
 		}
 		
 		super.visitVarInsn(opcode, var);

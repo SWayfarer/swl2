@@ -20,8 +20,7 @@ import ru.swayfarer.swl2.observable.property.ObservableProperty;
 import ru.swayfarer.swl2.resource.file.FileSWL;
 import ru.swayfarer.swl2.resource.rlink.ResourceLink;
 import ru.swayfarer.swl2.string.StringUtils;
-import ru.swayfarer.swl2.swconf.format.SwconfFormat;
-import ru.swayfarer.swl2.swconf.serialization.comments.IgnoreSwconf;
+import ru.swayfarer.swl2.swconf2.mapper.annotations.IgnoreSwconf;
 import ru.swayfarer.swl2.updater.UpdateContent.FileInfo;
 import ru.swayfarer.swl2.updater.progress.IProgressLoading;
 import ru.swayfarer.swl2.updater.progress.ProgressDownloading;
@@ -351,17 +350,8 @@ public class DownloadHashUpdater {
 	
 	public static DownloadHashUpdater fromSwconfInfo(ResourceLink rlink)
 	{
-		return fromSwconfInfo(rlink, null);
-	}
-	
-	public static DownloadHashUpdater fromSwconfInfo(ResourceLink rlink, SwconfFormat format)
-	{
-		if (format == null)
-			format = new SwconfFormat();
-		
 		UpdaterInfo updaterInfo = new UpdaterInfo();
 		updaterInfo.setResourceLink(rlink);
-		updaterInfo.configInfo.configurationFormat = format;
 		updaterInfo.init();
 		DownloadHashUpdater updater = new DownloadHashUpdater();
 		updater.updaterInfo = updaterInfo;

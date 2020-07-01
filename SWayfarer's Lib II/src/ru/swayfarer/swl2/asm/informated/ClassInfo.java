@@ -14,6 +14,7 @@ import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.exceptions.ExceptionsUtils;
 import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.resource.rlink.RLUtils;
+import ru.swayfarer.swl2.swconf2.mapper.annotations.IgnoreSwconf;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.Type;
 
 /**
@@ -26,6 +27,7 @@ public class ClassInfo {
 
 	/** Кэш полученных по именам классов, чтобы каждый раз не обращаться к файлам */
 	@InternalElement
+	@IgnoreSwconf
 	public static Map<String, ClassInfo> cachedClassInfos = CollectionsSWL.createHashMap();
 	
 	/** Версия класса. На какой Java скомпилирован */

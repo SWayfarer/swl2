@@ -5,7 +5,7 @@ import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.event.LogEvent;
 import ru.swayfarer.swl2.logger.handlers.LogFileHandler;
 import ru.swayfarer.swl2.resource.file.FileSWL;
-import ru.swayfarer.swl2.swconf.serialization.comments.CommentSwconf;
+import ru.swayfarer.swl2.swconf2.mapper.annotations.CommentedSwconf;
 
 /**
  * Конфигуратор сохранения логов в файл
@@ -15,15 +15,15 @@ import ru.swayfarer.swl2.swconf.serialization.comments.CommentSwconf;
 public class ConfiguratorFileEntry {
 	
 	/** Имя лог. файла */
-	@CommentSwconf("Logfile name")
+	@CommentedSwconf("Logfile name")
 	public String fileName = "logs/log.log";
 	
 	/** Фильтрация логов, пройдя которую они будут записаны в файл */
-	@CommentSwconf("Filtering of logs for this logfile")
+	@CommentedSwconf("Filtering of logs for this logfile")
 	public LogFiltering filtering = new LogFiltering();
 	
 	/** Конфигуратор архивации лог. файла */
-	@CommentSwconf("Archiving of this log file")
+	@CommentedSwconf("Archiving of this log file")
 	public ConfiguratorArchivingEntry archiving;
 	
 	/**

@@ -9,7 +9,7 @@ import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.resource.file.FileSWL;
 import ru.swayfarer.swl2.resource.file.FilesUtils;
 import ru.swayfarer.swl2.string.StringUtils;
-import ru.swayfarer.swl2.swconf.serialization.comments.CommentSwconf;
+import ru.swayfarer.swl2.swconf2.mapper.annotations.CommentedSwconf;
 
 /**
  * Контент обновления
@@ -22,12 +22,12 @@ public class UpdateContent {
 
 	/** Тип хэширования, по которому сравниваются файлы */
 	@InternalElement
-	@CommentSwconf("Type of hashing that will be used for update refreshing")
+	@CommentedSwconf("Type of hashing that will be used for update refreshing")
 	public String hashingType;
 	
 	/** Информация о файлах и папках обновления */
 	@InternalElement
-	@CommentSwconf("Files of update with additional information about them")
+	@CommentedSwconf("Files of update with additional information about them")
 	public IExtendedMap<String, FileInfo> files = CollectionsSWL.createExtendedMap();
 	
 	/**
