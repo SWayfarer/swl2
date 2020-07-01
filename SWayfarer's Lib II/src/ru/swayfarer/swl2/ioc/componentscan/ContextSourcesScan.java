@@ -2,6 +2,8 @@ package ru.swayfarer.swl2.ioc.componentscan;
 
 import java.lang.annotation.Annotation;
 
+import lombok.val;
+import lombok.var;
 import ru.swayfarer.swl2.asm.classfinder.ClassFinder;
 import ru.swayfarer.swl2.asm.informated.ClassInfo;
 import ru.swayfarer.swl2.classes.ReflectionUtils;
@@ -9,6 +11,7 @@ import ru.swayfarer.swl2.exceptions.ExceptionsUtils;
 import ru.swayfarer.swl2.ioc.DIAnnotation;
 import ru.swayfarer.swl2.ioc.DIManager;
 import ru.swayfarer.swl2.ioc.DIRegistry;
+import ru.swayfarer.swl2.ioc.componentscan.DISwlSource.ElementPostprocessor;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
 import ru.swayfarer.swl2.markers.InternalElement;
@@ -94,14 +97,41 @@ public class ContextSourcesScan {
 				logger.info("Found context's", context, "source", source);
 			}
 			
-			ReflectionUtils.methods(source)
+			// Регистрация постпроцессоров 
+			val finalContextName = context;
+			
+			DIManager.createIfNotFound(finalContextName);
+			
+			var methodsStream = ReflectionUtils.methods(source);
+			
+			methodsStream.annotated(ElementPostprocessor.class)
+				.argsCount(1)
+				.args(Object.class)
+				.returnType(Object.class, void.class)
+				.each((method) -> {
+					DIManager.registerPostProcessor(finalContextName, (element) -> {
+						
+						if (isLoggingScan)
+						{
+							logger.info("Found context element postprocessor method", method, "! Registering...");
+						}
+						
+						return logger.safeReturn(() -> {
+							Object ret = method.invoke(source, element);
+							return method.getReturnType() == void.class ? element : ret;
+						}, element, "Error while invoking postprocessor", method, "on object", element);
+					});
+				})
+			;
+			
+			methodsStream
 				.argsCount(0)
 				.annotated(DISwlSource.PreInitEvent.class)
 			.invoke(context);
 			
 			DIManager.registerContextSource(context, source);
 			
-			ReflectionUtils.methods(source)
+			methodsStream
 				.argsCount(0)
 				.annotated(DISwlSource.InitEvent.class)
 			.invoke(context);

@@ -8,6 +8,7 @@ import lombok.experimental.Accessors;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction2;
 import ru.swayfarer.swl2.ioc.DIManager;
+import ru.swayfarer.swl2.ioc.context.DIContext;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
 import ru.swayfarer.swl2.markers.InternalElement;
@@ -44,6 +45,15 @@ public class DIContextElementFromMethod implements IDIContextElement {
 	/** Логгер */
 	@InternalElement
 	public static ILogger logger = LoggingManager.getLogger();
+	
+	/** Контекст элемента */
+	@InternalElement
+	public DIContext context;
+	
+	public DIContextElementFromMethod(DIContext context)
+	{
+		this.context = context;
+	}
 
 	/** Функция, которая вызывает метод */
 	public IFunction2<Method, Object, Object> methodInvokationFun = (method, obj) -> {
@@ -71,7 +81,7 @@ public class DIContextElementFromMethod implements IDIContextElement {
 	};
 
 	@Override
-	public Object getValue()
+	public Object getElementValue()
 	{
 		return methodInvokationFun.apply(method, sourceInstance);
 	}
@@ -92,5 +102,17 @@ public class DIContextElementFromMethod implements IDIContextElement {
 	public String toString()
 	{
 		return "prototype from: " + method + " and instance " + sourceInstance;
+	}
+
+	@Override
+	public DIContext getContext()
+	{
+		return context;
+	}
+
+	@Override
+	public boolean mustPostProcess()
+	{
+		return true;
 	}
 }

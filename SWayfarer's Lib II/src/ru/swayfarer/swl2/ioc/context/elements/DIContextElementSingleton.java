@@ -20,8 +20,12 @@ public class DIContextElementSingleton extends DIContextElementFromFun {
 	@InternalElement
 	public AtomicBoolean isInstanceCreated = new AtomicBoolean(false);
 	
+	/** Было ли уже обработано значение элемента? */
+	@InternalElement
+	public AtomicBoolean isInstancePostProcessed = new AtomicBoolean(false);
+	
 	@Override
-	public Object getValue()
+	public Object getElementValue()
 	{
 		if (!isInstanceCreated.get())
 		{
@@ -36,5 +40,11 @@ public class DIContextElementSingleton extends DIContextElementFromFun {
 	public String toString()
 	{
 		return "singleton: " + objectCreationFun;
+	}
+	
+	@Override
+	public boolean mustPostProcess()
+	{
+		return isInstancePostProcessed.get();
 	}
 }

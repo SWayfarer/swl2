@@ -9,6 +9,7 @@ import java.util.Map;
 
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
+import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1;
 import ru.swayfarer.swl2.ioc.context.DIContext;
 import ru.swayfarer.swl2.ioc.context.elements.ContextElementType;
 import ru.swayfarer.swl2.ioc.context.elements.DIContextElementFromMethod;
@@ -62,8 +63,6 @@ public class DIManager {
 		return ret;
 	}
 	
-	
-
 	/**
 	 * Заблокировать иньекции из контекста <br>
 	 * Может быть использовано для его настройки
@@ -81,6 +80,30 @@ public class DIManager {
 		{
 			logger.warning("Can't lock context", contextName, "because it not found!\n| Registered managers:", DIRegistry.registeredManagers);
 		}
+	}
+	
+	/**
+	 * Зарегистрировать постпроцессор элементов для контекста <br> <br>
+	 * Постпроцессоры обрабатывают элементы контекста при их создании <br>
+	 * Постпроцессоры распространяются только на элементы этого контекста. 
+	 * Элементы наследуемых контекстов не обрабатываются им! <br>
+	 * 
+	 * <h1> Внимание </h1>
+	 * Постпроцессор возвращает значение, которое будет использовано в контексте. Т.е. через него можно даже заменить обхъект.
+	 * @param contextName Имя целевого контекста
+	 * @param fun Функция-постпроцессор
+	 */
+	public static void registerPostProcessor(String contextName, IFunction1<Object, Object> fun)
+	{
+		DIContext context = DIRegistry.getRegisteredContext(contextName);
+		
+		if (context == null)
+		{
+			logger.warning("Can't register post processor to non-existing context");
+			return;
+		}
+		
+		context.elementPostprocessors.addExclusive(fun);
 	}
 
 	/**
@@ -288,6 +311,7 @@ public class DIManager {
 								contextElement = new DIContextElementSingleton()
 									.setName(name)
 									.setAssociatedClass(method.getReturnType())
+									.setContext(context)
 									.setObjectCreationFun(() -> {
 										return logger.safeReturn(() -> method.invoke(obj, getArgsFromContext(obj.getClass(), method.getParameters()).toArray()), null, "Error while creating singleton from", method);
 									});
@@ -300,7 +324,13 @@ public class DIManager {
 							{
 								DIContextElementFromMethod element;
 	
-								contextElement = element = new DIContextElementFromMethod().setMethodClass(obj.getClass()).setAssociatedClass(method.getReturnType()).setMethod(method).setSourceInstance(obj).setName(name);
+								contextElement = element = new DIContextElementFromMethod(context)
+										.setMethodClass(obj.getClass())
+										.setAssociatedClass(method.getReturnType())
+										.setMethod(method)
+										.setSourceInstance(obj)
+										.setName(name)
+								;
 	
 								if (annotationElementType == ContextElementType.ThreadLocalPrototype)
 									element.methodInvokationFun = new ThreadLocalMethodInvokationFun();

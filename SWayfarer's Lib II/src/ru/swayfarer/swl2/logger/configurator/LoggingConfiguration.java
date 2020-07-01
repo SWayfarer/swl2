@@ -4,10 +4,14 @@ import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
+import ru.swayfarer.swl2.logger.configurator.entry.ConfiguartorEntry;
+import ru.swayfarer.swl2.logger.configurator.entry.ConfiguratorArchivingEntry;
+import ru.swayfarer.swl2.logger.configurator.entry.ConfiguratorFileEntry;
 import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.resource.rlink.RLUtils;
 import ru.swayfarer.swl2.resource.rlink.ResourceLink;
 import ru.swayfarer.swl2.string.property.SystemProperty;
+import ru.swayfarer.swl2.swconf2.helper.SwconfIO;
 
 /**
  * Конфигуратор логгеров v2
@@ -111,5 +115,32 @@ public class LoggingConfiguration {
 		}
 		
 		return false;
+	}
+	
+
+	
+	/**
+	 * Создать дамп конфигурации логгера <br>
+	 * Готовый шаблон всегда удобнее настраивать под себя =)
+	 * @param rlinkStr Сылка в формате {@link ResourceLink}, по которой будет храниться дамп
+	 */
+	public static void dumpLoggingConfiguration(String rlinkStr)
+	{
+		SwconfLoggerConfiguration configuration = new SwconfLoggerConfiguration();
+		
+		ConfiguartorEntry entry = new ConfiguartorEntry();
+		entry.applySources.add("mask:ru.swayfarer.*");
+		
+		ConfiguratorFileEntry fileEntry = new ConfiguratorFileEntry();
+		entry.files.add(fileEntry);
+		
+		ConfiguratorArchivingEntry archivingEntry = new ConfiguratorArchivingEntry();
+		fileEntry.archiving = archivingEntry;
+		
+		configuration.configuration.add(entry);
+		
+		ResourceLink rlink = RLUtils.createLink(rlinkStr);
+		
+		new SwconfIO().serialize(configuration, rlink);
 	}
 }

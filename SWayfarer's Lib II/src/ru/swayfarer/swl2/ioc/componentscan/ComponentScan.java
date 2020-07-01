@@ -20,6 +20,7 @@ import ru.swayfarer.swl2.ioc.DIRegistry;
 import ru.swayfarer.swl2.ioc.context.DIContext;
 import ru.swayfarer.swl2.ioc.context.elements.ContextElementType;
 import ru.swayfarer.swl2.ioc.context.elements.DIContextElementFromFun;
+import ru.swayfarer.swl2.ioc.context.elements.DIContextElementSingleton;
 import ru.swayfarer.swl2.ioc.context.elements.IDIContextElement;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
@@ -174,6 +175,8 @@ public class ComponentScan {
 		if (elementType == null)
 			elementType = ContextElementType.Singleton;
 		
+		boolean isSingleton = false;
+		
 		switch(elementType)
 		{
 			case Prototype:
@@ -183,23 +186,8 @@ public class ComponentScan {
 			}
 			case Singleton:
 			{
-				objectCreationFun = new IFunction0<Object>()
-				{
-					public Object instance;
-					
-					@Override
-					public Object apply()
-					{
-						if (instance == null)
-						{
-							instance = createNewObject(cl, false);
-							DIManager.injectContextElements(instance);
-							ReflectionUtils.invokeMethods(new EventAnnotatedMethodFilter(ComponentEventType.Init), cl, instance, new Object[0]);
-						}
-						
-						return instance;
-					}
-				};
+				isSingleton = true;
+				objectCreationFun = () -> createNewObject(cl, true);
 				break;
 			}
 			case ThreadLocalPrototype:
@@ -217,7 +205,16 @@ public class ComponentScan {
 		DIManager.createIfNotFound(contextName);
 		DIContext context = DIRegistry.getRegisteredContext(contextName);
 		
-		IDIContextElement elementToAdd = DIContextElementFromFun.of(assocClass, elementName, objectCreationFun);
+		IDIContextElement elementToAdd = null;
+		
+		if (isSingleton)
+		{
+			elementToAdd = DIContextElementSingleton.of(cl, elementName, objectCreationFun, context);
+		}
+		else
+		{
+			elementToAdd = DIContextElementFromFun.of(assocClass, elementName, objectCreationFun, context);
+		}
 		
 		Map<Class<?>, IDIContextElement> map = context.getElementsForName(elementName, true);
 		map.put(assocClass, elementToAdd);

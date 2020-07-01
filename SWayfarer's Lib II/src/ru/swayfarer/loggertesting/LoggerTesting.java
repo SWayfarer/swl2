@@ -14,11 +14,16 @@ import ru.swayfarer.swl2.swconf2.helper.SwconfIO;
 
 public class LoggerTesting {
 
-	public static SwconfIO swconfIO = new SwconfIO();
-	
 	public static void main(String[] args)
 	{
-		showExample();
+		try
+		{
+			showExample();
+		}
+		catch (Throwable e)
+		{
+			
+		}
 	}
 	
 	public static void readDefaultConfig()
@@ -59,7 +64,7 @@ public class LoggerTesting {
 		
 		ResourceLink rlink = RLUtils.createLink("f:output.yaml");
 		
-		swconfIO.serialize(configuration, rlink);
+		new SwconfIO().serialize(configuration, rlink);
 	}
 	
 }

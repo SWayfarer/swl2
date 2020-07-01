@@ -7,6 +7,9 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1;
+import ru.swayfarer.swl2.ioc.DIManager;
+
 /**
  * Автоматически регистрируемый источник контекста 
  * @author swayfarer
@@ -26,4 +29,14 @@ public @interface DISwlSource
 	@Retention(RUNTIME)
 	@Target(METHOD)
 	public static @interface PreInitEvent {}
+	
+	/**
+	 * Зарегистрировать метод как постпроцессор элементов указанного контекста. <br>
+	 * см. {@link DIManager#registerPostProcessor(String, IFunction1)}
+	 * @author swayfarer
+	 *
+	 */
+	@Retention(RUNTIME)
+	@Target(METHOD)
+	public @interface ElementPostprocessor {}
 }

@@ -54,6 +54,10 @@ public class ConfiguratorPrintingEntry {
 	/** Скрывать ли цвета? */
 	@CommentedSwconf("If sets to true output colors will be hidden")
 	public boolean hideColors = false;
+	
+	/** Цветовой режим логгинга */
+	@CommentedSwconf("Logs coloring mode")
+	public EnumLoggingColorMode coloringMode = EnumLoggingColorMode.Colors_8bit;
 
 	/** Декоратор {@link Throwable}'ов */
 	@CommentedSwconf("Throwables decorator seq")
@@ -82,5 +86,11 @@ public class ConfiguratorPrintingEntry {
 		{
 			logger.setDecoratorSeq(decoratorSeq);
 		}
+	}
+	
+	public static enum EnumLoggingColorMode {
+		Hide,
+		Colors_8bit,
+		Colors_ASCI
 	}
 }

@@ -11,6 +11,7 @@ import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
 import ru.swayfarer.swl2.resource.file.FileSWL;
 import ru.swayfarer.swl2.swconf2.mapper.standart.ContstructorMapper;
+import ru.swayfarer.swl2.swconf2.mapper.standart.EnumMapper;
 import ru.swayfarer.swl2.swconf2.mapper.standart.ListMapper;
 import ru.swayfarer.swl2.swconf2.mapper.standart.MapMapper;
 import ru.swayfarer.swl2.swconf2.mapper.standart.ObservablePropertyMapper;
@@ -127,6 +128,8 @@ public class SwconfSerialization {
 			.registerMapper(new ListMapper().registerDefaultCreationFuns())
 			.registerMapper(new MapMapper().registerDefaultCreationFuns())
 			
+			.registerMapper(new EnumMapper())
+
 			.registerMapper(new ReflectionMapper().registerDeaultEvents())
 		;
 		

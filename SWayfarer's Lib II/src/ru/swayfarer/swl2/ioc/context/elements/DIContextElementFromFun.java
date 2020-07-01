@@ -2,9 +2,11 @@ package ru.swayfarer.swl2.ioc.context.elements;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction0;
+import ru.swayfarer.swl2.ioc.context.DIContext;
 import ru.swayfarer.swl2.markers.InternalElement;
 
 /**
@@ -16,6 +18,7 @@ import ru.swayfarer.swl2.markers.InternalElement;
 @Getter
 @Setter
 @AllArgsConstructor(staticName = "of")
+@NoArgsConstructor
 public class DIContextElementFromFun implements IDIContextElement {
 
 	/** Класс, с которым ассоциирован элемент */
@@ -29,12 +32,13 @@ public class DIContextElementFromFun implements IDIContextElement {
 	/** Функция, возвращающая значение элемента */
 	@InternalElement
 	public IFunction0<Object> objectCreationFun;
-
-	/** Конструктор */
-	public DIContextElementFromFun() {}
+	
+	/** Контекст элемента */
+	@InternalElement
+	public DIContext context;
 	
 	@Override
-	public Object getValue()
+	public Object getElementValue()
 	{
 		return objectCreationFun.apply();
 	}
@@ -43,5 +47,17 @@ public class DIContextElementFromFun implements IDIContextElement {
 	public String toString()
 	{
 		return "prototype from fun: " + objectCreationFun;
+	}
+
+	@Override
+	public DIContext getContext()
+	{
+		return context;
+	}
+
+	@Override
+	public boolean mustPostProcess()
+	{
+		return true;
 	}
 }

@@ -864,6 +864,18 @@ public class ReflectionUtils {
 	}
 	
 	/**
+	 * Вызвать приватный метод класса
+	 * @param cl Класс, для которого вызывается метод
+	 * @param name Имя метода
+	 * @param args Аргументы для вызова метода
+	 * @throws Exception Если во время выполнения метода что-то пошло не так
+	 */
+	public static MethodInvokationResult invokeMethod(String name, Class<?> cl, Object... args)
+	{
+		return invokeMethod(cl, null, name, args);
+	}
+	
+	/**
 	 * Вызвать метод 
 	 * @param instance Экземпляр, в котором будет запускаться метод
 	 * @param name Имя метода 

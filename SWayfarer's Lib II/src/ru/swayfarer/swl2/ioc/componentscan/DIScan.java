@@ -1,5 +1,7 @@
 package ru.swayfarer.swl2.ioc.componentscan;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import ru.swayfarer.swl2.asm.classfinder.ClassFinder;
 import ru.swayfarer.swl2.markers.InternalElement;
 
@@ -11,6 +13,10 @@ import ru.swayfarer.swl2.markers.InternalElement;
 @SuppressWarnings("unchecked")
 public class DIScan {
 
+	/** Было ли уже совершено сканирование? */
+	@InternalElement
+	public AtomicBoolean isAlreadyScanned = new AtomicBoolean(false);
+	
 	/** Искалка классов, которые будут просканированы */
 	@InternalElement
 	public ClassFinder classFinder = new ClassFinder();
@@ -30,7 +36,18 @@ public class DIScan {
 	 */
 	public <T extends DIScan> T scan(String pkg)
 	{
+		if (isAlreadyScanned.get())
+			return (T) this;
+		
+		isAlreadyScanned.set(true);
+		
 		classFinder.scan(pkg);
+		return (T) this;
+	}
+	
+	public <T extends DIScan> T reset()
+	{
+		isAlreadyScanned.set(false);
 		return (T) this;
 	}
 }

@@ -9,6 +9,7 @@ import lombok.Synchronized;
 import lombok.var;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
+import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1;
 import ru.swayfarer.swl2.ioc.DIAnnotation;
 import ru.swayfarer.swl2.ioc.DIManager;
 import ru.swayfarer.swl2.ioc.context.elements.DIContextElementSingleton;
@@ -42,6 +43,10 @@ public class DIContext {
 	@InternalElement
 	public Map<String, Map<Class<?>, IDIContextElement>> contextElements = new HashMap<>();
 	
+	/** Постпроцессоры для элементов контекста */
+	@InternalElement
+	public IExtendedList<IFunction1<Object, Object>> elementPostprocessors = CollectionsSWL.createExtendedList();
+	
 	public IExtendedList<DIContext> parents = CollectionsSWL.createExtendedList();
 
 	/** 
@@ -58,6 +63,23 @@ public class DIContext {
 				lock.waitFor();
 			}
 		}
+	}
+	
+	/**
+	 * Постобработка элемента контекста <br>
+	 * На этапе постобработки объект может быть заменен, это стоит учитывать при использовании метода. 
+	 * Новое значение возвращается методом.
+	 * @param obj Обрабатываемый объект
+	 * @return Обработанный элемент контекста
+	 */
+	public <T> T postProcessElement(Object obj)
+	{
+		for (var postProcessorFun : elementPostprocessors)
+		{
+			obj = postProcessorFun.apply(obj);
+		}
+		
+		return (T) obj;
 	}
 
 	/**

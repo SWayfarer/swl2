@@ -7,6 +7,7 @@ import ru.swayfarer.swl2.classes.ReflectionUtils;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.collections.streams.DataStream;
 import ru.swayfarer.swl2.collections.streams.IDataStream;
+import ru.swayfarer.swl2.equals.EqualsUtils;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
 
@@ -40,12 +41,12 @@ public class MethodsStream extends AbstractMethodsStream<MethodsStream, Method> 
 	
 	/**
 	 * Оставить только методы, возвращаемый тип которых равен указанному
-	 * @param cl Класс, объекты которого будут возвращать оставшиеся методы 
+	 * @param classes Класс, объекты которого будут возвращать оставшиеся методы 
 	 * @return Поток с примененными изменениями
 	 */
-	public <T extends MethodsStream> T returnType(Class<?> cl)
+	public <T extends MethodsStream> T returnType(Class<?>... classes)
 	{
-		return filter((method) -> method.getReturnType() == cl);
+		return filter((method) -> EqualsUtils.objectEqualsSome(method.getReturnType(), (Object[]) classes));
 	}
 
 	/**

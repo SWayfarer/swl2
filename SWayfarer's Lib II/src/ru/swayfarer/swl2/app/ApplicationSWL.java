@@ -1,6 +1,7 @@
 package ru.swayfarer.swl2.app;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import lombok.SneakyThrows;
 import ru.swayfarer.swl2.asm.classloader.ClassLoaderSWL;
@@ -11,6 +12,7 @@ import ru.swayfarer.swl2.exceptions.ExceptionsUtils;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1NoR;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction2NoR;
 import ru.swayfarer.swl2.ioc.DIManager;
+import ru.swayfarer.swl2.ioc.EnableDIScan;
 import ru.swayfarer.swl2.ioc.componentscan.DIScan;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
@@ -19,6 +21,7 @@ import ru.swayfarer.swl2.observable.IObservable;
 import ru.swayfarer.swl2.observable.SimpleObservable;
 import ru.swayfarer.swl2.options.Option;
 import ru.swayfarer.swl2.options.OptionsParser;
+import ru.swayfarer.swl2.string.StringUtils;
 
 /** 
  * Стартер для приложений
@@ -44,7 +47,7 @@ public abstract class ApplicationSWL {
 	public ILogger logger = LoggingManager.getLogger(getClass().getSimpleName());
 	
 	/** Точка для подписки на событие выхода из приложения */
-	public IObservable<Void> eventExit = new SimpleObservable<>(); 
+	public IObservable<ApplicationSWL> eventExit = new SimpleObservable<>(); 
 	
 	/** Показывать ли время работы приложения при его закрытии? */
 	public boolean isShowingWorkTimeOnExit = true;
@@ -145,13 +148,38 @@ public abstract class ApplicationSWL {
 		optionsParser = new OptionsParser();
 		preStart(options);
 		
-		if (initDI(options))
+		EnableDIScan scanAnnotation = ReflectionUtils.findAnnotationRec(getClass(), EnableDIScan.class);
+		
+		boolean mustInject = initDI(options);
+				
+		if (scanAnnotation != null)
+		{
+			if (diScan.isAlreadyScanned.get())
+			{
+				logger.warning("Application marked by", EnableDIScan.class.getName(), ", but component scan is already done! Skiping...");
+			}
+			else
+			{
+				String root = scanAnnotation.root();
+				
+				if (StringUtils.isBlank(root))
+					root = getClass().getPackage().getName();
+				
+				diScan.scan(root);
+				
+				mustInject = true;
+			}
+		}
+		
+		if (mustInject)
 			DIManager.injectContextElements(this);
 		
 		this.options = optionsParser.parse(options);
 		optionsParser.init(logger, this.options);
 		
-		Runtime.getRuntime().addShutdownHook(new Thread(() -> eventExit.next(null)));
+		AtomicInteger nextListenerId = new AtomicInteger();
+		
+		Runtime.getRuntime().addShutdownHook(new Thread(() -> eventExit.next(this), "ShutdownListener-" + nextListenerId.getAndIncrement()));
 		
 		eventExit.subscribe((e) -> {
 			if (isShowingWorkTimeOnExit)
