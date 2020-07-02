@@ -3,7 +3,7 @@ package ru.swayfarer.swl2.resource.console;
 import java.io.PrintStream;
 import java.util.Scanner;
 
-import ru.swayfarer.swl2.ansi.AnsiFormatter;
+import ru.swayfarer.swl2.ansi.ConsoleColorsFormatter;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1;
 import ru.swayfarer.swl2.logger.SimpleLogLevel;
 import ru.swayfarer.swl2.logger.SimpleLoggerSWL;
@@ -13,7 +13,7 @@ import ru.swayfarer.swl2.string.StringUtils;
 
 public class ConsoleIO {
 
-	public static AnsiFormatter colorFormatter = AnsiFormatter.getInstance();
+	public static ConsoleColorsFormatter colorFormatter = ConsoleColorsFormatter.getInstance();
 	
 	public static DataInputStreamSWL dis = DataInputStreamSWL.of(System.in);
 	public static Scanner scan = new Scanner(System.in);

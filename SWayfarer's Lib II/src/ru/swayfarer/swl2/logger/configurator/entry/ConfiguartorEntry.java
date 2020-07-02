@@ -20,11 +20,14 @@ public class ConfiguartorEntry {
 	
 	/** Настройки вывода в консоль */
 	@CommentedSwconf("Console printing settings")
-	public ConfiguratorPrintingEntry printing = new ConfiguratorPrintingEntry();
+	public ConfiguratorPrintingEntry printing;
 	
 	/** Настройки сохранения логов в файл */
 	@CommentedSwconf("Files saving settings")
 	public IExtendedList<ConfiguratorFileEntry> files = CollectionsSWL.createExtendedList();
+	
+	@CommentedSwconf("Use base configuration?")
+	public Boolean useBaseConfiguration = false;
 	
 	@CommentedSwconf("Filtering of logs")
 	public LogFiltering filtering;

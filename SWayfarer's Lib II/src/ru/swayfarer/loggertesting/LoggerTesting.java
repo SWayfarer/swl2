@@ -60,7 +60,7 @@ public class LoggerTesting {
 		ConfiguratorArchivingEntry archivingEntry = new ConfiguratorArchivingEntry();
 		fileEntry.archiving = archivingEntry;
 		
-		configuration.configuration.add(entry);
+		configuration.custom.add(entry);
 		
 		ResourceLink rlink = RLUtils.createLink("f:output.yaml");
 		

@@ -82,7 +82,6 @@ public class ContextSourcesScan {
 			
 			Annotation annotation = DIAnnotation.findDISourceAnnotation(cl);
 			
-			logger.info(cl, annotation);
 			String context = DIAnnotation.getSourceContextName(annotation);
 			
 			if (StringUtils.isBlank(context))

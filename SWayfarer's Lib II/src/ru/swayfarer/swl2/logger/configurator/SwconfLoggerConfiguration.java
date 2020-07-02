@@ -22,8 +22,12 @@ public class SwconfLoggerConfiguration extends AutoSerializableConfig {
 	public boolean isEnabled = true;
 
 	/** Список конфигураций для логгера */
+	@CommentedSwconf("Base logs configuration that will apply to all logs")
+	public ConfiguartorEntry base;
+	
+	/** Список конфигураций для логгера */
 	@CommentedSwconf("Configurations for some packages")
-	public IExtendedList<ConfiguartorEntry> configuration = CollectionsSWL.createExtendedList();
+	public IExtendedList<ConfiguartorEntry> custom = CollectionsSWL.createExtendedList();
 	
 	/** Применить на логгер */
 	public void applyToLogger(ILogger logger)
@@ -31,19 +35,40 @@ public class SwconfLoggerConfiguration extends AutoSerializableConfig {
 		if (!isEnabled)
 			return;
 		
-		if (CollectionsSWL.isNullOrEmpty(configuration))
-			return;
-		
-		LogMultiloggerHandler multiloggerHandler = new LogMultiloggerHandler();
-		
-		for (ConfiguartorEntry entry : configuration)
+		if (CollectionsSWL.isNullOrEmpty(custom))
 		{
-			ILogger subLogger = new SimpleLoggerSWL(logger.getName());
-			entry.applyToLogger(subLogger);
-			multiloggerHandler.addLogger(entry::isAcceptingLog, subLogger);
+			if (base != null)
+			{
+				base.applyToLogger(logger);
+			}
 		}
-		
-		logger.evtLogging().subscribe(Integer.MAX_VALUE, multiloggerHandler);
+		else
+		{
+			LogMultiloggerHandler multiloggerHandler = new LogMultiloggerHandler();
+			
+			for (ConfiguartorEntry entry : custom)
+			{
+				ILogger subLogger = new SimpleLoggerSWL(logger.getName());
+				
+				// Если базовые настройки заданы и кастомные настройки их используют, то применяем их до кастомных
+				if (base != null && entry.useBaseConfiguration)
+					base.applyToLogger(subLogger);
+				
+				// А затем применяем кастомные
+				entry.applyToLogger(subLogger);
+				multiloggerHandler.addLogger(entry::isAcceptingLog, subLogger);
+			}
+			
+			// Дефолтный логгер, который будет выдавать логи в том случае, когда не подошли кастомные 
+			if (base != null)
+			{
+				ILogger baseLogger = new SimpleLoggerSWL(logger.getName());
+				base.applyToLogger(baseLogger);
+				multiloggerHandler.addLogger(base::isAcceptingLog, baseLogger);
+			}
+			
+			logger.evtLogging().subscribe(Integer.MAX_VALUE, multiloggerHandler);
+		}
 	}
 	
 	/**

@@ -3,7 +3,7 @@ package ru.swayfarer.swl2.logger;
 import java.util.logging.Level;
 
 import lombok.Data;
-import ru.swayfarer.swl2.ansi.AnsiFormatter;
+import ru.swayfarer.swl2.ansi.ConsoleColorsFormatter;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction0;
 import ru.swayfarer.swl2.markers.InternalElement;
 
@@ -70,8 +70,8 @@ public class SimpleLogLevel implements ILogLevel {
 	/** Получить уровень по заданным параметрам */
 	public static SimpleLogLevel of(String prefix, String logPrefix, Level javaLevel, int weight)
 	{
-		String formattedPrefix = AnsiFormatter.getInstance().format(prefix);
-		String formattedLogPrefix = AnsiFormatter.getInstance().format(logPrefix);
+		String formattedPrefix = ConsoleColorsFormatter.getInstance().format(prefix);
+		String formattedLogPrefix = ConsoleColorsFormatter.getInstance().format(logPrefix);
 		return of(() -> formattedPrefix, () -> formattedLogPrefix, javaLevel, weight);
 	}
 	

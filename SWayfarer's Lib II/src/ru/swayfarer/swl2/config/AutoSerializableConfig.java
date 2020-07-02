@@ -75,6 +75,8 @@ public class AutoSerializableConfig {
 	{
 		if (configInfo.swconfIO.deserialize(this, configInfo.resourceLink) == null)
 			logger.warning("Can't read config at", configInfo.resourceLink.toRlinkString());
+		else
+			configInfo.isReadedSuccessfully.set(true);
 		
 		return (T) this;
 	}

@@ -10,7 +10,7 @@ import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction2NoR;
 import ru.swayfarer.swl2.logger.ILogLevel.StandartLoggingLevels;
 import ru.swayfarer.swl2.logger.event.LogEvent;
-import ru.swayfarer.swl2.logger.formatter.AnsiColorsFormatter;
+import ru.swayfarer.swl2.logger.formatter.LogColorsFormatter;
 import ru.swayfarer.swl2.logger.formatter.TemplateLogFormatter;
 import ru.swayfarer.swl2.markers.ConcattedString;
 import ru.swayfarer.swl2.markers.InternalElement;
@@ -23,7 +23,7 @@ public class SimpleLoggerSWL implements ILogger, StandartLoggingLevels, Stacktra
 
 	public IFunction1<Throwable, IExtendedList<StackTraceElement>> stacktraceDecorator = (e) -> CollectionsSWL.createExtendedList(e.getStackTrace());
 	public static String defaultDecoratorSeq = "=-";
-	public static String defaultFormat = "[%thread%/%level%]&{153} (%from%) &{h:1}[%logger%] -> %text%";
+	public static String defaultFormat = "[%thread%/%level%]&{153} (%from%) &{h:1}[&{50}%logger%&{h:1}] -> %text%";
 	
 	public IFunction1<StackTraceElement, String> stacktraceToStringFun = String::valueOf;
 	
@@ -43,7 +43,7 @@ public class SimpleLoggerSWL implements ILogger, StandartLoggingLevels, Stacktra
 	
 	public static boolean coloringEnabledByDefault = true;
 	
-	private AnsiColorsFormatter ansiFormatter = AnsiColorsFormatter.instance;
+	private LogColorsFormatter ansiFormatter = LogColorsFormatter.instance;
 	
 	public SimpleLoggerSWL()
 	{
@@ -297,7 +297,7 @@ public class SimpleLoggerSWL implements ILogger, StandartLoggingLevels, Stacktra
 		return (T) this;
 	}
 	
-	public static class ClearAnsiFormatter extends AnsiColorsFormatter {
+	public static class ClearAnsiFormatter extends LogColorsFormatter {
 		
 		public ClearAnsiFormatter()
 		{

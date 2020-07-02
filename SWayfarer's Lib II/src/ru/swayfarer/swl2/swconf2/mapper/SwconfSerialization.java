@@ -14,10 +14,10 @@ import ru.swayfarer.swl2.swconf2.mapper.standart.ContstructorMapper;
 import ru.swayfarer.swl2.swconf2.mapper.standart.EnumMapper;
 import ru.swayfarer.swl2.swconf2.mapper.standart.ListMapper;
 import ru.swayfarer.swl2.swconf2.mapper.standart.MapMapper;
+import ru.swayfarer.swl2.swconf2.mapper.standart.NumberMapper;
 import ru.swayfarer.swl2.swconf2.mapper.standart.ObservablePropertyMapper;
 import ru.swayfarer.swl2.swconf2.mapper.standart.ReflectionMapper;
 import ru.swayfarer.swl2.swconf2.types.SwconfBoolean;
-import ru.swayfarer.swl2.swconf2.types.SwconfNum;
 import ru.swayfarer.swl2.swconf2.types.SwconfObject;
 import ru.swayfarer.swl2.swconf2.types.SwconfString;
 
@@ -113,12 +113,13 @@ public class SwconfSerialization {
 			
 			.registerConstructorMapper(FileSWL.class, SwconfString.class, File.class)
 			
-			.registerConstructorMapper(Byte.class, SwconfNum.class, byte.class, Byte.class)
-			.registerConstructorMapper(Short.class, SwconfNum.class, short.class, Short.class)
-			.registerConstructorMapper(Integer.class, SwconfNum.class, int.class, Integer.class)
-			.registerConstructorMapper(Long.class, SwconfNum.class, long.class, Long.class)
-			.registerConstructorMapper(Float.class, SwconfNum.class, float.class, Float.class)
-			.registerConstructorMapper(Double.class, SwconfNum.class, double.class, Double.class)
+			.registerMapper(new NumberMapper("byte", byte.class, Byte.class))
+			.registerMapper(new NumberMapper("short", short.class, Short.class))
+			.registerMapper(new NumberMapper("int", int.class, Integer.class))
+			.registerMapper(new NumberMapper("long", long.class, Long.class))
+			
+			.registerMapper(new NumberMapper("float", float.class, Float.class))
+			.registerMapper(new NumberMapper("double", double.class, Double.class))
 			
 			.registerConstructorMapper(Boolean.class, SwconfBoolean.class, boolean.class, Boolean.class)
 			

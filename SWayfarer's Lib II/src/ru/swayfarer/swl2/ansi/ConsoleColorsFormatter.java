@@ -2,7 +2,7 @@ package ru.swayfarer.swl2.ansi;
 
 import java.util.Map;
 
-import lombok.experimental.var;
+import lombok.var;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.logger.SimpleLoggerSWL;
@@ -18,11 +18,11 @@ import ru.swayfarer.swl2.string.property.SystemProperty;
  *
  */
 @SuppressWarnings("unchecked")
-public class AnsiFormatter {
+public class ConsoleColorsFormatter {
 
 	/** Форматтер */
 	@InternalElement
-	public static AnsiFormatter instance = new AnsiFormatter();
+	public static ConsoleColorsFormatter instance = new ConsoleColorsFormatter();
 	
 	/** Зарегистрированные цветовае коды */
 	@InternalElement
@@ -36,6 +36,8 @@ public class AnsiFormatter {
 	@InternalElement
 	public Map<String, String> styleCodes = CollectionsSWL.createHashMap();
 	
+	public ColoringMode coloringMode = ColoringMode.Enabled_8bit;
+	
 	/** Регулярка, по которой находятся цветовые префиксы */
 	@InternalElement
 	public static String ANSI_FORMAT_PREFIX = StringUtils.regex()
@@ -45,12 +47,12 @@ public class AnsiFormatter {
 			.build();
 	
 	/** Конструктор */
-	public AnsiFormatter()
+	public ConsoleColorsFormatter()
 	{
 		registerDefaultCodes();
 	}
 	
-	public static AnsiFormatter getInstance()
+	public static ConsoleColorsFormatter getInstance()
 	{
 		if (instance == null)
 		{
@@ -62,7 +64,7 @@ public class AnsiFormatter {
 			}
 			else
 			{
-				instance = new AnsiFormatter();
+				instance = new ConsoleColorsFormatter();
 			}
 		}
 		
@@ -203,9 +205,15 @@ public class AnsiFormatter {
 	 * @param code Код цвета
 	 * @param color Цветовая ANSI-вставка, соответствующая коду 
 	 */
-	public <T extends AnsiFormatter> T registerColor(String code, String color)
+	public <T extends ConsoleColorsFormatter> T registerColor(String code, String color)
 	{
 		this.foregroundColorCodes.put(code, color);
 		return (T) this;
+	}
+	
+	public static enum ColoringMode {
+		Enabled_Anci,
+		Enabled_8bit,
+		Disabled
 	}
 }

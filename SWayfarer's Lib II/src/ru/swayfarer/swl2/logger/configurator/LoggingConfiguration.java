@@ -1,12 +1,17 @@
 package ru.swayfarer.swl2.logger.configurator;
 
+import lombok.var;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
+import ru.swayfarer.swl2.logger.SimpleLoggerSWL;
 import ru.swayfarer.swl2.logger.configurator.entry.ConfiguartorEntry;
 import ru.swayfarer.swl2.logger.configurator.entry.ConfiguratorArchivingEntry;
 import ru.swayfarer.swl2.logger.configurator.entry.ConfiguratorFileEntry;
+import ru.swayfarer.swl2.logger.configurator.entry.ConfiguratorPrintingEntry;
+import ru.swayfarer.swl2.logger.configurator.entry.ConfiguratorPrintingEntry.EnumLoggingColorMode;
+import ru.swayfarer.swl2.logger.decorators.FormattedStacktraceDecorator;
 import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.resource.rlink.RLUtils;
 import ru.swayfarer.swl2.resource.rlink.ResourceLink;
@@ -128,6 +133,13 @@ public class LoggingConfiguration {
 	{
 		SwconfLoggerConfiguration configuration = new SwconfLoggerConfiguration();
 		
+		var printingEntry = new ConfiguratorPrintingEntry();
+		printingEntry.coloringMode = EnumLoggingColorMode.Colors_8bit;
+		printingEntry.decoratorSeq = SimpleLoggerSWL.defaultDecoratorSeq;
+		printingEntry.format = SimpleLoggerSWL.defaultFormat;
+		printingEntry.hideColors = false;
+		printingEntry.stacktraceFormat = FormattedStacktraceDecorator.defaultStacktraceFormat;
+		
 		ConfiguartorEntry entry = new ConfiguartorEntry();
 		entry.applySources.add("mask:ru.swayfarer.*");
 		
@@ -137,7 +149,7 @@ public class LoggingConfiguration {
 		ConfiguratorArchivingEntry archivingEntry = new ConfiguratorArchivingEntry();
 		fileEntry.archiving = archivingEntry;
 		
-		configuration.configuration.add(entry);
+		configuration.base = entry;
 		
 		ResourceLink rlink = RLUtils.createLink(rlinkStr);
 		

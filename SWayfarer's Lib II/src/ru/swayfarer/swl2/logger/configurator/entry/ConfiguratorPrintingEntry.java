@@ -3,8 +3,6 @@ package ru.swayfarer.swl2.logger.configurator.entry;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.logger.ILogger;
-import ru.swayfarer.swl2.logger.SimpleLoggerSWL;
-import ru.swayfarer.swl2.logger.decorators.FormattedStacktraceDecorator;
 import ru.swayfarer.swl2.string.StringUtils;
 import ru.swayfarer.swl2.swconf2.mapper.annotations.CommentedSwconf;
 
@@ -37,7 +35,7 @@ public class ConfiguratorPrintingEntry {
 			+ "%from% - line and source file simple name (e.g. SomeFile.java:123) from which log was called\n"
 			+ "%fromFull% - line and source file full name (e.g. some.path.to.SomeFile.java:123) from which log was called\n"
 	)
-	public String format = SimpleLoggerSWL.defaultFormat;
+	public String format;
 	
 	/**
 	 * Формат элемента стактрейса <br>
@@ -49,19 +47,19 @@ public class ConfiguratorPrintingEntry {
 	 * %file% - Файл, в котором лежит класс, на который ссылается элемент <br>
 	 */
 	@CommentedSwconf("Stacktrace element format")
-	public String stacktraceFormat = FormattedStacktraceDecorator.defaultStacktraceFormat;
+	public String stacktraceFormat;
 	
 	/** Скрывать ли цвета? */
 	@CommentedSwconf("If sets to true output colors will be hidden")
-	public boolean hideColors = false;
+	public Boolean hideColors;
 	
 	/** Цветовой режим логгинга */
 	@CommentedSwconf("Logs coloring mode")
-	public EnumLoggingColorMode coloringMode = EnumLoggingColorMode.Colors_8bit;
+	public EnumLoggingColorMode coloringMode;
 
 	/** Декоратор {@link Throwable}'ов */
 	@CommentedSwconf("Throwables decorator seq")
-	public String decoratorSeq = "=-";
+	public String decoratorSeq;
 	
 	/** Префиксы, элементы стактрейсов начинающиеся с которых будут скрыты из него */
 	@CommentedSwconf("All stacktrace elements that starts with element of this list will be not shown")
@@ -70,8 +68,10 @@ public class ConfiguratorPrintingEntry {
 	/** Применить на логгер */
 	public void applyToLogger(ILogger logger)
 	{
-		if (!StringUtils.isEmpty(format))
+		if (!StringUtils.isBlank(format))
+		{
 			logger.setLogFormat(format);
+		}
 		
 		if (!CollectionsSWL.isNullOrEmpty(stacktraceBlocks))
 			logger.addStackstraceBlocker(stacktraceBlocks.toArray(String.class));
@@ -79,7 +79,7 @@ public class ConfiguratorPrintingEntry {
 		if (!StringUtils.isEmpty(stacktraceFormat))
 			logger.setStacktraceElementFormat(stacktraceFormat);
 		
-		if (hideColors)
+		if (hideColors == Boolean.TRUE)
 			logger.hideColors();
 		
 		if (!StringUtils.isEmpty(decoratorSeq))
