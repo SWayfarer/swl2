@@ -143,6 +143,8 @@ public class LoggingConfiguration {
 		ConfiguartorEntry entry = new ConfiguartorEntry();
 		entry.applySources.add("mask:ru.swayfarer.*");
 		
+		entry.printing = printingEntry;
+		
 		ConfiguratorFileEntry fileEntry = new ConfiguratorFileEntry();
 		entry.files.add(fileEntry);
 		
