@@ -12,5 +12,5 @@ import java.lang.annotation.Retention;
 @Retention(RUNTIME)
 public @interface EnableDIScan
 {
-	public String root() default "";
+	public String[] roots() default "";
 }

@@ -1,5 +1,6 @@
 package ru.swayfarer.swl2.ioc.componentscan;
 
+import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
@@ -30,4 +31,19 @@ public @interface DISwlComponent
 	
 	/** Класс, с которым элемент будет ассоциирован */
 	public Class<?> associated() default Object.class;
+	
+	/**
+	 * Событие компонента DI <br>
+	 * События вызываются во время жизненного цикла компонента на разных стадиях <br>
+	 * Отмеченные методы становятся обработчиками этих событий
+	 * @author swayfarer
+	 *
+	 */
+	@Retention(RUNTIME)
+	@Target(METHOD)
+	public static @interface ComponentEvent
+	{
+		/** Тип события */
+		public ComponentEventType value() default ComponentEventType.Init;
+	}
 }

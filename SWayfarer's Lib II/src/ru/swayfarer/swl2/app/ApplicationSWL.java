@@ -160,12 +160,18 @@ public abstract class ApplicationSWL {
 			}
 			else
 			{
-				String root = scanAnnotation.root();
+				String[] roots = scanAnnotation.roots();
 				
-				if (StringUtils.isBlank(root))
-					root = getClass().getPackage().getName();
+				if (CollectionsSWL.isNullOrEmpty(roots))
+					roots = new String[] {""};
 				
-				diScan.scan(root);
+				for (String root : roots)
+				{
+					if (StringUtils.isBlank(root))
+						root = getClass().getPackage().getName();
+
+					diScan.scan(root, true);
+				}
 				
 				mustInject = true;
 			}

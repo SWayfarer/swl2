@@ -36,7 +36,18 @@ public class DIScan {
 	 */
 	public <T extends DIScan> T scan(String pkg)
 	{
-		if (isAlreadyScanned.get())
+		return scan(pkg, false);
+	}
+	
+	/**
+	 * Сканировать пакет 
+	 * @param pkg Сканируемый пакет
+	 * @param force Пропустить ли проверку на {@link #isAlreadyScanned}?
+	 * @return Этот объкет (this)
+	 */
+	public <T extends DIScan> T scan(String pkg, boolean force)
+	{
+		if (!force && isAlreadyScanned.get())
 			return (T) this;
 		
 		isAlreadyScanned.set(true);

@@ -347,7 +347,7 @@ public class ComponentScan {
 			if (method == null)
 				return false;
 			
-			DISwlComponentEvent annotation = method.getAnnotation(DISwlComponentEvent.class);
+			DISwlComponent.ComponentEvent annotation = method.getAnnotation(DISwlComponent.ComponentEvent.class);
 			
 			if (annotation != null)
 			{
