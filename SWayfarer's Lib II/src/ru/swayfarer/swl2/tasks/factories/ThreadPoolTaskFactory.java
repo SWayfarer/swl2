@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -31,7 +32,7 @@ import ru.swayfarer.swl2.tasks.TaskEvent;
  *
  */
 @SuppressWarnings("unchecked")
-public class ThreadPoolTaskFactory implements IFunction1<Runnable, ITask> {
+public class ThreadPoolTaskFactory implements IFunction1<Runnable, ITask>, Executor {
 
 	/** Логгер */
 	public static final ILogger logger = LoggingManager.getLogger();
@@ -103,11 +104,11 @@ public class ThreadPoolTaskFactory implements IFunction1<Runnable, ITask> {
 	@Override @Alias("execute(Runnable)")
 	public ITask apply(Runnable task)
 	{
-		return execute(task);
+		return executeTask(task);
 	}
 	
 	/** Добавить задачу на выполнение */
-	public synchronized ITask execute(Runnable task)
+	public synchronized ITask executeTask(Runnable task)
 	{
 		// Если ао время обновления потоков не было ни одного свободного, то пытаемся создать новый
 		if (!updateThreads())
@@ -367,5 +368,10 @@ public class ThreadPoolTaskFactory implements IFunction1<Runnable, ITask> {
 		{
 			return isProcessingTask.get();
 		}
+	}
+
+	@Override
+	public void execute(Runnable command) {
+		executeTask(command);
 	}
 }

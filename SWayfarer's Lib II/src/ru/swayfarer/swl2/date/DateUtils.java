@@ -6,6 +6,13 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 
+import lombok.var;
+import ru.swayfarer.swl2.collections.CollectionsSWL;
+import ru.swayfarer.swl2.collections.extended.IExtendedMap;
+import ru.swayfarer.swl2.exceptions.ExceptionsUtils;
+import ru.swayfarer.swl2.string.StringUtils;
+import ru.swayfarer.swl2.string.reader.StringReaderSWL;
+
 /**
  * Утилиты для работы с датами
  * @author swayfarer
@@ -13,6 +20,8 @@ import java.util.Date;
  */
 public class DateUtils {
 
+	
+	
 	/** Кол-во милисекунд в секунде */
 	public static final long MILISIS_IN_SECOND = 1000;
 	
@@ -28,6 +37,14 @@ public class DateUtils {
 	/** Кол-во милисекунд в недели */
 	public static final long MILISIS_IN_WEEK = MILISIS_IN_DAY * 7;
 
+	public static IExtendedMap<String, Long> registeredTimeUnits = CollectionsSWL.createExtendedMap(
+			"sec", MILISIS_IN_SECOND,
+			"min", MILISIS_IN_MINUTE,
+			"hour", MILISIS_IN_HOUR,
+			"day", MILISIS_IN_DAY,
+			"week", MILISIS_IN_WEEK
+	);
+	
 	/** Перевести милисекунды в секунды */
 	public static long toSecs(long milisis)
 	{
@@ -123,4 +140,46 @@ public class DateUtils {
 		return localDate;
 	}
 	
+	/** 
+	 * 
+	 * @param time
+	 * @return
+	 */
+	public static long getMilisis(String time)
+	{
+		var reader = new StringReaderSWL(time);
+		
+		int index = 0;
+		
+		while (reader.hasNextElement())
+		{
+			if (reader.skipSome(" ") || reader.skipSome(StringUtils.TAB)) 
+			{
+				index ++;
+				// Nope!
+			}
+			else if (!StringUtils.isDouble(reader.next()))
+				break;
+			else
+				index ++;
+		}
+		
+		if (index < time.length())
+		{
+			var value = time.substring(0, index);
+			var unit = time.substring(index);
+			unit = StringUtils.removeLastWhitespaces(unit);
+			
+			Long unitModifier = registeredTimeUnits.get(unit);
+			
+			ExceptionsUtils.IfNull(unitModifier, IllegalArgumentException.class, "Time unit '" + unit + "' is not registered! Please, register it or use another! Available units:", registeredTimeUnits.keySet());
+			
+			reader.close();
+			return Long.valueOf(value.trim()) * unitModifier;
+			
+		}
+		
+		reader.close();
+		return Long.valueOf(time);
+	}
 }

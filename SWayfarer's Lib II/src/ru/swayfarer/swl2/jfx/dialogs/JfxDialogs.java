@@ -14,12 +14,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
-import javafx.stage.DirectoryChooser;
-import javafx.stage.FileChooser;
-import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
-import ru.swayfarer.swl2.exceptions.ExceptionsUtils;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction2;
 import ru.swayfarer.swl2.jfx.config.JfxLocale;
 import ru.swayfarer.swl2.jfx.css.CssManager;
@@ -30,7 +26,6 @@ import ru.swayfarer.swl2.jfx.scene.controls.validation.TextPropertyValidators;
 import ru.swayfarer.swl2.jfx.utils.JfxUtils;
 import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.resource.file.FileSWL;
-import ru.swayfarer.swl2.string.StringUtils;
 
 /**
  * Утилиты для работы с Jfx-диалогами

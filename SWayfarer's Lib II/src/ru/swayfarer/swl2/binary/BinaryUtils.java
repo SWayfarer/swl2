@@ -2,8 +2,13 @@ package ru.swayfarer.swl2.binary;
 
 import java.nio.ByteOrder;
 
+import lombok.var;
 import ru.swayfarer.swl2.binary.buffers.DynamicByteBuffer;
+import ru.swayfarer.swl2.collections.CollectionsSWL;
+import ru.swayfarer.swl2.collections.extended.IExtendedMap;
 import ru.swayfarer.swl2.exceptions.ExceptionsUtils;
+import ru.swayfarer.swl2.string.StringUtils;
+import ru.swayfarer.swl2.string.reader.StringReaderSWL;
 import ru.swayfarer.swl2.threads.ThreadsUtils;
 
 /**
@@ -13,6 +18,12 @@ import ru.swayfarer.swl2.threads.ThreadsUtils;
  */
 public class BinaryUtils {
 
+	public static IExtendedMap<String, Long> registeredSizeUnits = CollectionsSWL.createExtendedMap(
+			"kb", 1024l,
+			"mb", 1024l * 1024,
+			"gb", 1024l * 1024 * 1024
+	);
+	
 	public static int SHORT_BYTES_SIZE = 2;
 	public static int INT_BYTES_SIZE = 4;
 	public static int FLOAT_BYTES_SIZE = 4;
@@ -132,6 +143,43 @@ public class BinaryUtils {
 		ExceptionsUtils.If(i < Byte.MIN_VALUE, IllegalArgumentException.class, "Smaller integer!");
 		
 		return (byte) i;
+	}
+	
+	public static long getBytes(String size)
+	{
+		var reader = new StringReaderSWL(size);
+		
+		int index = 0;
+		
+		while (reader.hasNextElement())
+		{
+			if (reader.skipSome(" ") || reader.skipSome(StringUtils.TAB)) 
+			{
+				index ++;
+				// Nope!
+			}
+			else if (!StringUtils.isDouble(reader.next()))
+				break;
+			else
+				index ++;
+		}
+		
+		if (index < size.length())
+		{
+			var value = size.substring(0, index);
+			var unit = size.substring(index);
+			unit = StringUtils.removeLastWhitespaces(unit);
+			
+			Long unitModifier = registeredSizeUnits.get(unit);
+			
+			ExceptionsUtils.IfNull(unitModifier, IllegalArgumentException.class, "Size unit '" + unit + "' is not registered! Please, register it or use another! Available units:", registeredSizeUnits.keySet());
+			
+			reader.close();
+			return Long.valueOf(value.trim()) * unitModifier;
+		}
+		
+		reader.close();
+		return Long.valueOf(size);
 	}
 	
 }

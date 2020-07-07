@@ -20,6 +20,7 @@ import java.util.zip.ZipFile;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.ExtendedListWrapper;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
+import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction0NoR;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1;
 import ru.swayfarer.swl2.logger.ILogger;
 import ru.swayfarer.swl2.logger.LoggingManager;
@@ -533,6 +534,17 @@ public class FileSWL extends File implements IHasSubfiles, Iterable<FileSWL> {
 		}
 		
 		return null;
+	}
+	
+	/**
+	 * Выполнить функцию, заблокировав файл. Другой поток не сможет обра
+	 * @param fun
+	 */
+	public void locked(IFunction0NoR fun)
+	{
+		lock();
+		fun.apply();
+		unlock();
 	}
 	
 	/** Заблокировать файл в потоке, чтобы не было одновременной записи в файл */

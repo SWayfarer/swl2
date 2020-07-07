@@ -42,7 +42,7 @@ public class MultiThreadExecutor<Element_Type> implements IFunction2NoR<IFunctio
 			final int id = next ++;
 
 			lock.counter.incrementAndGet();
-			ITask task = getThreadPoolTaskFactory().execute(() -> {
+			ITask task = getThreadPoolTaskFactory().executeTask(() -> {
 				fun.apply(id, element);
 				lock.reduce();
 			});
