@@ -141,6 +141,19 @@ public class PathTransforms {
 	{
 		registrerTransformer(new DatePathTransformer("date"));
 		registrerTransformer(new DatePathTransformer(new Date(), "startDate"));
+		
+		registrerTransformer(new DatePathTransformer("date")
+				.setParamsStart("{")
+				.setParamsEnd("}")
+				.updateRegex()
+		);
+		
+		registrerTransformer(new DatePathTransformer(new Date(), "startDate")
+				.setParamsStart("{")
+				.setParamsEnd("}")
+				.updateRegex()
+		);
+		
 		registrerTransformer(new KeyCodesTransformer());
 	}
 	

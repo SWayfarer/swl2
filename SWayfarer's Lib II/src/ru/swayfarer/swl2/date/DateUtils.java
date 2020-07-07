@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.List;
 
 import lombok.var;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
@@ -20,7 +21,14 @@ import ru.swayfarer.swl2.string.reader.StringReaderSWL;
  */
 public class DateUtils {
 
+	public static String DATE_REGEX_START = "%date{";
+	public static String DATE_REGEX_END = "}%";
 	
+	public static String DATE_REGEX = StringUtils.regex()
+			.text(DATE_REGEX_START)
+				.not(DATE_REGEX_END)
+			.text(DATE_REGEX_END)
+	.build();
 	
 	/** Кол-во милисекунд в секунде */
 	public static final long MILISIS_IN_SECOND = 1000;
@@ -181,5 +189,25 @@ public class DateUtils {
 		
 		reader.close();
 		return Long.valueOf(time);
+	}
+	
+	
+	public static String replaceAllDates(String str, Date d)
+	{
+		List<String> dates = StringUtils.getAllMatches(DATE_REGEX, str);
+		
+		if (dates != null)
+		{
+			for (String date : dates)
+			{
+				String format = date.substring(6, date.length() - 2);
+				
+				SimpleDateFormat dateFormat = new SimpleDateFormat(format);
+				
+				str = str.replace(date, dateFormat.format(d));
+			}
+		}
+		
+		return str;
 	}
 }

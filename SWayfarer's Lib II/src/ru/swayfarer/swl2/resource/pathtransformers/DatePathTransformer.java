@@ -3,6 +3,9 @@ package ru.swayfarer.swl2.resource.pathtransformers;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.exceptions.ExceptionsUtils;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1;
@@ -13,14 +16,21 @@ import ru.swayfarer.swl2.string.StringUtils;
  * Преобразователь дат в формате %date{format}%
  * @author swayfarer
  */
+@Getter @Setter @Accessors(chain = true)
 public class DatePathTransformer implements IFunction1<String, String> {
 
 	/** Стандартный формат, который поставляется, если явно не указано даты */
-	public static String defaultDateFormat = "(DD.MM.YYYY-HH.mm)";
+	public static String defaultDateFormat = "(dd.MM.yyyy-HH.mm)";
 	
 	/** Регулярка, по которой находятся даты для замены */
 	@InternalElement
 	public String dateRegex;
+	
+	@InternalElement
+	public String paramsStart = "[";
+	
+	@InternalElement
+	public String paramsEnd = "]";
 			
 	/** Константная дата. Если не будет указана, то при каждой замене будет использована актуальная */
 	@InternalElement
@@ -43,12 +53,22 @@ public class DatePathTransformer implements IFunction1<String, String> {
 		
 		this.date = date;
 		this.prefix = prefix;
+		updateRegex();
+	}
+	
+	public DatePathTransformer updateRegex()
+	{
+		String start = "%" + prefix + paramsStart;
+		String end = paramsEnd + "%";
 		
 		dateRegex = StringUtils.regex()
-				.text("%" + prefix + "[")
-				.something()
-				.text("]%")
+				.text(start)
+					.some()
+					.not(end)
+				.text(end)
 		.build();
+		
+		return this;
 	}
 
 	/** Преобразовать путь */
