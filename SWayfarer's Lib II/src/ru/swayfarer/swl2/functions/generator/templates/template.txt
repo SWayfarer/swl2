@@ -3,12 +3,17 @@
 #set classType ${functionName}${argsCount}<${funGenerics}, ${returnType}>
 #set oneArgClassType ${functionName}1<${returnType}, ${returnType}>
 #set classTypeNoR ${functionName}${argsCount}NoR<${funGenerics}>
+
+#set classTypeWithBooleanRet ${functionName}${argsCount}<${funGenerics}, Boolean>
+
 #set classTypeNoRExtends ${functionName}${argsCount}<${funGenerics}, Void>
 
 #if ($argsCount == 0)
 	#set classType ${functionName}${argsCount}<${returnType}>
 	#set classTypeNoR ${functionName}${argsCount}NoR
 	#set classTypeNoRExtends ${functionName}${argsCount}<Void>
+	#set classTypeWithoutRet ${functionName}${argsCount}<
+	#set classTypeWithBooleanRet ${functionName}${argsCount}<Boolean>
 #endif
 
 #text
@@ -51,6 +56,18 @@ public static interface ${classType} {
 		return apply(${invokeArgs});
 	}
 	
+	public default ${classTypeWithBooleanRet} and(${classTypeWithBooleanRet} fun)
+	{
+		${classTypeWithBooleanRet} thisFun = (${classTypeWithBooleanRet})((Object) this);
+		return (${invokeArgs2}) -> thisFun.apply(${invokeArgs2}) && fun.apply(${invokeArgs2});
+	}
+	
+	public default ${classTypeWithBooleanRet} or(${classTypeWithBooleanRet} fun)
+	{
+		${classTypeWithBooleanRet} thisFun = (${classTypeWithBooleanRet})((Object) this);
+		return (${invokeArgs2}) -> thisFun.apply(${invokeArgs2}) || fun.apply(${invokeArgs2});
+	}
+	
 	/**
 	 * Выполнить функцию, запомнить результат и возвращать всегда его
 	 * 
@@ -86,6 +103,40 @@ public static interface ${classType} {
 				}
 				
 				return retValue;
+			}
+		};
+	}
+	
+	/**
+	 * При первом выполнении функция запомнит результат и будет всегда его возвращать
+	 * 
+	 * @return Возвращаемое значение функции
+	 */
+	public default ${classType} threadLocal()
+	{
+		${classType} fun = this;
+	
+		return new ${classType} () 
+		{
+			public volatile ThreadLocal<Boolean> isPassed = new ThreadLocal<Boolean>();
+			public volatile ThreadLocal<${returnType}> threadLocal = new ThreadLocal<${returnType}>();
+		
+			public boolean isPassed()
+			{
+				return isPassed.get() == Boolean.TRUE;
+			}
+			
+			public ${returnType} apply(${declareArgs})
+			{
+				if (isPassed())
+				{
+					return threadLocal.get();
+				}
+				
+				${returnType} ret = fun.apply(${invokeArgs});
+				threadLocal.set(ret);
+				isPassed.set(true);
+				return ret;
 			}
 		};
 	}

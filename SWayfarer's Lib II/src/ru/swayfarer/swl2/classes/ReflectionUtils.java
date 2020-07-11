@@ -14,6 +14,7 @@ import java.util.Map;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.var;
 import ru.swayfarer.swl2.classes.reflection.ConstructorsStream;
 import ru.swayfarer.swl2.classes.reflection.FieldsStream;
 import ru.swayfarer.swl2.classes.reflection.MethodsStream;
@@ -245,6 +246,14 @@ public class ReflectionUtils {
 		return null;
 	}
 	
+	public static <T extends Annotation> T findAnnotationRec(Annotation annotation, Class<T> annotationClass)
+	{
+		if (annotation.annotationType() == annotationClass)
+			return (T) annotation;
+		
+		return findAnnotationRec(annotation.annotationType(), annotationClass);
+	}
+	
 	public static <T extends Annotation> T findAnnotationRec(Class<?> cl, IExtendedList<Class<?>> visitedAnnotations, Class<? extends Annotation> annotationClass)
 	{
 		T annnotation = (T) cl.getAnnotation(annotationClass);
@@ -256,11 +265,13 @@ public class ReflectionUtils {
 		
 		for (Annotation annotation : annotations)
 		{
-			if (!visitedAnnotations.contains(annotationClass))
+			var type = annotation.annotationType();
+			
+			if (!visitedAnnotations.contains(type))
 			{
-				visitedAnnotations.add(annotationClass);
+				visitedAnnotations.add(type);
 				
-				T ret = findAnnotationRec(annotation.annotationType(), visitedAnnotations, annotationClass);
+				T ret = findAnnotationRec(type, visitedAnnotations, annotationClass);
 				
 				if (ret != null)
 				{

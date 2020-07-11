@@ -1,6 +1,7 @@
 package ru.swayfarer.swl2.classes.reflection;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 
 import ru.swayfarer.swl2.classes.ReflectionUtils;
@@ -67,6 +68,15 @@ public class MethodsStream extends AbstractMethodsStream<MethodsStream, Method> 
 	public <T extends MethodsStream> T returnExtends(Class<?> cl)
 	{
 		return filter((method) -> method.getReturnType().getSuperclass().equals(cl));
+	}
+	
+	/**
+	 * Оставить не-статические методы
+	 * @return Поток с примененными изменениями
+	 */
+	public <T extends MethodsStream> T nonStatics()
+	{
+		return filter((method) -> !Modifier.isStatic(method.getModifiers()));
 	}
 
 	/**

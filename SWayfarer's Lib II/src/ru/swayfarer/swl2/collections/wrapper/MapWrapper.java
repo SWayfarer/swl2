@@ -1,6 +1,7 @@
 package ru.swayfarer.swl2.collections.wrapper;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -121,5 +122,10 @@ public class MapWrapper<K, V> implements IExtendedMap<K, V> {
 	public String toString()
 	{
 		return "MapWrapper(" + wrappedMap.toString() + ")";
+	}
+
+	@Override
+	public Iterator<Entry<K, V>> iterator() {
+		return entrySet().iterator();
 	}
 }

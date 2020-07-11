@@ -1,5 +1,6 @@
 package ru.swayfarer.swl2.asm.transformer.ditransformer.regetter.visitor;
 
+import lombok.var;
 import ru.swayfarer.swl2.asm.informated.AnnotationInfo;
 import ru.swayfarer.swl2.asm.informated.FieldInfo;
 import ru.swayfarer.swl2.asm.transformer.ditransformer.DIClassTransformer;
@@ -8,7 +9,6 @@ import ru.swayfarer.swl2.logger.LoggingManager;
 import ru.swayfarer.swl2.markers.InternalElement;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.ClassVisitor;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.MethodVisitor;
-import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.Type;
 import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.commons.AdviceAdapter;
 
 /**
@@ -18,23 +18,23 @@ import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.commons.AdviceAdapter;
  */
 public class DIDynamicMethodVisitor extends AdviceAdapter {
 
+	@InternalElement
+	public DIClassTransformer diClassTransformer;
+	
 	/** {@link ClassVisitor}, для которого был создан этот {@link MethodVisitor} */
 	@InternalElement
 	public DIDynamicClassVisitor classVisitor;
-	
-	/** Дескриптор аннотации {@link DynamicDI} */
-	@InternalElement
-	public static String UPDATE_ANNOTATION_DESC = Type.getDescriptor(DynamicDI.class);
 	
 	/** Логгер */
 	@InternalElement
 	public static ILogger logger = LoggingManager.getLogger();
 	
 	/** Конструктор */
-	public DIDynamicMethodVisitor(MethodVisitor methodVisitor, int access, String name, String descriptor, DIDynamicClassVisitor classVisitor)
+	public DIDynamicMethodVisitor(DIClassTransformer diClassTransformer, MethodVisitor methodVisitor, int access, String name, String descriptor, DIDynamicClassVisitor classVisitor)
 	{
 		super(ASM7, methodVisitor, access, name, descriptor);
 		this.classVisitor = classVisitor;
+		this.diClassTransformer = diClassTransformer;
 	}
 
 	@Override
@@ -46,14 +46,17 @@ public class DIDynamicMethodVisitor extends AdviceAdapter {
 			
 			if (field != null && !field.isPrimitive())
 			{
-				AnnotationInfo updateAnnotation = field.getFirstAnnotation(UPDATE_ANNOTATION_DESC);
-				
-				if (updateAnnotation != null)
+				for (var annotationDesc : diClassTransformer.dynamicAnnotationsDescs)
 				{
-					visitMethodInsn(INVOKEVIRTUAL, owner, classVisitor.getMethodName(field), classVisitor.getMethodDesc(field), false);
-					classVisitor.addGenFieldInfo(field);
+					AnnotationInfo updateAnnotation = field.findAnnotationRec(annotationDesc);
 					
-					return;
+					if (updateAnnotation != null)
+					{
+						visitMethodInsn(INVOKEVIRTUAL, owner, classVisitor.getMethodName(field), classVisitor.getMethodDesc(field), false);
+						classVisitor.addGenFieldInfo(field);
+						
+						return;
+					}
 				}
 			}
 		}

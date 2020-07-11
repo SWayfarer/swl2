@@ -16,7 +16,7 @@ import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction1NoR;
  * @param <V> Тип Значения
  */
 @SuppressWarnings("unchecked")
-public interface IExtendedMap<K, V> extends Map<K, V> {
+public interface IExtendedMap<K, V> extends Map<K, V>, Iterable<Map.Entry<K, V>> {
 
 	/**
 	 * Выполнить функцию для каждой {@link Entry} 

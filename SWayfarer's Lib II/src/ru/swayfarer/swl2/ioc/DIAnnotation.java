@@ -16,8 +16,8 @@ import ru.swayfarer.swl2.ioc.DIManager.DISwL;
 import ru.swayfarer.swl2.ioc.componentscan.DISwlComponent;
 import ru.swayfarer.swl2.ioc.componentscan.DISwlSource;
 import ru.swayfarer.swl2.ioc.context.elements.ContextElementType;
-import ru.swayfarer.swl2.logger.LoggingManager;
 import ru.swayfarer.swl2.logger.ILogger;
+import ru.swayfarer.swl2.logger.LoggingManager;
 
 public class DIAnnotation {
 
@@ -25,6 +25,7 @@ public class DIAnnotation {
 	
 	public static IExtendedMap<Class<?>, IFunction1<Annotation, String>> sourcesContextFun = CollectionsSWL.createExtendedMap();
 	
+	public static IExtendedMap<Class<?>, IFunction1<Annotation, String>> findsContextFun = CollectionsSWL.createExtendedMap();
 	
 	public static IExtendedMap<Class<?>, IFunction1<Annotation, String>> elementNameFuns = CollectionsSWL.createExtendedMap();
 	public static IExtendedMap<Class<?>, IFunction1<Annotation, String>> elementContextFuns = CollectionsSWL.createExtendedMap();
@@ -36,6 +37,11 @@ public class DIAnnotation {
 	public static IExtendedMap<Class<?>, IFunction1<Annotation, Boolean>> componentUsingNameFuns = CollectionsSWL.createExtendedMap();
 	public static IExtendedMap<Class<?>, IFunction1<Annotation, ContextElementType>> componentTypeFuns = CollectionsSWL.createExtendedMap();
 	public static IExtendedMap<Class<?>, IFunction1<Annotation, Class<?>>> componentAssociatedClassFuns = CollectionsSWL.createExtendedMap();
+	
+	public static String getFindAnnotationContextName(Annotation annotation) 
+	{
+		return getByNamedFun(annotation, "context", String.class, findsContextFun, FindInContext.class);
+	}
 	
 	public static String getSourceContextName(Annotation annotation) 
 	{

@@ -5,13 +5,17 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 
 import lombok.AllArgsConstructor;
+import lombok.var;
 import ru.swayfarer.swl2.asm.transformer.ditransformer.regetter.visitor.DynamicDI;
 import ru.swayfarer.swl2.classes.ReflectionUtils;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.functions.GeneratedFunctions.IFunction2;
+import ru.swayfarer.swl2.generics.GenericObject;
 import ru.swayfarer.swl2.ioc.DIManager.DISwL;
+import ru.swayfarer.swl2.ioc.DIAnnotation;
 import ru.swayfarer.swl2.ioc.DIRegistry;
+import ru.swayfarer.swl2.ioc.FindInContext;
 import ru.swayfarer.swl2.ioc.context.DIContext;
 import ru.swayfarer.swl2.ioc.context.elements.IDIContextElement;
 import ru.swayfarer.swl2.logger.ILogger;
@@ -34,7 +38,10 @@ public class ReflectionDIInjector {
 	public static Map<Class<?>, ReflectionDIInjector> cachedInjectors = new IdentityHashMap<>();
 
 	/** Список полей, к которым был получен доступ */
-	public IExtendedList<ReflectionDIInjector.FieldDIInfo> fields = CollectionsSWL.createExtendedList();
+	public IExtendedList<InjectFieldDIInfo> injectFields = CollectionsSWL.createExtendedList();
+	
+	/** Список полей, к которым был получен доступ */
+	public IExtendedList<FindFieldDIInfo> findFields = CollectionsSWL.createExtendedList();
 
 	/** Логгер */
 	public static ILogger logger = LoggingManager.getLogger();
@@ -54,18 +61,33 @@ public class ReflectionDIInjector {
 
 			for (Field field : cl.getDeclaredFields())
 			{ 
+				FindInContext findInContext = field.getAnnotation(FindInContext.class);
 				DISwL annotation = ReflectionUtils.findAnnotationRec(field, DISwL.class); // field.getAnnotation(DISwL.class);
 				DynamicDI dynamicDI = field.getAnnotation(DynamicDI.class);
 				
-				if (dynamicDI == null && annotation != null)
+				if (dynamicDI == null)
 				{
-					if (ReflectionUtils.setAccessible(field))
+					if (annotation != null)
 					{
-						fields.add(FieldDIInfo.of(field, annotation));
+						if (ReflectionUtils.setAccessible(field))
+						{
+							injectFields.add(InjectFieldDIInfo.of(field, annotation));
+						}
+						else
+						{
+							logger.error("Can't access the field", field, ". The field will be skipped during injection...");
+						}
 					}
-					else
+					else 
 					{
-						logger.error("Can't access the field", field, ". The field will be skipped during injection...");
+						if (ReflectionUtils.setAccessible(field))
+						{
+							findFields.add(FindFieldDIInfo.of(field, findInContext));
+						}
+						else
+						{
+							logger.error("Can't access the field", field, ". The field will be skipped during injection...");
+						}
 					}
 				}
 			}
@@ -99,7 +121,7 @@ public class ReflectionDIInjector {
 	{
 		logger.safe(() -> {
 
-			for (ReflectionDIInjector.FieldDIInfo fieldInfo : fields)
+			for (ReflectionDIInjector.InjectFieldDIInfo fieldInfo : injectFields)
 			{
 				injectToField(obj, fieldInfo, contextFun.apply(fieldInfo.field, fieldInfo.annotation));
 			}
@@ -114,23 +136,48 @@ public class ReflectionDIInjector {
 	
 	public static void injectToField(Object instance, Field field) throws IllegalArgumentException, IllegalAccessException 
 	{
+		FindInContext findInContext = ReflectionUtils.findAnnotationRec(field, FindInContext.class);
+		
 		DISwL annotation = ReflectionUtils.findAnnotationRec(field, DISwL.class); //field.getAnnotation(DISwL.class);
 		Class<?> cl = instance.getClass();
 		
-		if (annotation != null)
+		if (findInContext != null)
 		{
-			String context = annotation.context();
+			String contextName = DIAnnotation.getFindAnnotationContextName(findInContext);
+			
+			if (StringUtils.isBlank(contextName))
+			{
+				contextName = DIRegistry.getClassContextName(cl);
+			}
+			
+			var context = DIRegistry.getRegisteredContext(contextName);
+			
+			if (context != null)
+			{
+				var generics = GenericObject.ofField(field);
+				
+				if (generics == null || generics.size() != 1)
+				{
+					return;
+				}
+				
+				
+			}
+		}
+		else if (annotation != null)
+		{
+			String context = DIAnnotation.getElementName(annotation);
 			
 			if (StringUtils.isBlank(context))
 			{
 				context = DIRegistry.getClassContextName(cl);
 			}
 			
-			injectToField(instance, FieldDIInfo.of(field, annotation), DIRegistry.getRegisteredContext(context));
+			injectToField(instance, InjectFieldDIInfo.of(field, annotation), DIRegistry.getRegisteredContext(context));
 		}
 	}
 	
-	public static void injectToField(Object instance, ReflectionDIInjector.FieldDIInfo fieldInfo, DIContext context) throws IllegalArgumentException, IllegalAccessException 
+	public static void injectToField(Object instance, ReflectionDIInjector.InjectFieldDIInfo fieldInfo, DIContext context) throws IllegalArgumentException, IllegalAccessException 
 	{
 		Field field = fieldInfo.field;
 
@@ -209,7 +256,26 @@ public class ReflectionDIInjector {
 	 */
 	@InternalElement
 	@AllArgsConstructor(staticName = "of")
-	public static class FieldDIInfo {
+	public static class FindFieldDIInfo {
+		
+		/** Поле */
+		@InternalElement
+		public Field field;
+		
+		/** Аннотация {@link DISwL}, которой отмечено поле */
+		@InternalElement
+		public FindInContext annotation;
+
+	}
+	
+	/**
+	 * Информация о поле
+	 * @author swayfarer
+	 *
+	 */
+	@InternalElement
+	@AllArgsConstructor(staticName = "of")
+	public static class InjectFieldDIInfo {
 		
 		/** Поле */
 		@InternalElement

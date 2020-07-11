@@ -5,6 +5,7 @@ import ru.swayfarer.swl2.asm.informated.ClassInfo;
 import ru.swayfarer.swl2.asm.informated.FieldInfo;
 import ru.swayfarer.swl2.asm.informated.MethodInfo;
 import ru.swayfarer.swl2.asm.informated.visitor.InformatedClassVisitor;
+import ru.swayfarer.swl2.asm.transformer.ditransformer.DIClassTransformer;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.extended.IExtendedList;
 import ru.swayfarer.swl2.ioc.DIRegistry;
@@ -17,22 +18,23 @@ import ru.swayfarer.swl2.z.dependencies.org.objectweb.asm.Type;
 
 public class DIDynamicClassVisitor extends InformatedClassVisitor {
 
-	public static String sourceOwnerInternalName = Type.getInternalName(DIRegistry.class);
-	
 	public static ILogger logger = LoggingManager.getLogger();
+	
+	public DIClassTransformer diClassTransformer;
 	
 	public IExtendedList<String> fieldsToGenerate = CollectionsSWL.createExtendedList();
 	
-	public DIDynamicClassVisitor(ClassVisitor classVisitor, ClassInfo classInfo)
+	public DIDynamicClassVisitor(DIClassTransformer diClassTransformer, ClassVisitor classVisitor, ClassInfo classInfo)
 	{
 		super(classVisitor, classInfo);
+		this.diClassTransformer = diClassTransformer;
 	}
 	
 	@Override
 	public MethodVisitor visitMethodInformated(MethodInfo info, int access, String name, String descriptor, String signature, String[] exceptions)
 	{
 		MethodVisitor cv = super.visitMethodInformated(info, access, name, descriptor, signature, exceptions);
-		cv = new DIDynamicMethodVisitor(cv, access, name, descriptor, this);
+		cv = new DIDynamicMethodVisitor(diClassTransformer, cv, access, name, descriptor, this);
 		return cv;
 	}
 	
@@ -68,7 +70,7 @@ public class DIDynamicClassVisitor extends InformatedClassVisitor {
 		mv.visitCode();
 			mv.visitVarInsn(ALOAD, 0);
 			mv.visitLdcInsn(field.getName());
-			mv.visitMethodInsn(INVOKESTATIC, sourceOwnerInternalName, "getContextElementValue", "(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;", false);
+			mv.visitMethodInsn(INVOKESTATIC, diClassTransformer.dynamicClassInternalName, diClassTransformer.dynamicInjectionMethodName, "(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;", false);
 			AsmUtils.invokeObjectCheckcast(mv, field.getType());
 			AsmUtils.invokeReturn(mv, field.getType());
 			mv.visitMaxs(2, 2);

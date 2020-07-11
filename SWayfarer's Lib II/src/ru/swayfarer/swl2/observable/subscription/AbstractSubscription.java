@@ -70,6 +70,7 @@ public abstract class AbstractSubscription<Event_Type> implements ISubscription<
 				{
 					processError(e);
 					
+					e.printStackTrace();
 					logger.error(e, "Error while processing subscription", this);
 				}
 			}

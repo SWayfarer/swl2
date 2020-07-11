@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.TreeSet;
 
+import lombok.var;
 import ru.swayfarer.swl2.collections.CollectionsSWL;
 import ru.swayfarer.swl2.collections.streams.DataStream;
 import ru.swayfarer.swl2.collections.streams.IDataStream;
@@ -69,6 +70,19 @@ public interface IExtendedList<Element_Type> extends List<Element_Type>{
 		}
 		
 		return (T) this;
+	}
+	
+	public default <T extends Element_Type> T find(IFunction1<Element_Type, Boolean> filter)
+	{
+		for (var element : this)
+		{
+			if (filter.apply(element) == Boolean.TRUE)
+			{
+				return (T) element;
+			}
+		}
+		
+		return null;
 	}
 	
 	/**

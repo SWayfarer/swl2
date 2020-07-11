@@ -304,6 +304,12 @@ public class ExceptionsUtils {
 			throw createThrowable(classOfThrowable, StringUtils.concatWithSpaces(message), 2);
 	}
 	
+	@SneakyThrows
+	public static void throwException(Throwable e)
+	{
+		throw e;
+	}
+	
 	/**
 	 * Бросить исключение, если проверяемая строка пуста
 	 * @param str Проверяемая строка
